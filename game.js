@@ -399,7 +399,12 @@
             shieldEl.textContent = shieldHits;
           }
           if (u.type === 'double') {
-            shotCount++;
+            if (shotCount < 4) {
+              shotCount++;
+            } else {
+              playerDamage++;
+              damageEl.textContent = playerDamage;
+            }
           }
           if (u.type === 'rocket') hasRocket = true;
           if (u.type === 'heal') {
