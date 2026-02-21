@@ -28,9 +28,9 @@
 
   const ROCKET_W = 10;
   const ROCKET_H = 24;
-  const ROCKET_INITIAL_SPEED = 2;
-  const ROCKET_MAX_SPEED = 14;
-  const ROCKET_THRUST = 0.38;
+  const ROCKET_INITIAL_SPEED = 1;
+  const ROCKET_MAX_SPEED = 9;
+  const ROCKET_THRUST = 0.25;
   const ROCKET_STEER_STRENGTH = 0.12;
   const ROCKET_VERTICAL_PHASE = 55;
   const ROCKET_HIT_RADIUS = 28;
