@@ -414,19 +414,27 @@
       const dy = r.targetY - cy;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < ROCKET_HIT_RADIUS) {
+        let bestI = -1;
+        let bestD = Infinity;
         for (let i = 0; i < invaders.length; i++) {
           const inv = invaders[i];
           const invCx = inv.x + inv.w / 2;
           const invCy = inv.y + inv.h / 2;
-          const d = Math.sqrt((cx - invCx) ** 2 + (cy - invCy) ** 2);
-          if (d < ROCKET_HIT_RADIUS) {
-            score += 15 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
-            spawnExplosion(invCx, invCy, inv.color);
-            spawnUpgrade(inv.x, inv.y);
-            invaders.splice(i, 1);
-            scoreEl.textContent = score;
-            return false;
+          const d = (invCx - r.targetX) ** 2 + (invCy - r.targetY) ** 2;
+          if (d < bestD) {
+            bestD = d;
+            bestI = i;
           }
+        }
+        if (bestI >= 0) {
+          const inv = invaders[bestI];
+          const invCx = inv.x + inv.w / 2;
+          const invCy = inv.y + inv.h / 2;
+          score += 15 * (inv.color === COLORS.invader3 ? 3 : inv.color === COLORS.invader1 ? 2 : 1);
+          spawnExplosion(invCx, invCy, inv.color);
+          spawnUpgrade(inv.x, inv.y);
+          invaders.splice(bestI, 1);
+          scoreEl.textContent = score;
         }
         return false;
       }
