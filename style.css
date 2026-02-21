@@ -53,6 +53,21 @@ body::before {
   font-size: 0.9rem;
 }
 
+.hud span {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.hud .score,
+.hud .level {
+  text-align: left;
+}
+
+.hud .lives,
+.hud .shield {
+  text-align: right;
+}
+
 .hud strong {
   color: #39ff14;
   text-shadow: 0 0 8px #39ff14;
