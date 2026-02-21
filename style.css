@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #0a0a0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  color: #00f5ff;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% 120%, rgba(0, 245, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255, 0, 255, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.game-wrap {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  margin-bottom: 0.5rem;
+  text-shadow: 
+    0 0 10px #00f5ff,
+    0 0 20px #00f5ff,
+    0 0 40px #00f5ff;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  width: 800px;
+  margin: 0 auto 0.5rem;
+  font-size: 0.9rem;
+}
+
+.hud strong {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+.hud .level strong {
+  color: #ff6600;
+  text-shadow: 0 0 8px #ff6600;
+}
+
+.hud .shield strong {
+  color: #00f5ff;
+  text-shadow: 0 0 8px #00f5ff;
+}
+
+#game {
+  display: block;
+  margin: 0 auto;
+  background: #0d0d14;
+  border: 2px solid #00f5ff;
+  box-shadow: 
+    0 0 20px rgba(0, 245, 255, 0.3),
+    inset 0 0 60px rgba(0, 245, 255, 0.03);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.controls {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 15, 0.9);
+  color: #00f5ff;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay p {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 15px #00f5ff;
+}
+
+#overlay-text.win {
+  color: #39ff14;
+  text-shadow: 0 0 15px #39ff14;
+}
+
+#restart {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  padding: 0.6rem 1.5rem;
+  background: transparent;
+  color: #00f5ff;
+  border: 2px solid #00f5ff;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  transition: all 0.2s;
+}
+
+#restart:hover {
+  background: #00f5ff;
+  color: #0a0a0f;
+  box-shadow: 0 0 20px #00f5ff;
+}
+
+#start-screen p {
+  font-size: 1.2rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
