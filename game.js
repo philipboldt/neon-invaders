@@ -427,39 +427,52 @@
   }
 
   function updateRockets(now) {
-    const lowestRow = getLowestRowInvaders();
-    const targetPool = lowestRow.length > 0 ? lowestRow : invaders;
-    if (hasRocket && targetPool.length > 0 && now - lastRocketTime >= ROCKET_INTERVAL_MS) {
+    const currentLowest = getLowestRowInvaders();
+    if (hasRocket && currentLowest.length > 0 && now - lastRocketTime >= ROCKET_INTERVAL_MS) {
       lastRocketTime = now;
-      const targetInv = targetPool[Math.floor(Math.random() * targetPool.length)];
-      const targetX = targetInv.x + targetInv.w / 2;
-      const targetY = targetInv.y + targetInv.h / 2;
+      const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
       rockets.push({
         x: player.x + player.w / 2 - ROCKET_W / 2,
         y: player.y,
         w: ROCKET_W,
         h: ROCKET_H,
-        targetX,
-        targetY,
+        targetX: targetInv.x + targetInv.w / 2,
+        targetY: targetInv.y + targetInv.h / 2,
         vx: 0,
         vy: -ROCKET_INITIAL_SPEED,
         distanceTraveled: 0,
       });
     }
     rockets = rockets.filter((r) => {
+      if (currentLowest.length > 0) {
+        let bestInv = null;
+        let bestD = Infinity;
+        for (const inv of currentLowest) {
+          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
+          if (d < bestD) {
+            bestD = d;
+            bestInv = inv;
+          }
+        }
+        if (bestInv) {
+          r.targetX = bestInv.x + bestInv.w / 2;
+          r.targetY = bestInv.y + bestInv.h / 2;
+        }
+      }
+
       const cx = r.x + ROCKET_W / 2;
       const cy = r.y + ROCKET_H / 2;
       const dx = r.targetX - cx;
       const dy = r.targetY - cy;
       const dist = Math.sqrt(dx * dx + dy * dy);
+
       if (dist < ROCKET_HIT_RADIUS) {
         let bestI = -1;
         let bestD = Infinity;
         for (let i = 0; i < invaders.length; i++) {
           const inv = invaders[i];
-          const invCx = inv.x + inv.w / 2;
-          const invCy = inv.y + inv.h / 2;
-          const d = (invCx - r.targetX) ** 2 + (invCy - r.targetY) ** 2;
+          if (!currentLowest.includes(inv)) continue;
+          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
           if (d < bestD) {
             bestD = d;
             bestI = i;
