@@ -397,7 +397,7 @@
             shieldHits = 1;
             hasShieldSystem = true;
             lastShieldLostTime = -1;
-            shieldEl.textContent = shieldHits;
+            shieldEl.textContent = 'activated';
           }
           if (u.type === 'double') {
             if (shotCount < 4) {
@@ -510,7 +510,7 @@
     if (now - lastShieldLostTime >= SHIELD_RECHARGE_MS) {
       shieldHits = 1;
       lastShieldLostTime = -1;
-      shieldEl.textContent = shieldHits;
+      shieldEl.textContent = 'activated';
     }
   }
 
@@ -546,7 +546,7 @@
           if (shieldHits > 0) {
             shieldHits = 0;
             lastShieldLostTime = now;
-            shieldEl.textContent = shieldHits;
+            shieldEl.textContent = 'deactivated';
           } else {
             lives--;
             livesEl.textContent = lives;
@@ -661,7 +661,7 @@
     shieldHits = 0;
     hasShieldSystem = false;
     lastShieldLostTime = -1;
-    shieldEl.textContent = 0;
+    shieldEl.textContent = 'no shield';
     hasRocket = false;
     lastRocketTime = 0;
     invaderDir = 1;
@@ -686,7 +686,7 @@
         shieldHits = 0;
         shotCount = 1;
         hasRocket = false;
-        shieldEl.textContent = 0;
+        shieldEl.textContent = 'no shield';
       }
       return;
     }
