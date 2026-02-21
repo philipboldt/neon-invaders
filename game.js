@@ -23,6 +23,7 @@
     shield: '#00f5ff',
     double: '#39ff14',
     rocket: '#ff6600',
+    heal: '#ff3366',
   };
 
   const ROCKET_W = 10;
@@ -39,13 +40,13 @@
   let lives = 3;
   let level = 1;
 
-  const UPGRADE_TYPES = ['shield', 'double', 'rocket'];
+  const UPGRADE_TYPES = ['shield', 'double', 'rocket', 'heal'];
   const DROP_CHANCE = 0.18;
   const UPGRADE_FALL_SPEED = 3;
   const UPGRADE_W = 24;
   const UPGRADE_H = 24;
   const ROCKET_INTERVAL_MS = 5000;
-  const SHIELD_HITS = 2;
+  const SHIELD_RECHARGE_MS = 5000;
 
   const EXPLOSION_PARTICLES = 18;
   const PARTICLE_MAX_SIZE = 14;
@@ -59,6 +60,7 @@
   let rockets = [];
   let particles = [];
   let shieldHits = 0;
+  let lastShieldLostTime = -1;
   let doubleShot = false;
   let hasRocket = false;
   let lastRocketTime = 0;
@@ -117,7 +119,7 @@
 
   function drawUpgrades() {
     upgrades.forEach((u) => {
-      const c = u.type === 'shield' ? COLORS.shield : u.type === 'double' ? COLORS.double : COLORS.rocket;
+      const c = u.type === 'shield' ? COLORS.shield : u.type === 'double' ? COLORS.double : u.type === 'rocket' ? COLORS.rocket : COLORS.heal;
       ctx.shadowColor = c;
       ctx.shadowBlur = 12;
       ctx.fillStyle = c;
@@ -319,11 +321,16 @@
         u.y + u.h > player.y && u.y < player.y + player.h
       ) {
         if (u.type === 'shield') {
-          shieldHits = SHIELD_HITS;
+          shieldHits = 1;
+          lastShieldLostTime = -1;
           shieldEl.textContent = shieldHits;
         }
         if (u.type === 'double') doubleShot = true;
         if (u.type === 'rocket') hasRocket = true;
+        if (u.type === 'heal') {
+          lives++;
+          livesEl.textContent = lives;
+        }
         return false;
       }
       return true;
@@ -408,7 +415,16 @@
     });
   }
 
-  function checkCollisions() {
+  function updateShieldRecharge(now) {
+    if (shieldHits > 0 || lastShieldLostTime < 0) return;
+    if (now - lastShieldLostTime >= SHIELD_RECHARGE_MS) {
+      shieldHits = 1;
+      lastShieldLostTime = -1;
+      shieldEl.textContent = shieldHits;
+    }
+  }
+
+  function checkCollisions(now) {
     bullets = bullets.filter((b) => {
       for (let i = 0; i < invaders.length; i++) {
         const inv = invaders[i];
@@ -434,7 +450,8 @@
       ) {
         spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player);
         if (shieldHits > 0) {
-          shieldHits--;
+          shieldHits = 0;
+          lastShieldLostTime = now;
           shieldEl.textContent = shieldHits;
         } else {
           lives--;
@@ -470,9 +487,10 @@
     updateBullets(16);
     updateInvaders(now);
     invaderShoot(now);
-    checkCollisions();
+    checkCollisions(now);
     updateUpgrades();
     updateRockets(now);
+    updateShieldRecharge(now);
     updateParticles();
 
     drawInvaders();
@@ -516,6 +534,7 @@
     upgrades = [];
     particles = [];
     shieldHits = 0;
+    lastShieldLostTime = -1;
     shieldEl.textContent = 0;
     doubleShot = false;
     hasRocket = false;
