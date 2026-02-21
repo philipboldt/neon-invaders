@@ -230,25 +230,39 @@
     const gap = 8;
     const rows = Math.min(INVADER_ROWS + Math.floor(level / 2), 7);
     const cols = Math.min(INVADER_COLS + Math.floor(level / 3), 14);
+    const twoHpRows = Math.min(2 * (level - 1), rows);
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const color =
           row === 0 ? COLORS.invader3 :
           row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
+        const maxHp = row < twoHpRows ? 2 : 1;
         invaders.push({
           x: startX + col * (INVADER_W + gap),
           y: startY + row * (INVADER_H + gap),
           w: INVADER_W,
           h: INVADER_H,
           color,
+          maxHp,
+          hp: maxHp,
         });
       }
     }
   }
 
+  function darkenColor(hex, ratio) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.max(0, Math.floor(((n >> 16) & 0xff) * ratio));
+    const g = Math.max(0, Math.floor(((n >> 8) & 0xff) * ratio));
+    const b = Math.max(0, Math.floor((n & 0xff) * ratio));
+    return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+  }
+
   function drawInvaders() {
     invaders.forEach((inv) => {
-      drawRect(inv.x, inv.y, inv.w, inv.h, inv.color, true);
+      const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
+      const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
+      drawRect(inv.x, inv.y, inv.w, inv.h, color, true);
     });
   }
 
@@ -451,11 +465,14 @@
           b.x + 4 > inv.x && b.x < inv.x + inv.w &&
           b.y < inv.y + inv.h && b.y + 12 > inv.y
         ) {
-          score += 10 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
-          spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
-          spawnUpgrade(inv.x, inv.y);
-          invaders.splice(i, 1);
-          scoreEl.textContent = score;
+          inv.hp -= 1;
+          if (inv.hp <= 0) {
+            score += 10 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
+            spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
+            spawnUpgrade(inv.x, inv.y);
+            invaders.splice(i, 1);
+            scoreEl.textContent = score;
+          }
           return false;
         }
       }
