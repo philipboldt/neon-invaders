@@ -642,6 +642,10 @@
       }
       return;
     }
+    if (e.code === 'KeyA' && gameRunning && debugMode) {
+      invaders = [];
+      return;
+    }
     if (e.code === 'ArrowLeft') player.dir = -1;
     if (e.code === 'ArrowRight') player.dir = 1;
     if (e.code === 'Space') {
