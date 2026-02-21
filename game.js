@@ -330,7 +330,7 @@
   }
 
   function updateInvaders(now) {
-    const stepMs = Math.max(180, INVADER_STEP_MS_BASE - level * 35);
+    const stepMs = Math.max(80, INVADER_STEP_MS_BASE - level * 40);
     if (now - lastInvaderStep < stepMs) return;
     lastInvaderStep = now;
 
@@ -344,7 +344,8 @@
       invaderDir *= -1;
       invaders.forEach((inv) => (inv.y += 20));
     } else {
-      invaders.forEach((inv) => (inv.x += invaderDir * 12));
+      const stepDist = 12 + Math.min(10, Math.floor(level / 2));
+      invaders.forEach((inv) => (inv.x += invaderDir * stepDist));
     }
   }
 
