@@ -608,6 +608,10 @@
     if (invaders.length === 0) {
       level++;
       levelEl.textContent = level;
+      bullets = [];
+      invaderBullets = [];
+      upgrades = [];
+      rockets = [];
       initInvaders();
       lastInvaderStep = now;
       lastInvaderShoot = now;
