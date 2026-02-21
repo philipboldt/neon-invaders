@@ -64,6 +64,7 @@
   let doubleShot = false;
   let hasRocket = false;
   let lastRocketTime = 0;
+  let debugMode = false;
 
   const player = {
     x: W / 2 - 20,
@@ -274,6 +275,13 @@
       const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
       const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
       drawRect(inv.x, inv.y, inv.w, inv.h, color, true);
+      if (debugMode) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 14px Orbitron';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(inv.hp + '/' + inv.maxHp, inv.x + inv.w / 2, inv.y + inv.h / 2);
+      }
     });
   }
 
@@ -364,16 +372,18 @@
         u.x + u.w > player.x && u.x < player.x + player.w &&
         u.y + u.h > player.y && u.y < player.y + player.h
       ) {
-        if (u.type === 'shield') {
-          shieldHits = 1;
-          lastShieldLostTime = -1;
-          shieldEl.textContent = shieldHits;
-        }
-        if (u.type === 'double') doubleShot = true;
-        if (u.type === 'rocket') hasRocket = true;
-        if (u.type === 'heal') {
-          lives++;
-          livesEl.textContent = lives;
+        if (!debugMode) {
+          if (u.type === 'shield') {
+            shieldHits = 1;
+            lastShieldLostTime = -1;
+            shieldEl.textContent = shieldHits;
+          }
+          if (u.type === 'double') doubleShot = true;
+          if (u.type === 'rocket') hasRocket = true;
+          if (u.type === 'heal') {
+            lives++;
+            livesEl.textContent = lives;
+          }
         }
         return false;
       }
@@ -503,14 +513,16 @@
         b.x + 6 > player.x && b.x < player.x + player.w &&
         b.y + 10 > player.y && b.y < player.y + player.h
       ) {
-        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player);
-        if (shieldHits > 0) {
-          shieldHits = 0;
-          lastShieldLostTime = now;
-          shieldEl.textContent = shieldHits;
-        } else {
-          lives--;
-          livesEl.textContent = lives;
+        if (!debugMode) {
+          spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player);
+          if (shieldHits > 0) {
+            shieldHits = 0;
+            lastShieldLostTime = now;
+            shieldEl.textContent = shieldHits;
+          } else {
+            lives--;
+            livesEl.textContent = lives;
+          }
         }
         return false;
       }
@@ -519,6 +531,12 @@
   }
 
   function checkLose() {
+    if (debugMode) {
+      for (const inv of invaders) {
+        if (inv.y + inv.h >= player.y) return true;
+      }
+      return false;
+    }
     for (const inv of invaders) {
       if (inv.y + inv.h >= player.y) return true;
     }
@@ -555,6 +573,16 @@
     drawParticles();
     drawUpgrades();
     drawPlayer();
+
+    if (debugMode) {
+      ctx.font = 'bold 56px Orbitron';
+      ctx.fillStyle = '#ff0844';
+      ctx.shadowColor = '#ff0844';
+      ctx.shadowBlur = 20;
+      ctx.textAlign = 'center';
+      ctx.fillText('DEBUG MODE', W / 2, 72);
+      ctx.shadowBlur = 0;
+    }
 
     if (invaders.length === 0) {
       level++;
@@ -604,6 +632,16 @@
   }
 
   document.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyD' && gameRunning) {
+      debugMode = !debugMode;
+      if (debugMode) {
+        shieldHits = 0;
+        doubleShot = false;
+        hasRocket = false;
+        shieldEl.textContent = 0;
+      }
+      return;
+    }
     if (e.code === 'ArrowLeft') player.dir = -1;
     if (e.code === 'ArrowRight') player.dir = 1;
     if (e.code === 'Space') {
