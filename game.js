@@ -10,6 +10,7 @@
   const overlayText = document.getElementById('overlay-text');
   const restartBtn = document.getElementById('restart');
   const startScreen = document.getElementById('start-screen');
+  const helpScreen = document.getElementById('help-screen');
 
   const W = canvas.width;
   const H = canvas.height;
@@ -68,6 +69,7 @@
   let hasRocket = false;
   let lastRocketTime = 0;
   let debugMode = false;
+  let isPaused = false;
 
   const player = {
     x: W / 2 - 20,
@@ -398,7 +400,6 @@
           }
           if (u.type === 'double') {
             shotCount++;
-            damageEl.textContent = shotCount;
           }
           if (u.type === 'rocket') hasRocket = true;
           if (u.type === 'heal') {
@@ -573,6 +574,10 @@
 
   function gameLoop(now = 0) {
     if (!gameRunning) return;
+    if (isPaused) {
+      requestAnimationFrame(gameLoop);
+      return;
+    }
 
     ctx.fillStyle = '#0d0d14';
     ctx.fillRect(0, 0, W, H);
@@ -629,15 +634,17 @@
   function startGame() {
     startScreen.classList.add('hidden');
     overlay.classList.add('hidden');
+    helpScreen.classList.add('hidden');
     score = 0;
     lives = 3;
     level = 1;
     shotCount = 1;
     playerDamage = 1;
+    isPaused = false;
     scoreEl.textContent = score;
     levelEl.textContent = level;
     livesEl.textContent = lives;
-    damageEl.textContent = shotCount;
+    damageEl.textContent = playerDamage;
     player.x = W / 2 - 20;
     player.y = H - 60;
     bullets = [];
@@ -660,6 +667,13 @@
   }
 
   document.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyH' && gameRunning && overlay.classList.contains('hidden')) {
+      isPaused = !isPaused;
+      helpScreen.classList.toggle('hidden', !isPaused);
+      return;
+    }
+    if (isPaused) return;
+
     if (e.code === 'KeyD' && gameRunning) {
       debugMode = !debugMode;
       if (debugMode) {
