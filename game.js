@@ -359,7 +359,16 @@
 
   function spawnUpgrade(x, y) {
     if (Math.random() >= DROP_CHANCE) return;
-    const type = UPGRADE_TYPES[Math.floor(Math.random() * UPGRADE_TYPES.length)];
+    
+    const availableTypes = UPGRADE_TYPES.filter(type => {
+      if (type === 'shield' && shieldHits > 0) return false;
+      if (type === 'rocket' && hasRocket) return false;
+      return true;
+    });
+
+    if (availableTypes.length === 0) return;
+
+    const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
     upgrades.push({
       x: x + INVADER_W / 2 - UPGRADE_W / 2,
       y: y,
