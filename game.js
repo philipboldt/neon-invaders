@@ -542,7 +542,7 @@
         b.y + 10 > player.y && b.y < player.y + player.h
       ) {
         if (!debugMode) {
-          spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player);
+          spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player, Math.PI, Math.PI);
           if (shieldHits > 0) {
             shieldHits = 0;
             lastShieldLostTime = now;
