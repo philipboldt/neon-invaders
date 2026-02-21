@@ -70,6 +70,9 @@
   let lastRocketTime = 0;
   let debugMode = false;
   let isPaused = false;
+  let spacePressed = false;
+  let lastPlayerShot = 0;
+  const PLAYER_SHOOT_COOLDOWN = 200;
 
   const player = {
     x: W / 2 - 20,
@@ -349,6 +352,19 @@
     }
   }
 
+  function playerShoot(now) {
+    if (!spacePressed || now - lastPlayerShot < PLAYER_SHOOT_COOLDOWN) return;
+    lastPlayerShot = now;
+    const maxBullets = 5 + shotCount * 2;
+    if (bullets.length < maxBullets) {
+      const spread = 14;
+      const startX = player.x + player.w / 2 - 2 - (shotCount - 1) * (spread / 2);
+      for (let i = 0; i < shotCount; i++) {
+        bullets.push({ x: startX + i * spread, y: player.y, w: 4, h: 12 });
+      }
+    }
+  }
+
   function invaderShoot(now) {
     const shootInterval = Math.max(350, INVADER_SHOOT_INTERVAL_BASE - level * 60);
     if (invaders.length === 0 || now - lastInvaderShoot < shootInterval) return;
@@ -604,6 +620,7 @@
 
     updatePlayer(16);
     updateBullets(16);
+    playerShoot(now);
     updateInvaders(now);
     invaderShoot(now);
     checkCollisions(now);
@@ -712,19 +729,10 @@
     if (e.code === 'ArrowRight') player.dir = 1;
     if (e.code === 'Space') {
       e.preventDefault();
+      spacePressed = true;
       if (!gameRunning && !startScreen.classList.contains('hidden')) {
         startGame();
         return;
-      }
-      if (gameRunning) {
-        const maxBullets = 5 + shotCount * 2;
-        if (bullets.length < maxBullets) {
-          const spread = 14;
-          const startX = player.x + player.w / 2 - 2 - (shotCount - 1) * (spread / 2);
-          for (let i = 0; i < shotCount; i++) {
-            bullets.push({ x: startX + i * spread, y: player.y, w: 4, h: 12 });
-          }
-        }
       }
     }
   });
@@ -732,6 +740,7 @@
   document.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowLeft' && player.dir === -1) player.dir = 0;
     if (e.code === 'ArrowRight' && player.dir === 1) player.dir = 0;
+    if (e.code === 'Space') spacePressed = false;
   });
 
   restartBtn.addEventListener('click', () => {
