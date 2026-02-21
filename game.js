@@ -27,7 +27,10 @@
 
   const ROCKET_W = 10;
   const ROCKET_H = 24;
-  const ROCKET_HOMING_SPEED = 11;
+  const ROCKET_INITIAL_SPEED = 2;
+  const ROCKET_MAX_SPEED = 14;
+  const ROCKET_THRUST = 0.38;
+  const ROCKET_STEER_STRENGTH = 0.14;
   const ROCKET_HIT_RADIUS = 28;
 
   let gameRunning = false;
@@ -114,13 +117,21 @@
   }
 
   function drawRockets() {
-    ctx.fillStyle = COLORS.rocket;
-    ctx.shadowColor = COLORS.rocket;
-    ctx.shadowBlur = 15;
     rockets.forEach((r) => {
-      ctx.fillRect(r.x, r.y, ROCKET_W, ROCKET_H);
+      const cx = r.x + ROCKET_W / 2;
+      const cy = r.y + ROCKET_H / 2;
+      const angle = Math.atan2(r.vy, r.vx);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      ctx.translate(-ROCKET_W / 2, -ROCKET_H / 2);
+      ctx.fillStyle = COLORS.rocket;
+      ctx.shadowColor = COLORS.rocket;
+      ctx.shadowBlur = 15;
+      ctx.fillRect(0, 0, ROCKET_W, ROCKET_H);
+      ctx.shadowBlur = 0;
+      ctx.restore();
     });
-    ctx.shadowBlur = 0;
   }
 
   function initInvaders() {
@@ -264,6 +275,8 @@
         h: ROCKET_H,
         targetX,
         targetY,
+        vx: 0,
+        vy: -ROCKET_INITIAL_SPEED,
       });
     }
     rockets = rockets.filter((r) => {
@@ -289,9 +302,27 @@
         return false;
       }
       if (dist > 0) {
-        r.x += (dx / dist) * ROCKET_HOMING_SPEED;
-        r.y += (dy / dist) * ROCKET_HOMING_SPEED;
+        const desiredDx = dx / dist;
+        const desiredDy = dy / dist;
+        const steerX = desiredDx * ROCKET_MAX_SPEED - r.vx;
+        const steerY = desiredDy * ROCKET_MAX_SPEED - r.vy;
+        r.vx += steerX * ROCKET_STEER_STRENGTH;
+        r.vy += steerY * ROCKET_STEER_STRENGTH;
       }
+      const speed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
+      if (speed > 0) {
+        const thrustX = (r.vx / speed) * ROCKET_THRUST;
+        const thrustY = (r.vy / speed) * ROCKET_THRUST;
+        r.vx += thrustX;
+        r.vy += thrustY;
+        const newSpeed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
+        if (newSpeed > ROCKET_MAX_SPEED) {
+          r.vx = (r.vx / newSpeed) * ROCKET_MAX_SPEED;
+          r.vy = (r.vy / newSpeed) * ROCKET_MAX_SPEED;
+        }
+      }
+      r.x += r.vx;
+      r.y += r.vy;
       if (r.y < -ROCKET_H * 2 || r.y > H + ROCKET_H || r.x < -ROCKET_W * 2 || r.x > W + ROCKET_W) return false;
       return true;
     });
