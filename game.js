@@ -51,6 +51,9 @@
   const PARTICLE_MAX_SIZE = 14;
   const PARTICLE_LIFE = 28;
   const PARTICLE_SPEED = 5;
+  const ROCKET_TRAIL_SIZE = 5;
+  const ROCKET_TRAIL_LIFE = 14;
+  const ROCKET_TRAIL_DRAG = 0.25;
 
   let upgrades = [];
   let rockets = [];
@@ -140,6 +143,23 @@
         color,
       });
     }
+  }
+
+  function spawnRocketTrail(cx, cy, vx, vy) {
+    const speed = Math.sqrt(vx * vx + vy * vy) || 1;
+    const backX = (-vx / speed) * ROCKET_TRAIL_DRAG * speed;
+    const backY = (-vy / speed) * ROCKET_TRAIL_DRAG * speed;
+    particles.push({
+      x: cx,
+      y: cy,
+      vx: backX + (Math.random() - 0.5) * 1.5,
+      vy: backY + (Math.random() - 0.5) * 1.5,
+      size: ROCKET_TRAIL_SIZE,
+      maxSize: ROCKET_TRAIL_SIZE * (0.6 + Math.random() * 0.4),
+      life: 0,
+      maxLife: ROCKET_TRAIL_LIFE,
+      color: COLORS.rocket,
+    });
   }
 
   function updateParticles() {
@@ -381,6 +401,7 @@
       }
       r.x += r.vx;
       r.y += r.vy;
+      spawnRocketTrail(r.x + ROCKET_W / 2, r.y + ROCKET_H / 2, r.vx, r.vy);
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       if (r.y < -ROCKET_H * 2 || r.y > H + ROCKET_H || r.x < -ROCKET_W * 2 || r.x > W + ROCKET_W) return false;
       return true;
@@ -411,6 +432,7 @@
         b.x + 6 > player.x && b.x < player.x + player.w &&
         b.y + 10 > player.y && b.y < player.y + player.h
       ) {
+        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player);
         if (shieldHits > 0) {
           shieldHits--;
           shieldEl.textContent = shieldHits;
