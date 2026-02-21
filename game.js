@@ -139,9 +139,9 @@
     });
   }
 
-  function spawnExplosion(cx, cy, color) {
+  function spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2) {
     for (let n = 0; n < EXPLOSION_PARTICLES; n++) {
-      const angle = (Math.PI * 2 * n) / EXPLOSION_PARTICLES + Math.random() * 0.5;
+      const angle = angleStart + (angleRange * n) / EXPLOSION_PARTICLES + (Math.random() - 0.5) * (angleRange / EXPLOSION_PARTICLES);
       const speed = PARTICLE_SPEED * (0.6 + Math.random() * 0.8);
       const maxSize = PARTICLE_MAX_SIZE * (0.4 + Math.random() * 0.6);
       particles.push({
@@ -391,7 +391,7 @@
         u.x + u.w > player.x && u.x < player.x + player.w &&
         u.y + u.h > player.y && u.y < player.y + player.h
       ) {
-        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS[u.type]);
+        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS[u.type], Math.PI, Math.PI);
         if (!debugMode) {
           if (u.type === 'shield') {
             shieldHits = 1;
