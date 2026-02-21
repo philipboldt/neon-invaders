@@ -47,8 +47,14 @@
   const ROCKET_INTERVAL_MS = 5000;
   const SHIELD_HITS = 2;
 
+  const EXPLOSION_PARTICLES = 18;
+  const PARTICLE_MAX_SIZE = 14;
+  const PARTICLE_LIFE = 28;
+  const PARTICLE_SPEED = 5;
+
   let upgrades = [];
   let rockets = [];
+  let particles = [];
   let shieldHits = 0;
   let doubleShot = false;
   let hasRocket = false;
@@ -113,6 +119,47 @@
       ctx.shadowBlur = 12;
       ctx.fillStyle = c;
       ctx.fillRect(u.x, u.y, UPGRADE_W, UPGRADE_H);
+      ctx.shadowBlur = 0;
+    });
+  }
+
+  function spawnExplosion(cx, cy, color) {
+    for (let n = 0; n < EXPLOSION_PARTICLES; n++) {
+      const angle = (Math.PI * 2 * n) / EXPLOSION_PARTICLES + Math.random() * 0.5;
+      const speed = PARTICLE_SPEED * (0.6 + Math.random() * 0.8);
+      const maxSize = PARTICLE_MAX_SIZE * (0.4 + Math.random() * 0.6);
+      particles.push({
+        x: cx,
+        y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: maxSize,
+        maxSize,
+        life: 0,
+        maxLife: PARTICLE_LIFE,
+        color,
+      });
+    }
+  }
+
+  function updateParticles() {
+    particles = particles.filter((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life++;
+      return p.life < p.maxLife;
+    });
+  }
+
+  function drawParticles() {
+    particles.forEach((p) => {
+      const t = p.life / p.maxLife;
+      const size = Math.max(0, p.maxSize * (1 - t));
+      if (size <= 0) return;
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 8;
+      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
       ctx.shadowBlur = 0;
     });
   }
@@ -303,6 +350,7 @@
           const d = Math.sqrt((cx - invCx) ** 2 + (cy - invCy) ** 2);
           if (d < ROCKET_HIT_RADIUS) {
             score += 15 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
+            spawnExplosion(invCx, invCy, inv.color);
             spawnUpgrade(inv.x, inv.y);
             invaders.splice(i, 1);
             scoreEl.textContent = score;
@@ -348,6 +396,7 @@
           b.y < inv.y + inv.h && b.y + 12 > inv.y
         ) {
           score += 10 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
+          spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
           spawnUpgrade(inv.x, inv.y);
           invaders.splice(i, 1);
           scoreEl.textContent = score;
@@ -402,10 +451,12 @@
     checkCollisions();
     updateUpgrades();
     updateRockets(now);
+    updateParticles();
 
     drawInvaders();
     drawBullets();
     drawRockets();
+    drawParticles();
     drawUpgrades();
     drawPlayer();
 
@@ -441,6 +492,7 @@
     invaderBullets = [];
     rockets = [];
     upgrades = [];
+    particles = [];
     shieldHits = 0;
     shieldEl.textContent = 0;
     doubleShot = false;
