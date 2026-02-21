@@ -191,6 +191,20 @@
     });
   }
 
+  function drawRocketTargets() {
+    const red = '#ff0000';
+    rockets.forEach((r) => {
+      const tx = r.targetX - INVADER_W / 2;
+      const ty = r.targetY - INVADER_H / 2;
+      ctx.strokeStyle = red;
+      ctx.shadowColor = red;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(tx, ty, INVADER_W, INVADER_H);
+      ctx.shadowBlur = 0;
+    });
+  }
+
   function drawRockets() {
     rockets.forEach((r) => {
       const cx = r.x + ROCKET_W / 2;
@@ -500,6 +514,7 @@
 
     drawInvaders();
     drawBullets();
+    drawRocketTargets();
     drawRockets();
     drawParticles();
     drawUpgrades();
