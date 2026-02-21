@@ -118,12 +118,17 @@
   }
 
   function drawUpgrades() {
+    const radius = UPGRADE_W / 2;
     upgrades.forEach((u) => {
       const c = u.type === 'shield' ? COLORS.shield : u.type === 'double' ? COLORS.double : u.type === 'rocket' ? COLORS.rocket : COLORS.heal;
+      const cx = u.x + radius;
+      const cy = u.y + radius;
       ctx.shadowColor = c;
       ctx.shadowBlur = 12;
       ctx.fillStyle = c;
-      ctx.fillRect(u.x, u.y, UPGRADE_W, UPGRADE_H);
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
       ctx.shadowBlur = 0;
     });
   }
