@@ -54,7 +54,7 @@ body::before {
 }
 
 .hud span {
-  width: 200px;
+  width: 160px;
   flex-shrink: 0;
 }
 
@@ -64,7 +64,8 @@ body::before {
 }
 
 .hud .lives,
-.hud .shield {
+.hud .shield,
+.hud .damage {
   text-align: right;
 }
 
@@ -78,7 +79,8 @@ body::before {
   text-shadow: 0 0 8px #ff6600;
 }
 
-.hud .shield strong {
+.hud .shield strong,
+.hud .damage strong {
   color: #00f5ff;
   text-shadow: 0 0 8px #00f5ff;
 }

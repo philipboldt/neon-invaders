@@ -5,6 +5,7 @@
   const levelEl = document.getElementById('level');
   const livesEl = document.getElementById('lives');
   const shieldEl = document.getElementById('shield');
+  const damageEl = document.getElementById('damage');
   const overlay = document.getElementById('overlay');
   const overlayText = document.getElementById('overlay-text');
   const restartBtn = document.getElementById('restart');
@@ -60,8 +61,10 @@
   let rockets = [];
   let particles = [];
   let shieldHits = 0;
+  let hasShieldSystem = false;
   let lastShieldLostTime = -1;
-  let doubleShot = false;
+  let shotCount = 1;
+  let playerDamage = 1;
   let hasRocket = false;
   let lastRocketTime = 0;
   let debugMode = false;
@@ -361,7 +364,7 @@
     if (Math.random() >= DROP_CHANCE) return;
     
     const availableTypes = UPGRADE_TYPES.filter(type => {
-      if (type === 'shield' && shieldHits > 0) return false;
+      if (type === 'shield' && hasShieldSystem) return false;
       if (type === 'rocket' && hasRocket) return false;
       return true;
     });
@@ -389,10 +392,14 @@
         if (!debugMode) {
           if (u.type === 'shield') {
             shieldHits = 1;
+            hasShieldSystem = true;
             lastShieldLostTime = -1;
             shieldEl.textContent = shieldHits;
           }
-          if (u.type === 'double') doubleShot = true;
+          if (u.type === 'double') {
+            shotCount++;
+            damageEl.textContent = shotCount;
+          }
           if (u.type === 'rocket') hasRocket = true;
           if (u.type === 'heal') {
             lives++;
@@ -508,7 +515,7 @@
           b.x + 4 > inv.x && b.x < inv.x + inv.w &&
           b.y < inv.y + inv.h && b.y + 12 > inv.y
         ) {
-          inv.hp -= 1;
+          inv.hp -= playerDamage;
           if (inv.hp <= 0) {
             score += 10 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
             spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
@@ -621,9 +628,12 @@
     score = 0;
     lives = 3;
     level = 1;
+    shotCount = 1;
+    playerDamage = 1;
     scoreEl.textContent = score;
     levelEl.textContent = level;
     livesEl.textContent = lives;
+    damageEl.textContent = shotCount;
     player.x = W / 2 - 20;
     player.y = H - 60;
     bullets = [];
@@ -632,9 +642,9 @@
     upgrades = [];
     particles = [];
     shieldHits = 0;
+    hasShieldSystem = false;
     lastShieldLostTime = -1;
     shieldEl.textContent = 0;
-    doubleShot = false;
     hasRocket = false;
     lastRocketTime = 0;
     invaderDir = 1;
@@ -650,7 +660,7 @@
       debugMode = !debugMode;
       if (debugMode) {
         shieldHits = 0;
-        doubleShot = false;
+        shotCount = 1;
         hasRocket = false;
         shieldEl.textContent = 0;
       }
@@ -669,13 +679,12 @@
         return;
       }
       if (gameRunning) {
-        const maxBullets = doubleShot ? 8 : 5;
+        const maxBullets = 5 + shotCount * 2;
         if (bullets.length < maxBullets) {
-          if (doubleShot) {
-            bullets.push({ x: player.x + player.w / 2 - 2 - 12, y: player.y, w: 4, h: 12 });
-            bullets.push({ x: player.x + player.w / 2 - 2 + 12, y: player.y, w: 4, h: 12 });
-          } else {
-            bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 12 });
+          const spread = 14;
+          const startX = player.x + player.w / 2 - 2 - (shotCount - 1) * (spread / 2);
+          for (let i = 0; i < shotCount; i++) {
+            bullets.push({ x: startX + i * spread, y: player.y, w: 4, h: 12 });
           }
         }
       }
