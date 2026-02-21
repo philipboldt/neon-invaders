@@ -242,13 +242,22 @@
     const gap = 8;
     const rows = Math.min(INVADER_ROWS + Math.floor(level / 2), 7);
     const cols = Math.min(INVADER_COLS + Math.floor(level / 3), 14);
-    const block = Math.floor((level - 1) / 5);
-    const p = (level - 1) % 5;
-    const baseHp = 1 + block;
-    const higherHp = baseHp + 1;
-    const rowsWithHigher = block === 0
-      ? (p === 0 ? 0 : p === 4 ? rows : Math.min(2 * p, rows))
-      : (p === 4 ? rows : Math.min(2 * (p + 1), rows));
+    let baseHp, higherHp, rowsWithHigher;
+    if (level <= 5) {
+      baseHp = 1;
+      higherHp = 2;
+      rowsWithHigher = level === 1 ? 0 : level === 5 ? rows : Math.min(2 * (level - 1), rows);
+    } else if (level <= 10) {
+      baseHp = 2;
+      higherHp = 3;
+      rowsWithHigher = level === 10 ? rows : Math.min(2 * (level - 5), rows);
+    } else {
+      const block = Math.floor((level - 1) / 5);
+      const p = (level - 1) % 5;
+      baseHp = 1 + block;
+      higherHp = baseHp + 1;
+      rowsWithHigher = p === 4 ? rows : Math.min(2 * (p + 1), rows);
+    }
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const color =
