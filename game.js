@@ -391,7 +391,7 @@
         u.x + u.w > player.x && u.x < player.x + player.w &&
         u.y + u.h > player.y && u.y < player.y + player.h
       ) {
-        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player);
+        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS[u.type]);
         if (!debugMode) {
           if (u.type === 'shield') {
             shieldHits = 1;
