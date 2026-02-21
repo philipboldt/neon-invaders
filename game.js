@@ -95,8 +95,6 @@
   let invaderDir = 1;
   let invaderDown = false;
   let invaderTick = 0;
-  const INVADER_STEP_MS_BASE = 500;
-  let lastInvaderStep = 0;
   let lastInvaderShoot = 0;
   const INVADER_SHOOT_INTERVAL_BASE = 1000;
 
@@ -333,22 +331,24 @@
   }
 
   function updateInvaders(now) {
-    const stepMs = Math.max(80, INVADER_STEP_MS_BASE - level * 40);
-    if (now - lastInvaderStep < stepMs) return;
-    lastInvaderStep = now;
+    if (invaders.length === 0) return;
 
+    // Smooth speed calculation based on level
+    const speed = (40 + level * 15) / 60;
     let moveDown = false;
     const margin = 40;
+    const moveX = invaderDir * speed;
+
     for (const inv of invaders) {
-      if (invaderDir > 0 && inv.x + inv.w >= W - margin) moveDown = true;
-      if (invaderDir < 0 && inv.x <= margin) moveDown = true;
+      if (invaderDir > 0 && inv.x + inv.w + moveX >= W - margin) moveDown = true;
+      if (invaderDir < 0 && inv.x + moveX <= margin) moveDown = true;
     }
+
     if (moveDown) {
       invaderDir *= -1;
       invaders.forEach((inv) => (inv.y += 20));
     } else {
-      const stepDist = 12 + Math.min(10, Math.floor(level / 2));
-      invaders.forEach((inv) => (inv.x += invaderDir * stepDist));
+      invaders.forEach((inv) => (inv.x += moveX));
     }
   }
 
@@ -655,7 +655,6 @@
       upgrades = [];
       rockets = [];
       initInvaders();
-      lastInvaderStep = now;
       lastInvaderShoot = now;
       requestAnimationFrame(gameLoop);
       return;
@@ -696,7 +695,6 @@
     hasRocket = false;
     lastRocketTime = 0;
     invaderDir = 1;
-    lastInvaderStep = 0;
     lastInvaderShoot = 0;
     initInvaders();
     gameRunning = true;
