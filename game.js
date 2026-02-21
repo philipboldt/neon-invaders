@@ -192,13 +192,24 @@
   }
 
   function drawRocketTargets() {
-    const red = '#ff0000';
+    const neonRed = '#ff0844';
     rockets.forEach((r) => {
-      const tx = r.targetX - INVADER_W / 2;
-      const ty = r.targetY - INVADER_H / 2;
-      ctx.strokeStyle = red;
-      ctx.shadowColor = red;
-      ctx.shadowBlur = 10;
+      let tx = r.targetX - INVADER_W / 2;
+      let ty = r.targetY - INVADER_H / 2;
+      let bestD = Infinity;
+      for (const inv of invaders) {
+        const icx = inv.x + inv.w / 2;
+        const icy = inv.y + inv.h / 2;
+        const d = (icx - r.targetX) ** 2 + (icy - r.targetY) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          tx = inv.x;
+          ty = inv.y;
+        }
+      }
+      ctx.strokeStyle = neonRed;
+      ctx.shadowColor = neonRed;
+      ctx.shadowBlur = 18;
       ctx.lineWidth = 3;
       ctx.strokeRect(tx, ty, INVADER_W, INVADER_H);
       ctx.shadowBlur = 0;
