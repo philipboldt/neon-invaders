@@ -30,7 +30,8 @@
   const ROCKET_INITIAL_SPEED = 2;
   const ROCKET_MAX_SPEED = 14;
   const ROCKET_THRUST = 0.38;
-  const ROCKET_STEER_STRENGTH = 0.14;
+  const ROCKET_STEER_STRENGTH = 0.12;
+  const ROCKET_VERTICAL_PHASE = 55;
   const ROCKET_HIT_RADIUS = 28;
 
   let gameRunning = false;
@@ -262,10 +263,18 @@
     });
   }
 
+  function getLowestRowInvaders() {
+    if (invaders.length === 0) return [];
+    const lowestY = Math.max(...invaders.map((inv) => inv.y));
+    return invaders.filter((inv) => inv.y >= lowestY - 2);
+  }
+
   function updateRockets(now) {
-    if (hasRocket && invaders.length > 0 && now - lastRocketTime >= ROCKET_INTERVAL_MS) {
+    const lowestRow = getLowestRowInvaders();
+    const targetPool = lowestRow.length > 0 ? lowestRow : invaders;
+    if (hasRocket && targetPool.length > 0 && now - lastRocketTime >= ROCKET_INTERVAL_MS) {
       lastRocketTime = now;
-      const targetInv = invaders[Math.floor(Math.random() * invaders.length)];
+      const targetInv = targetPool[Math.floor(Math.random() * targetPool.length)];
       const targetX = targetInv.x + targetInv.w / 2;
       const targetY = targetInv.y + targetInv.h / 2;
       rockets.push({
@@ -277,6 +286,7 @@
         targetY,
         vx: 0,
         vy: -ROCKET_INITIAL_SPEED,
+        distanceTraveled: 0,
       });
     }
     rockets = rockets.filter((r) => {
@@ -301,7 +311,7 @@
         }
         return false;
       }
-      if (dist > 0) {
+      if (dist > 0 && r.distanceTraveled >= ROCKET_VERTICAL_PHASE) {
         const desiredDx = dx / dist;
         const desiredDy = dy / dist;
         const steerX = desiredDx * ROCKET_MAX_SPEED - r.vx;
@@ -323,6 +333,7 @@
       }
       r.x += r.vx;
       r.y += r.vy;
+      r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       if (r.y < -ROCKET_H * 2 || r.y > H + ROCKET_H || r.x < -ROCKET_W * 2 || r.x > W + ROCKET_W) return false;
       return true;
     });
