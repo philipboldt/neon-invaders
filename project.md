@@ -17,6 +17,10 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - `Pierce`: Shots pass through one enemy if the hit is fatal.
   - `Heal`: Restores 1 life (max 5 lives).
 
+- **UI/HUD:**
+  - Lives, Score, Level, Shield Status, Damage Multiplier.
+  - Pierce Status (None/Active). **[NEW]**
+
 - **Mechanics:**
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
   - **Health Drops:** 'Heal' power-ups only drop if player has fewer than 5 lives.
@@ -29,6 +33,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Input:** Keyboard event listeners
 
 ## Recent Changes
+- Added Pierce status indicator to the HUD.
 - Restored accidentally deleted core variables and functions (`invaders`, `bullets`, `drawPlayer`, etc.) which prevented the game from starting.
 - Fixed a crash issue where `lastPlayerShot` and `PLAYER_SHOOT_COOLDOWN` were undefined.
 - Added `Pierce` power-up (Yellow): Bullets continue through one enemy if they deal the killing blow.

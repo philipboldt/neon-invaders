@@ -5,6 +5,7 @@
   const levelEl = document.getElementById('level');
   const livesEl = document.getElementById('lives');
   const shieldEl = document.getElementById('shield');
+  const pierceEl = document.getElementById('pierce');
   const damageEl = document.getElementById('damage');
   const overlay = document.getElementById('overlay');
   const overlayText = document.getElementById('overlay-text');
@@ -435,7 +436,10 @@
             }
           }
           if (u.type === 'rocket') hasRocket = true;
-          if (u.type === 'pierce') hasPierce = true;
+          if (u.type === 'pierce') {
+            hasPierce = true;
+            pierceEl.textContent = 'active';
+          }
           if (u.type === 'heal') {
             if (lives < 5) {
               lives++;
@@ -710,6 +714,7 @@
     hasShieldSystem = false;
     lastShieldLostTime = -1;
     shieldEl.textContent = 'no shield';
+    pierceEl.textContent = 'none';
     hasRocket = false;
     hasPierce = false;
     lastRocketTime = 0;
@@ -736,6 +741,7 @@
         hasRocket = false;
         hasPierce = false;
         shieldEl.textContent = 'no shield';
+        pierceEl.textContent = 'none';
       }
       return;
     }
