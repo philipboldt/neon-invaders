@@ -385,6 +385,7 @@
     const availableTypes = UPGRADE_TYPES.filter(type => {
       if (type === 'shield' && hasShieldSystem) return false;
       if (type === 'rocket' && hasRocket) return false;
+      if (type === 'heal' && lives >= 5) return false;
       return true;
     });
 
@@ -426,8 +427,10 @@
           }
           if (u.type === 'rocket') hasRocket = true;
           if (u.type === 'heal') {
-            lives++;
-            livesEl.textContent = lives;
+            if (lives < 5) {
+              lives++;
+              livesEl.textContent = lives;
+            }
           }
         }
         return false;
