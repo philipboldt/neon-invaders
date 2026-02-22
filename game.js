@@ -85,6 +85,47 @@
     dir: 0,
   };
 
+  let invaders = [];
+  let bullets = [];
+  let invaderBullets = [];
+  const BULLET_SPEED = -10;
+  const INVADER_BULLET_SPEED = 4;
+  const INVADER_ROWS = 5;
+  const INVADER_COLS = 11;
+  const INVADER_W = 36;
+  const INVADER_H = 24;
+  let invaderDir = 1;
+  let invaderDown = false;
+  let invaderTick = 0;
+  let lastInvaderShoot = 0;
+  const INVADER_SHOOT_INTERVAL_BASE = 1000;
+
+  function drawRect(x, y, w, h, fill, glow) {
+    if (glow) {
+      ctx.shadowColor = fill;
+      ctx.shadowBlur = 15;
+    }
+    ctx.fillStyle = fill;
+    ctx.fillRect(x, y, w, h);
+    ctx.shadowBlur = 0;
+  }
+
+  function drawPlayer() {
+    const { x, y, w, h } = player;
+    if (shieldHits > 0) {
+      ctx.strokeStyle = COLORS.shield;
+      ctx.shadowColor = COLORS.shield;
+      ctx.shadowBlur = 20;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x - 4, y - 4, w + 8, h + 8);
+      ctx.shadowBlur = 0;
+    }
+    drawRect(x, y, w, h, COLORS.player, true);
+    ctx.fillStyle = '#0a0a0f';
+    ctx.fillRect(x + 8, y + 4, 8, 8);
+    ctx.fillRect(x + w - 16, y + 4, 8, 8);
+  }
+
   function drawUpgrades() {
     const radius = UPGRADE_W / 2;
     upgrades.forEach((u) => {

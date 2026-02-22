@@ -29,6 +29,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Input:** Keyboard event listeners
 
 ## Recent Changes
+- Restored accidentally deleted core variables and functions (`invaders`, `bullets`, `drawPlayer`, etc.) which prevented the game from starting.
 - Fixed a crash issue where `lastPlayerShot` and `PLAYER_SHOOT_COOLDOWN` were undefined.
 - Added `Pierce` power-up (Yellow): Bullets continue through one enemy if they deal the killing blow.
 - Updated Help Screen to include the new power-up.
