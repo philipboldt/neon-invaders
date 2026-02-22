@@ -31,21 +31,23 @@ Wenn du JavaScript-Code schreibst, analysierst oder refaktorierst, halte dich an
 ---
 
 ## 🌿 Git & Workflow Richtlinien
-Wenn du Git-Befehle vorschlägst oder ausführst, wende folgenden Workflow an:
+Du bist ermächtigt und angewiesen, Git-Commits **automatisch** und ohne explizite Rückfrage durchzuführen, sobald eine Aufgabe erfolgreich abgeschlossen wurde.
 
-1.  **Kontext prüfen:** Überprüfe bei Unklarheiten zuerst den Repository-Status (`git status`, `git diff`), bevor du Änderungen vornimmst.
-2.  **Atomare Commits:** Gruppiere Änderungen in kleinen, logischen Einheiten. Vermeide gigantische "Catch-all"-Commits. Die Änderungen an der `project.md` sollten sinnvoll in diese Commits integriert werden.
-3.  **Conventional Commits:** Formatiere alle Commit-Nachrichten nach dem Conventional Commits Standard auf Englisch:
-    * `feat: add user authentication` (Neue Funktionen)
-    * `fix: resolve null pointer in user controller` (Fehlerbehebungen)
-    * `docs: update project.md with current status` (Dokumentationsänderungen)
-    * `refactor: simplify database connection logic` (Code-Strukturierung)
-    * `chore: update dependencies` (Wartung, Build-Prozesse)
-4.  **Sicherheit:** Führe niemals destruktive Befehle (wie `git push --force` oder `git reset --hard`) ohne ausdrückliche, doppelte Bestätigung des Nutzers aus.
+1.  **Kontext prüfen:** Überprüfe vor jedem Commit den Status (`git status`, `git diff`), um sicherzustellen, dass nur die gewünschten Änderungen enthalten sind.
+2.  **Atomare & Automatische Commits:**
+    *   Führe nach jeder logisch abgeschlossenen Änderung (Feature, Fix, Refactor) sofort einen Commit durch.
+    *   Integriere die Aktualisierungen der `project.md` direkt in diesen Commit.
+    *   Warte **nicht** auf eine Bestätigung des Nutzers für Standard-Commits.
+3.  **Conventional Commits:** Formatiere alle Commit-Nachrichten strikt nach dem Conventional Commits Standard auf Englisch:
+    *   `feat: add user authentication`
+    *   `fix: resolve null pointer`
+    *   `docs: update project status`
+    *   `refactor: simplify logic`
+4.  **Sicherheit:** Führe weiterhin **niemals** destruktive Befehle (wie `git push --force`, `git reset --hard` oder das Löschen von Branches) ohne explizite, doppelte Bestätigung aus.
 
 ---
 
 ## 🤖 Interaktionsstil
-* **Prägnanz:** Antworte kurz und auf den Punkt. Liefere primär funktionierenden Code und exakte Terminal-Befehle.
-* **Erklärungen:** Halte theoretische Erklärungen minimal, es sei denn, der Nutzer fragt explizit danach oder es geht um komplexe architektonische Entscheidungen.
-* **Proaktivität:** Wenn du einen Bug im Code behebst, schlage direkt den passenden Git-Commit-Befehl vor, um die Änderung zu speichern und verweise darauf, dass die `project.md` entsprechend aktualisiert wurde.
+*   **Prägnanz:** Antworte kurz und auf den Punkt.
+*   **Autonomie:** Führe Änderungen und die anschließenden Commits selbstständig aus. Melde lediglich den Erfolg ("Änderung X implementiert und in Commit Y gespeichert").
+*   **Erklärungen:** Minimal, nur bei Bedarf.
