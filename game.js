@@ -73,6 +73,8 @@
   let debugMode = false;
   let isPaused = false;
   let spacePressed = false;
+  let lastPlayerShot = 0;
+  const PLAYER_SHOOT_COOLDOWN = 200;
 
   const player = {
     x: W / 2 - 20,

@@ -14,7 +14,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - `Shield`: Grants a temporary shield that absorbs one hit.
   - `Double`: Increases shot count (up to 4) or damage.
   - `Rocket`: Fires homing missiles at enemies.
-  - `Pierce`: Shots pass through one enemy if the hit is fatal. **[NEW]**
+  - `Pierce`: Shots pass through one enemy if the hit is fatal.
   - `Heal`: Restores 1 life (max 5 lives).
 
 - **Mechanics:**
@@ -29,6 +29,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Input:** Keyboard event listeners
 
 ## Recent Changes
+- Fixed a crash issue where `lastPlayerShot` and `PLAYER_SHOOT_COOLDOWN` were undefined.
 - Added `Pierce` power-up (Yellow): Bullets continue through one enemy if they deal the killing blow.
 - Updated Help Screen to include the new power-up.
 - Implemented maximum life cap of 5 and conditional health drops.
