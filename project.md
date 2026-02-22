@@ -14,11 +14,12 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - `Shield`: Grants a temporary shield that absorbs one hit.
   - `Double`: Increases shot count (up to 4) or damage.
   - `Rocket`: Fires homing missiles at enemies.
-  - `Heal`: Restores 1 life (max 5 lives). **[NEW]**
+  - `Pierce`: Shots pass through one enemy if the hit is fatal. **[NEW]**
+  - `Heal`: Restores 1 life (max 5 lives).
 
 - **Mechanics:**
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
-  - **Health Drops:** 'Heal' power-ups only drop if player has fewer than 5 lives. **[NEW]**
+  - **Health Drops:** 'Heal' power-ups only drop if player has fewer than 5 lives.
   - **Scoring:** Points awarded for destroying enemies.
 
 ## Technical Stack
@@ -28,5 +29,6 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Input:** Keyboard event listeners
 
 ## Recent Changes
-- Implemented a maximum life cap of 5.
-- Modified drop logic to prevent 'heal' power-ups from spawning when lives are full (5).
+- Added `Pierce` power-up (Yellow): Bullets continue through one enemy if they deal the killing blow.
+- Updated Help Screen to include the new power-up.
+- Implemented maximum life cap of 5 and conditional health drops.

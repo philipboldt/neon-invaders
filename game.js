@@ -26,6 +26,7 @@
     double: '#39ff14',
     rocket: '#ff6600',
     heal: '#ff3366',
+    pierce: '#ffff00',
   };
 
   const ROCKET_W = 10;
@@ -42,7 +43,7 @@
   let lives = 3;
   let level = 1;
 
-  const UPGRADE_TYPES = ['shield', 'double', 'rocket', 'heal'];
+  const UPGRADE_TYPES = ['shield', 'double', 'rocket', 'pierce', 'heal'];
   const DROP_CHANCE = 0.18;
   const UPGRADE_FALL_SPEED = 3;
   const UPGRADE_W = 24;
@@ -67,12 +68,11 @@
   let shotCount = 1;
   let playerDamage = 1;
   let hasRocket = false;
+  let hasPierce = false;
   let lastRocketTime = 0;
   let debugMode = false;
   let isPaused = false;
   let spacePressed = false;
-  let lastPlayerShot = 0;
-  const PLAYER_SHOOT_COOLDOWN = 200;
 
   const player = {
     x: W / 2 - 20,
@@ -83,51 +83,16 @@
     dir: 0,
   };
 
-  let invaders = [];
-  let bullets = [];
-  let invaderBullets = [];
-  const BULLET_SPEED = -10;
-  const INVADER_BULLET_SPEED = 4;
-  const INVADER_ROWS = 5;
-  const INVADER_COLS = 11;
-  const INVADER_W = 36;
-  const INVADER_H = 24;
-  let invaderDir = 1;
-  let invaderDown = false;
-  let invaderTick = 0;
-  let lastInvaderShoot = 0;
-  const INVADER_SHOOT_INTERVAL_BASE = 1000;
-
-  function drawRect(x, y, w, h, fill, glow) {
-    if (glow) {
-      ctx.shadowColor = fill;
-      ctx.shadowBlur = 15;
-    }
-    ctx.fillStyle = fill;
-    ctx.fillRect(x, y, w, h);
-    ctx.shadowBlur = 0;
-  }
-
-  function drawPlayer() {
-    const { x, y, w, h } = player;
-    if (shieldHits > 0) {
-      ctx.strokeStyle = COLORS.shield;
-      ctx.shadowColor = COLORS.shield;
-      ctx.shadowBlur = 20;
-      ctx.lineWidth = 3;
-      ctx.strokeRect(x - 4, y - 4, w + 8, h + 8);
-      ctx.shadowBlur = 0;
-    }
-    drawRect(x, y, w, h, COLORS.player, true);
-    ctx.fillStyle = '#0a0a0f';
-    ctx.fillRect(x + 8, y + 4, 8, 8);
-    ctx.fillRect(x + w - 16, y + 4, 8, 8);
-  }
-
   function drawUpgrades() {
     const radius = UPGRADE_W / 2;
     upgrades.forEach((u) => {
-      const c = u.type === 'shield' ? COLORS.shield : u.type === 'double' ? COLORS.double : u.type === 'rocket' ? COLORS.rocket : COLORS.heal;
+      let c;
+      if (u.type === 'shield') c = COLORS.shield;
+      else if (u.type === 'double') c = COLORS.double;
+      else if (u.type === 'rocket') c = COLORS.rocket;
+      else if (u.type === 'pierce') c = COLORS.pierce;
+      else c = COLORS.heal;
+
       const cx = u.x + radius;
       const cy = u.y + radius;
       ctx.shadowColor = c;
@@ -385,6 +350,7 @@
     const availableTypes = UPGRADE_TYPES.filter(type => {
       if (type === 'shield' && hasShieldSystem) return false;
       if (type === 'rocket' && hasRocket) return false;
+      if (type === 'pierce' && hasPierce) return false;
       if (type === 'heal' && lives >= 5) return false;
       return true;
     });
@@ -426,6 +392,7 @@
             }
           }
           if (u.type === 'rocket') hasRocket = true;
+          if (u.type === 'pierce') hasPierce = true;
           if (u.type === 'heal') {
             if (lives < 5) {
               lives++;
@@ -562,6 +529,11 @@
             spawnUpgrade(inv.x, inv.y);
             invaders.splice(i, 1);
             scoreEl.textContent = score;
+
+            if (hasPierce && !b.pierced) {
+              b.pierced = true;
+              return true;
+            }
           }
           return false;
         }
@@ -696,6 +668,7 @@
     lastShieldLostTime = -1;
     shieldEl.textContent = 'no shield';
     hasRocket = false;
+    hasPierce = false;
     lastRocketTime = 0;
     invaderDir = 1;
     lastInvaderShoot = 0;
@@ -718,6 +691,7 @@
         shieldHits = 0;
         shotCount = 1;
         hasRocket = false;
+        hasPierce = false;
         shieldEl.textContent = 'no shield';
       }
       return;
