@@ -777,33 +777,37 @@
     startGame();
   });
 
-  // Touch controls
-  const handleTouchStart = (btn, action) => {
-    btn.addEventListener('touchstart', (e) => {
+  // Pointer controls for unified touch/mouse/pen handling
+  const handlePointerDown = (btn, action) => {
+    btn.addEventListener('pointerdown', (e) => {
+      // Only handle primary button (left click) or touch
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
       e.preventDefault(); // Prevent default mobile behavior like scrolling
+      btn.setPointerCapture(e.pointerId);
       action(true);
-    }, { passive: false });
+    });
   };
 
-  const handleTouchEnd = (btn, action) => {
-    btn.addEventListener('touchend', (e) => {
+  const handlePointerUp = (btn, action) => {
+    btn.addEventListener('pointerup', (e) => {
+      e.preventDefault();
+      btn.releasePointerCapture(e.pointerId);
+      action(false);
+    });
+    btn.addEventListener('pointercancel', (e) => {
       e.preventDefault();
       action(false);
-    }, { passive: false });
-    btn.addEventListener('touchcancel', (e) => {
-      e.preventDefault();
-      action(false);
-    }, { passive: false });
+    });
   };
 
   if (btnLeft && btnRight && btnShoot && btnPause) {
-    handleTouchStart(btnLeft, (active) => { if (active) player.dir = -1; });
-    handleTouchEnd(btnLeft, (active) => { if (!active && player.dir === -1) player.dir = 0; });
+    handlePointerDown(btnLeft, (active) => { if (active) player.dir = -1; });
+    handlePointerUp(btnLeft, (active) => { if (!active && player.dir === -1) player.dir = 0; });
 
-    handleTouchStart(btnRight, (active) => { if (active) player.dir = 1; });
-    handleTouchEnd(btnRight, (active) => { if (!active && player.dir === 1) player.dir = 0; });
+    handlePointerDown(btnRight, (active) => { if (active) player.dir = 1; });
+    handlePointerUp(btnRight, (active) => { if (!active && player.dir === 1) player.dir = 0; });
 
-    handleTouchStart(btnShoot, (active) => {
+    handlePointerDown(btnShoot, (active) => {
       spacePressed = active;
       if (active && (!gameRunning || isPaused)) {
         if (!startScreen.classList.contains('hidden')) {
@@ -814,9 +818,9 @@
         }
       }
     });
-    handleTouchEnd(btnShoot, (active) => { spacePressed = active; });
+    handlePointerUp(btnShoot, (active) => { spacePressed = active; });
 
-    handleTouchStart(btnPause, (active) => {
+    handlePointerDown(btnPause, (active) => {
       if (active && gameRunning && overlay.classList.contains('hidden')) {
         isPaused = !isPaused;
         helpScreen.classList.toggle('hidden', !isPaused);
@@ -825,34 +829,35 @@
   }
 
   // Tapping the start screen or game over screen to start/restart
-  // Tapping the start screen or game over screen to start/restart
   const startHandler = (e) => {
+    // Only handle primary button (left click) or touch
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
+    if (gameRunning && !isPaused) return; // Prevent double execution
     startGame();
   };
-  startScreen.addEventListener('touchstart', startHandler, { passive: false });
-  startScreen.addEventListener('click', startHandler);
+  startScreen.addEventListener('pointerdown', startHandler);
 
   const closeHelp = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
     if (isPaused) {
       isPaused = false;
       helpScreen.classList.add('hidden');
     }
   };
-  helpScreen.addEventListener('touchstart', closeHelp, { passive: false });
-  helpScreen.addEventListener('click', closeHelp);
+  helpScreen.addEventListener('pointerdown', closeHelp);
 
   const gameOverHandler = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     if (!overlay.classList.contains('hidden')) {
       // Let the restart button handle its own click or touch
       if (e.target.id !== 'restart') {
         e.preventDefault();
         startScreen.classList.add('hidden');
-        startGame();
+        if (!gameRunning) startGame();
       }
     }
   };
-  overlay.addEventListener('touchstart', gameOverHandler, { passive: false });
-  overlay.addEventListener('click', gameOverHandler);
+  overlay.addEventListener('pointerdown', gameOverHandler);
 })();
