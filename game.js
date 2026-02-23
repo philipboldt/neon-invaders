@@ -13,6 +13,11 @@
   const startScreen = document.getElementById('start-screen');
   const helpScreen = document.getElementById('help-screen');
 
+  const btnLeft = document.getElementById('btn-left');
+  const btnRight = document.getElementById('btn-right');
+  const btnShoot = document.getElementById('btn-shoot');
+  const btnPause = document.getElementById('btn-pause');
+
   const W = canvas.width;
   const H = canvas.height;
 
@@ -771,4 +776,68 @@
     startScreen.classList.add('hidden');
     startGame();
   });
+
+  // Touch controls
+  const handleTouchStart = (btn, action) => {
+    btn.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // Prevent default mobile behavior like scrolling
+      action(true);
+    }, { passive: false });
+  };
+
+  const handleTouchEnd = (btn, action) => {
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      action(false);
+    }, { passive: false });
+    btn.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      action(false);
+    }, { passive: false });
+  };
+
+  if (btnLeft && btnRight && btnShoot && btnPause) {
+    handleTouchStart(btnLeft, (active) => { if (active) player.dir = -1; });
+    handleTouchEnd(btnLeft, (active) => { if (!active && player.dir === -1) player.dir = 0; });
+
+    handleTouchStart(btnRight, (active) => { if (active) player.dir = 1; });
+    handleTouchEnd(btnRight, (active) => { if (!active && player.dir === 1) player.dir = 0; });
+
+    handleTouchStart(btnShoot, (active) => {
+      spacePressed = active;
+      if (active && (!gameRunning || isPaused)) {
+        if (!startScreen.classList.contains('hidden')) {
+          startGame();
+        } else if (isPaused) {
+          isPaused = false;
+          helpScreen.classList.add('hidden');
+        }
+      }
+    });
+    handleTouchEnd(btnShoot, (active) => { spacePressed = active; });
+
+    handleTouchStart(btnPause, (active) => {
+      if (active && gameRunning && overlay.classList.contains('hidden')) {
+        isPaused = !isPaused;
+        helpScreen.classList.toggle('hidden', !isPaused);
+      }
+    });
+  }
+
+  // Tapping the start screen or game over screen to start/restart
+  startScreen.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startGame();
+  }, { passive: false });
+
+  overlay.addEventListener('touchstart', (e) => {
+    if (!overlay.classList.contains('hidden')) {
+       // Let the restart button handle its own click or touch
+       if (e.target.id !== 'restart') {
+         e.preventDefault();
+         startScreen.classList.add('hidden');
+         startGame();
+       }
+    }
+  }, { passive: false });
 })();

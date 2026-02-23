@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Neon Invaders</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -18,6 +18,12 @@
       <span class="damage">Damage: <strong id="damage">1</strong></span>
     </div>
     <canvas id="game" width="800" height="600"></canvas>
+    <div id="touch-controls" class="touch-controls">
+      <button id="btn-left" class="touch-btn">◀</button>
+      <button id="btn-shoot" class="touch-btn shoot">SHOOT</button>
+      <button id="btn-right" class="touch-btn">▶</button>
+      <button id="btn-pause" class="touch-btn pause">⏸</button>
+    </div>
     <p class="controls">← → move · SPACE shoot · H help</p>
     <div id="help-screen" class="overlay hidden">
       <h2>UPGRADES</h2>
