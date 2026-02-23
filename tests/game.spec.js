@@ -67,6 +67,21 @@ test.describe('Neon Invaders E2E Tests', () => {
         // Start screen should hide
         await expect(startScreen).toHaveClass(/hidden/);
 
+        // Tap to pause the game
+        const btnPause = page.locator('#btn-pause');
+        const helpScreen = page.locator('#help-screen');
+        await expect(btnPause).toBeVisible();
+        await btnPause.tap();
+
+        // Help screen should appear
+        await expect(helpScreen).not.toHaveClass(/hidden/);
+
+        // Tap the help screen to dismiss it
+        await helpScreen.tap();
+
+        // Help screen should be hidden again
+        await expect(helpScreen).toHaveClass(/hidden/);
+
         // Tap the shoot button
         const btnShoot = page.locator('#btn-shoot');
         await expect(btnShoot).toBeVisible();

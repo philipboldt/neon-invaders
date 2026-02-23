@@ -272,7 +272,7 @@
       for (let col = 0; col < cols; col++) {
         const color =
           row === 0 ? COLORS.invader3 :
-          row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
+            row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
         const maxHp = row < rowsWithHigher ? higherHp : baseHp;
         invaders.push({
           x: startX + col * (INVADER_W + gap),
@@ -395,7 +395,7 @@
 
   function spawnUpgrade(x, y) {
     if (Math.random() >= DROP_CHANCE) return;
-    
+
     const availableTypes = UPGRADE_TYPES.filter(type => {
       if (type === 'shield' && hasShieldSystem) return false;
       if (type === 'rocket' && hasRocket) return false;
@@ -830,14 +830,22 @@
     startGame();
   }, { passive: false });
 
+  helpScreen.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (isPaused) {
+      isPaused = false;
+      helpScreen.classList.add('hidden');
+    }
+  }, { passive: false });
+
   overlay.addEventListener('touchstart', (e) => {
     if (!overlay.classList.contains('hidden')) {
-       // Let the restart button handle its own click or touch
-       if (e.target.id !== 'restart') {
-         e.preventDefault();
-         startScreen.classList.add('hidden');
-         startGame();
-       }
+      // Let the restart button handle its own click or touch
+      if (e.target.id !== 'restart') {
+        e.preventDefault();
+        startScreen.classList.add('hidden');
+        startGame();
+      }
     }
   }, { passive: false });
 })();
