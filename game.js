@@ -646,8 +646,8 @@
       scores = scores.slice(0, 3);
       localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
     }
-    const listEl = document.getElementById('highscore-list');
-    if (listEl) {
+    const listEls = document.querySelectorAll('.highscore-list');
+    listEls.forEach(listEl => {
       listEl.innerHTML = '';
       scores.forEach((s, i) => {
         const li = document.createElement('li');
@@ -664,7 +664,7 @@
         li.appendChild(scoreSpan);
         listEl.appendChild(li);
       });
-    }
+    });
   }
 
   function gameLoop(now = 0) {

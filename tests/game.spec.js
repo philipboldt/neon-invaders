@@ -163,7 +163,7 @@ test.describe('Neon Invaders E2E Tests', () => {
         });
         await page.goto('/');
 
-        const hsList = page.locator('#highscore-list li');
+        const hsList = page.locator('#start-screen .highscore-list li');
         await expect(hsList).toHaveCount(3);
 
         // Assert first place
@@ -177,5 +177,34 @@ test.describe('Neon Invaders E2E Tests', () => {
         // Assert third place
         await expect(hsList.nth(2).locator('.rank')).toHaveText('3.');
         await expect(hsList.nth(2).locator('.score-val')).toHaveText('00010');
+    });
+
+    test('desktop: properly renders highscores on game over screen', async ({ page }) => {
+        if (page.viewportSize()?.width < 768) test.skip();
+
+        await page.addInitScript(() => {
+            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([99999, 1234, 10]));
+        });
+        await page.goto('/');
+
+        // Force a game over
+        await page.evaluate(() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' }));
+            document.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' }));
+        });
+
+        await page.evaluate(() => {
+            // Need to bypass local closure variables if possible. 
+            // Alternatively we trigger death directly by triggering a specific state, or just wait for the invaders to hit the player if we wait long enough.
+            // A simpler way: The script runs automatically, we can manipulate localStorage, start game, wait for high score to re-render, 
+            // Actually, we don't need to force game over, because the start game script hides it, but updateHighScores() is called on game over AND on start. It populates BOTH lists on load!
+            // Wait, does it populate both lists on page load? Yes! `updateHighScores()` runs at the bottom of the script.
+        });
+
+        // The game over overlay starts with `display: none` because of the `.hidden` class, but the DOM elements for the list should be populated.
+        const hsList = page.locator('#overlay .highscore-list li');
+        await expect(hsList).toHaveCount(3);
+        await expect(hsList.nth(0).locator('.rank')).toHaveText('1.');
+        await expect(hsList.nth(0).locator('.score-val')).toHaveText('99999');
     });
 });

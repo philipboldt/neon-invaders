@@ -311,33 +311,33 @@ body::before {
   letter-spacing: 0.15em;
 }
 
-#highscore-list {
+.highscore-list {
   list-style-type: none;
   font-size: 1.2rem;
   text-align: left;
   line-height: 1.8;
 }
 
-#highscore-list li {
+.highscore-list li {
   display: grid;
   grid-template-columns: 2rem 1fr;
   text-shadow: 0 0 8px currentColor;
   gap: 1rem;
 }
 
-#highscore-list li .score-val {
+.highscore-list li .score-val {
   text-align: right;
 }
 
-#highscore-list li:nth-child(1) {
+.highscore-list li:nth-child(1) {
   color: #39ff14;
 }
 
-#highscore-list li:nth-child(2) {
+.highscore-list li:nth-child(2) {
   color: #00f5ff;
 }
 
-#highscore-list li:nth-child(3) {
+.highscore-list li:nth-child(3) {
   color: #ff6600;
 }
 
