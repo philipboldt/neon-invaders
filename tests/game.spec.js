@@ -125,4 +125,32 @@ test.describe('Neon Invaders E2E Tests', () => {
         // (If wrap occurred due to Flexbox, it would jump by ~15-20px)
         expect(Math.abs(newBox.height - initialBox.height)).toBeLessThan(2);
     });
+
+    test('mobile: Level position remains mostly stable when Score is extremely large', async ({ page }) => {
+        if (page.viewportSize()?.width >= 768) test.skip();
+        await page.goto('/');
+
+        const levelNode = page.locator('.level');
+        await expect(levelNode).toBeVisible();
+
+        // Get initial horizontal position of Level
+        const initialLevelBox = await levelNode.boundingBox();
+        expect(initialLevelBox).not.toBeNull();
+        const initialLeft = initialLevelBox.x;
+
+        // Inject massive score
+        await page.evaluate(() => {
+            document.getElementById('score').textContent = '999999999999';
+        });
+
+        await page.waitForTimeout(100);
+
+        // Get new horizontal position of Level
+        const newLevelBox = await levelNode.boundingBox();
+        expect(newLevelBox).not.toBeNull();
+        const newLeft = newLevelBox.x;
+
+        // Assert horizontal Shift is minimal (e.g. less than 10 pixels of wobble)
+        expect(Math.abs(newLeft - initialLeft)).toBeLessThan(10);
+    });
 });
