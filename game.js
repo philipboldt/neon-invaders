@@ -635,6 +635,26 @@
     overlay.classList.remove('hidden');
     overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     overlayText.classList.toggle('win', won);
+    updateHighScores(score);
+  }
+
+  function updateHighScores(newScore) {
+    let scores = JSON.parse(localStorage.getItem('neonInvadersHighScores') || '[0,0,0]');
+    if (newScore !== undefined) {
+      scores.push(newScore);
+      scores.sort((a, b) => b - a);
+      scores = scores.slice(0, 3);
+      localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
+    }
+    const listEl = document.getElementById('highscore-list');
+    if (listEl) {
+      listEl.innerHTML = '';
+      scores.forEach((s, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${i + 1}. ${s.toString().padStart(5, '0')}`;
+        listEl.appendChild(li);
+      });
+    }
   }
 
   function gameLoop(now = 0) {
@@ -869,4 +889,6 @@
     }
   };
   overlay.addEventListener('pointerdown', gameOverHandler);
+
+  updateHighScores();
 })();

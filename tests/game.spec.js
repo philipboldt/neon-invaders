@@ -15,7 +15,7 @@ test.describe('Neon Invaders E2E Tests', () => {
         // Check start screen is visible
         const startScreen = page.locator('#start-screen');
         await expect(startScreen).toBeVisible();
-        await expect(startScreen).toHaveText(/Press SPACE to start/);
+        await expect(startScreen).toHaveText(/Press SPACE or Tap to start/);
     });
 
     test('desktop: can start the game and shoot using keyboard', async ({ page }) => {
@@ -152,5 +152,21 @@ test.describe('Neon Invaders E2E Tests', () => {
 
         // Assert horizontal Shift is minimal (e.g. less than 10 pixels of wobble)
         expect(Math.abs(newLeft - initialLeft)).toBeLessThan(10);
+    });
+
+    test('desktop: properly renders highscores from localStorage', async ({ page }) => {
+        if (page.viewportSize()?.width < 768) test.skip();
+
+        // Inject highscores before page load
+        await page.addInitScript(() => {
+            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([99999, 1234, 10]));
+        });
+        await page.goto('/');
+
+        const hsList = page.locator('#highscore-list li');
+        await expect(hsList).toHaveCount(3);
+        await expect(hsList.nth(0)).toHaveText('1. 99999');
+        await expect(hsList.nth(1)).toHaveText('2. 01234');
+        await expect(hsList.nth(2)).toHaveText('3. 00010');
     });
 });

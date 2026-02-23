@@ -293,6 +293,50 @@ body::before {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+.highscore-container {
+  margin-bottom: 2rem;
+  background: rgba(0, 245, 255, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  padding: 1.5rem 3rem;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.1);
+  text-align: center;
+}
+
+.highscore-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #00f5ff;
+  text-shadow: 0 0 10px #00f5ff;
+  letter-spacing: 0.15em;
+}
+
+#highscore-list {
+  list-style-type: none;
+  font-size: 1.2rem;
+  text-align: left;
+  line-height: 1.8;
+}
+
+#highscore-list li {
+  display: flex;
+  justify-content: space-between;
+  text-shadow: 0 0 8px currentColor;
+  gap: 2rem;
+}
+
+#highscore-list li:nth-child(1) {
+  color: #39ff14;
+}
+
+#highscore-list li:nth-child(2) {
+  color: #00f5ff;
+}
+
+#highscore-list li:nth-child(3) {
+  color: #ff6600;
+}
+
 @keyframes pulse {
 
   0%,
