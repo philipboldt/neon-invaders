@@ -21,7 +21,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - Lives, Score, Level, Shield Status, Damage Multiplier.
   - Pierce Status (None/Active).
   - Responsive Mobile Touch Controls (Left, Shoot, Right, Pause).
-  - *Mobile Shoot Button acts as an Auto-Fire Toggle rather than a hold-to-shoot button.* **[NEW]**
+  - Mobile Shoot Button acts as an Auto-Fire Toggle.
+  - **Highscore List**: Persistent top 3 scores saved in `localStorage`, displayed on Start and Game Over screens. **[NEW]**
 
 - **Mechanics:**
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
@@ -36,9 +37,10 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Highscore List:** Added a persistent top 3 highscore list that saves to `localStorage` and displays on both the Start and Game Over screens.
+- **HUD Layout Fix:** Addressed an issue where extremely large scores caused the HUD elements to wrap. Fixed via CSS Grid and text-truncation.
 - **Mobile Auto-Fire Toggle:** Refactored the Mobile Shoot button to toggle auto-fire on and off with single taps. Added visual `.active` feedback so players know when auto-fire is locked on.
 - **Mobile Layout Fix:** Swapped position of right arrow and pause buttons for improved reachability.
 - **Mobile Support:** Added responsive canvas scaling and on-screen touch controls.
 - **Pointer Events:** Migrated UI interaction to `pointerdown`/`pointerup` for seamless Android Chrome & iOS Safari compatibility.
-- **Testing:** Integrated Playwright framework with E2E tests for desktop keyboard and mobile touch interactions.
-- Added Pierce status indicator to the HUD.
+- **Testing:** Integrated Playwright framework with E2E tests for desktop keyboard and mobile touch interactions, including highscore and layout shift tests.
