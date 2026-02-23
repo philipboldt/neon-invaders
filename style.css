@@ -21,7 +21,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
+  background:
     radial-gradient(ellipse 80% 50% at 50% 120%, rgba(0, 245, 255, 0.08) 0%, transparent 50%),
     radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255, 0, 255, 0.06) 0%, transparent 50%);
   pointer-events: none;
@@ -42,7 +42,7 @@ body::before {
   font-weight: 900;
   letter-spacing: 0.3em;
   margin-bottom: 0.5rem;
-  text-shadow: 
+  text-shadow:
     0 0 10px #00f5ff,
     0 0 20px #00f5ff,
     0 0 40px #00f5ff;
@@ -89,7 +89,7 @@ body::before {
   object-fit: contain;
   background: #0d0d14;
   border: 2px solid #00f5ff;
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(0, 245, 255, 0.3),
     inset 0 0 60px rgba(0, 245, 255, 0.03);
   image-rendering: pixelated;
@@ -109,7 +109,8 @@ body::before {
   width: 100%;
   justify-content: center;
   gap: 10px;
-  touch-action: none; /* Prevent browser handling of touches */
+  touch-action: none;
+  /* Prevent browser handling of touches */
 }
 
 .touch-btn {
@@ -126,7 +127,8 @@ body::before {
   box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
   transition: all 0.1s;
   min-width: 60px;
-  min-height: 60px; /* recommended tap target size */
+  min-height: 60px;
+  /* recommended tap target size */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,14 +170,18 @@ body::before {
 
 @media (pointer: coarse) {
   .controls {
-    display: none; /* hide keyboard instructions on mobile */
+    display: none;
+    /* hide keyboard instructions on mobile */
   }
+
   .touch-controls {
     display: flex;
   }
+
   .hud {
     font-size: 0.75rem;
   }
+
   .title {
     font-size: 1.5rem;
   }
@@ -191,6 +197,8 @@ body::before {
   justify-content: center;
   background: rgba(10, 10, 15, 0.9);
   color: #00f5ff;
+  cursor: pointer;
+  touch-action: none;
 }
 
 .overlay.hidden {
@@ -272,6 +280,13 @@ body::before {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }

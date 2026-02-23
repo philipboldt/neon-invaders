@@ -825,20 +825,25 @@
   }
 
   // Tapping the start screen or game over screen to start/restart
-  startScreen.addEventListener('touchstart', (e) => {
+  // Tapping the start screen or game over screen to start/restart
+  const startHandler = (e) => {
     e.preventDefault();
     startGame();
-  }, { passive: false });
+  };
+  startScreen.addEventListener('touchstart', startHandler, { passive: false });
+  startScreen.addEventListener('click', startHandler);
 
-  helpScreen.addEventListener('touchstart', (e) => {
+  const closeHelp = (e) => {
     e.preventDefault();
     if (isPaused) {
       isPaused = false;
       helpScreen.classList.add('hidden');
     }
-  }, { passive: false });
+  };
+  helpScreen.addEventListener('touchstart', closeHelp, { passive: false });
+  helpScreen.addEventListener('click', closeHelp);
 
-  overlay.addEventListener('touchstart', (e) => {
+  const gameOverHandler = (e) => {
     if (!overlay.classList.contains('hidden')) {
       // Let the restart button handle its own click or touch
       if (e.target.id !== 'restart') {
@@ -847,5 +852,7 @@
         startGame();
       }
     }
-  }, { passive: false });
+  };
+  overlay.addEventListener('touchstart', gameOverHandler, { passive: false });
+  overlay.addEventListener('click', gameOverHandler);
 })();
