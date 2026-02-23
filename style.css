@@ -49,9 +49,8 @@ body::before {
 }
 
 .hud {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   width: 100%;
   margin: 0 auto 0.5rem;
   font-size: 0.85rem;
@@ -59,9 +58,10 @@ body::before {
 }
 
 .hud span {
-  flex: 1;
   text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hud strong {
