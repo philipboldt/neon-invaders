@@ -5,7 +5,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 ## Current Features
 - **Core Gameplay:**
-  - Player movement (Left/Right arrows) and shooting (Spacebar).
+  - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
   - Wave-based invader spawning with increasing difficulty.
   - Enemy types with different colors and hit points.
   - Collision detection for bullets, enemies, and player.
@@ -19,7 +19,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 - **UI/HUD:**
   - Lives, Score, Level, Shield Status, Damage Multiplier.
-  - Pierce Status (None/Active). **[NEW]**
+  - Pierce Status (None/Active).
+  - Responsive Mobile Touch Controls (Left, Shoot, Right, Pause). **[NEW]**
 
 - **Mechanics:**
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
@@ -28,14 +29,13 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 ## Technical Stack
 - **Language:** JavaScript (ES6+)
-- **Rendering:** HTML5 Canvas API
+- **Rendering:** HTML5 Canvas API (Responsive scaling)
 - **Styling:** CSS3 (Neon aesthetic)
-- **Input:** Keyboard event listeners
+- **Input:** Keyboard & Modern Pointer Events (Mobile-friendly)
+- **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Mobile Support:** Added responsive canvas scaling and on-screen touch controls.
+- **Pointer Events:** Migrated UI interaction to `pointerdown`/`pointerup` for seamless Android Chrome & iOS Safari compatibility.
+- **Testing:** Integrated Playwright framework with E2E tests for desktop keyboard and mobile touch interactions.
 - Added Pierce status indicator to the HUD.
-- Restored accidentally deleted core variables and functions (`invaders`, `bullets`, `drawPlayer`, etc.) which prevented the game from starting.
-- Fixed a crash issue where `lastPlayerShot` and `PLAYER_SHOOT_COOLDOWN` were undefined.
-- Added `Pierce` power-up (Yellow): Bullets continue through one enemy if they deal the killing blow.
-- Updated Help Screen to include the new power-up.
-- Implemented maximum life cap of 5 and conditional health drops.
