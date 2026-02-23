@@ -651,7 +651,17 @@
       listEl.innerHTML = '';
       scores.forEach((s, i) => {
         const li = document.createElement('li');
-        li.textContent = `${i + 1}. ${s.toString().padStart(5, '0')}`;
+
+        const rankSpan = document.createElement('span');
+        rankSpan.className = 'rank';
+        rankSpan.textContent = `${i + 1}.`;
+
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'score-val';
+        scoreSpan.textContent = s.toString().padStart(5, '0');
+
+        li.appendChild(rankSpan);
+        li.appendChild(scoreSpan);
         listEl.appendChild(li);
       });
     }

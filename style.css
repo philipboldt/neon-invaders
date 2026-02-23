@@ -319,10 +319,14 @@ body::before {
 }
 
 #highscore-list li {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
   text-shadow: 0 0 8px currentColor;
-  gap: 2rem;
+  gap: 1rem;
+}
+
+#highscore-list li .score-val {
+  text-align: right;
 }
 
 #highscore-list li:nth-child(1) {

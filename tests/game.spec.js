@@ -165,8 +165,17 @@ test.describe('Neon Invaders E2E Tests', () => {
 
         const hsList = page.locator('#highscore-list li');
         await expect(hsList).toHaveCount(3);
-        await expect(hsList.nth(0)).toHaveText('1. 99999');
-        await expect(hsList.nth(1)).toHaveText('2. 01234');
-        await expect(hsList.nth(2)).toHaveText('3. 00010');
+
+        // Assert first place
+        await expect(hsList.nth(0).locator('.rank')).toHaveText('1.');
+        await expect(hsList.nth(0).locator('.score-val')).toHaveText('99999');
+
+        // Assert second place
+        await expect(hsList.nth(1).locator('.rank')).toHaveText('2.');
+        await expect(hsList.nth(1).locator('.score-val')).toHaveText('01234');
+
+        // Assert third place
+        await expect(hsList.nth(2).locator('.rank')).toHaveText('3.');
+        await expect(hsList.nth(2).locator('.score-val')).toHaveText('00010');
     });
 });
