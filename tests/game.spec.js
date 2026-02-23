@@ -92,4 +92,37 @@ test.describe('Neon Invaders E2E Tests', () => {
         await btnShoot.tap();
         await expect(btnShoot).not.toHaveClass(/active/);
     });
+
+    test('mobile: HUD layout remains stable with long text combinations', async ({ page }) => {
+        if (page.viewportSize()?.width >= 768) test.skip();
+        await page.goto('/');
+
+        const hud = page.locator('.hud');
+        await expect(hud).toBeVisible();
+
+        // Get initial bounding box height of the HUD container
+        const initialBox = await hud.boundingBox();
+        expect(initialBox).not.toBeNull();
+
+        // Inject extreme text into all HUD elements to force a potential wrap
+        await page.evaluate(() => {
+            document.getElementById('score').textContent = '999999999';
+            document.getElementById('level').textContent = '999';
+            document.getElementById('lives').textContent = '99';
+            document.getElementById('shield').textContent = 'activated-super-long-status';
+            document.getElementById('pierce').textContent = 'active-pierce-very-long';
+            document.getElementById('damage').textContent = '999';
+        });
+
+        // Small timeout to allow browser layout calculation just in case
+        await page.waitForTimeout(100);
+
+        // Get new bounding box height
+        const newBox = await hud.boundingBox();
+        expect(newBox).not.toBeNull();
+
+        // Assert height hasn't changed by more than 2 pixels
+        // (If wrap occurred due to Flexbox, it would jump by ~15-20px)
+        expect(Math.abs(newBox.height - initialBox.height)).toBeLessThan(2);
+    });
 });
