@@ -82,9 +82,14 @@ test.describe('Neon Invaders E2E Tests', () => {
         // Help screen should be hidden again
         await expect(helpScreen).toHaveClass(/hidden/);
 
-        // Tap the shoot button
+        // Tap the shoot button to enable auto-fire
         const btnShoot = page.locator('#btn-shoot');
         await expect(btnShoot).toBeVisible();
         await btnShoot.tap();
+        await expect(btnShoot).toHaveClass(/active/);
+
+        // Tap the shoot button again to disable auto-fire
+        await btnShoot.tap();
+        await expect(btnShoot).not.toHaveClass(/active/);
     });
 });

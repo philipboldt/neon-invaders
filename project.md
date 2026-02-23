@@ -20,7 +20,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **UI/HUD:**
   - Lives, Score, Level, Shield Status, Damage Multiplier.
   - Pierce Status (None/Active).
-  - Responsive Mobile Touch Controls (Left, Shoot, Right, Pause). **[NEW]**
+  - Responsive Mobile Touch Controls (Left, Shoot, Right, Pause).
+  - *Mobile Shoot Button acts as an Auto-Fire Toggle rather than a hold-to-shoot button.* **[NEW]**
 
 - **Mechanics:**
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
@@ -35,6 +36,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Mobile Auto-Fire Toggle:** Refactored the Mobile Shoot button to toggle auto-fire on and off with single taps. Added visual `.active` feedback so players know when auto-fire is locked on.
+- **Mobile Layout Fix:** Swapped position of right arrow and pause buttons for improved reachability.
 - **Mobile Support:** Added responsive canvas scaling and on-screen touch controls.
 - **Pointer Events:** Migrated UI interaction to `pointerdown`/`pointerup` for seamless Android Chrome & iOS Safari compatibility.
 - **Testing:** Integrated Playwright framework with E2E tests for desktop keyboard and mobile touch interactions.

@@ -630,6 +630,8 @@
 
   function endGame(won) {
     gameRunning = false;
+    spacePressed = false;
+    if (btnShoot) btnShoot.classList.remove('active');
     overlay.classList.remove('hidden');
     overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     overlayText.classList.toggle('win', won);
@@ -725,6 +727,8 @@
     lastRocketTime = 0;
     invaderDir = 1;
     lastInvaderShoot = 0;
+    spacePressed = false;
+    if (btnShoot) btnShoot.classList.remove('active');
     initInvaders();
     gameRunning = true;
     requestAnimationFrame(gameLoop);
@@ -808,17 +812,22 @@
     handlePointerUp(btnRight, (active) => { if (!active && player.dir === 1) player.dir = 0; });
 
     handlePointerDown(btnShoot, (active) => {
-      spacePressed = active;
-      if (active && (!gameRunning || isPaused)) {
+      if (!gameRunning || isPaused) {
         if (!startScreen.classList.contains('hidden')) {
           startGame();
         } else if (isPaused) {
           isPaused = false;
           helpScreen.classList.add('hidden');
         }
+        // Auto-shoot starts immediately when activating game via the shoot button
+        spacePressed = true;
+        btnShoot.classList.add('active');
+        return;
       }
+
+      spacePressed = !spacePressed;
+      btnShoot.classList.toggle('active', spacePressed);
     });
-    handlePointerUp(btnShoot, (active) => { spacePressed = active; });
 
     handlePointerDown(btnPause, (active) => {
       if (active && gameRunning && overlay.classList.contains('hidden')) {
