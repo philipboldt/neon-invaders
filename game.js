@@ -309,6 +309,7 @@
       const baseHp = 1 + block;
       const higherHp = baseHp + 1;
       const rowsWithHigher = p * 2;
+      const actualMaxHp = rowsWithHigher > 0 ? higherHp : baseHp;
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -335,7 +336,7 @@
       this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
       
       if (isBossLevel || isMiniBossLevel) {
-        const bossMaxHp = isBossLevel ? higherHp * 10 : higherHp * 5;
+        const bossMaxHp = isBossLevel ? actualMaxHp * 10 : actualMaxHp * 5;
         const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
         const bX = startX + this.gridW / 2 - bossW / 2;
         const bY = 80;
