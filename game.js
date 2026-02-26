@@ -299,10 +299,6 @@
       
       const bossW = isBossLevel ? CONSTANTS.INVADER_W * 6 : (isMiniBossLevel ? CONSTANTS.INVADER_W * 4 : 0);
       const bossH = isBossLevel ? CONSTANTS.INVADER_H * 6 : (isMiniBossLevel ? CONSTANTS.INVADER_H * 4 : 0);
-      
-      if (isBossLevel || isMiniBossLevel) {
-        startY += bossH + gap * 2;
-      }
 
       const rows = Math.min(CONSTANTS.INVADER_ROWS + Math.floor(this.level / 2), 7);
       const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.level / 3), 14);
@@ -341,7 +337,7 @@
         const bossMaxHp = isBossLevel ? actualMaxHp * 10 : actualMaxHp * 5;
         const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
         const bX = startX + this.gridW / 2 - bossW / 2;
-        const bY = 80;
+        const bY = startY - bossH - gap * 2;
         this.invaders.push({
           x: bX,
           y: bY,
@@ -375,6 +371,8 @@
       this.lastInvaderShoot = now;
       const idx = Math.floor(Math.random() * this.invaders.length);
       const inv = this.invaders[idx];
+      // Only shoot if in viewport
+      if (inv.y + inv.h < 0) return;
       this.invaderBullets.push({
         x: inv.x + inv.w / 2 - 3,
         y: inv.y + inv.h,
@@ -390,6 +388,9 @@
       
       this.lastBossShoot = now;
       bosses.forEach(boss => {
+        // Only shoot if boss is at least partially on screen
+        if (boss.y + boss.h < 0) return;
+        
         const startX = boss.x + boss.w / 2;
         const startY = boss.y + boss.h;
         
