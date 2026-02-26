@@ -1,23 +1,6 @@
 (function () {
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
-  const scoreEl = document.getElementById('score');
-  const levelEl = document.getElementById('level');
-  const livesEl = document.getElementById('lives');
-  const shieldEl = document.getElementById('shield');
-  const pierceEl = document.getElementById('pierce');
-  const damageEl = document.getElementById('damage');
-  const overlay = document.getElementById('overlay');
-  const overlayText = document.getElementById('overlay-text');
-  const restartBtn = document.getElementById('restart');
-  const startScreen = document.getElementById('start-screen');
-  const helpScreen = document.getElementById('help-screen');
-
-  const btnLeft = document.getElementById('btn-left');
-  const btnRight = document.getElementById('btn-right');
-  const btnShoot = document.getElementById('btn-shoot');
-  const btnPause = document.getElementById('btn-pause');
-
   const W = canvas.width;
   const H = canvas.height;
 
@@ -35,78 +18,18 @@
     pierce: '#ffff00',
   };
 
-  const ROCKET_W = 10;
-  const ROCKET_H = 24;
-  const ROCKET_INITIAL_SPEED = 1;
-  const ROCKET_MAX_SPEED = 9;
-  const ROCKET_THRUST = 0.25;
-  const ROCKET_STEER_STRENGTH = 0.12;
-  const ROCKET_VERTICAL_PHASE = 55;
-  const ROCKET_HIT_RADIUS = 28;
-
-  let gameRunning = false;
-  let score = 0;
-  let lives = 3;
-  let level = 1;
-
-  const UPGRADE_TYPES = ['shield', 'double', 'rocket', 'pierce', 'heal'];
-  const DROP_CHANCE = 0.18;
-  const UPGRADE_FALL_SPEED = 3;
-  const UPGRADE_W = 24;
-  const UPGRADE_H = 24;
-  const ROCKET_INTERVAL_MS = 5000;
-  const SHIELD_RECHARGE_MS = 5000;
-
-  const EXPLOSION_PARTICLES = 18;
-  const PARTICLE_MAX_SIZE = 14;
-  const PARTICLE_LIFE = 28;
-  const PARTICLE_SPEED = 5;
-  const ROCKET_TRAIL_SIZE = 5;
-  const ROCKET_TRAIL_LIFE = 14;
-  const ROCKET_TRAIL_DRAG = 0.25;
-
-  let upgrades = [];
-  let rockets = [];
-  let particles = [];
-  let shieldHits = 0;
-  let hasShieldSystem = false;
-  let lastShieldLostTime = -1;
-  let shotCount = 1;
-  let playerDamage = 1;
-  let hasRocket = false;
-  let hasPierce = false;
-  let lastRocketTime = 0;
-  let debugMode = false;
-  let isPaused = false;
-  let spacePressed = false;
-  let lastPlayerShot = 0;
-  const PLAYER_SHOOT_COOLDOWN = 200;
-
-  const player = {
-    x: W / 2 - 20,
-    y: H - 60,
-    w: 40,
-    h: 24,
-    speed: 6,
-    dir: 0,
+  const CONSTANTS = {
+    ROCKET_W: 10, ROCKET_H: 24, ROCKET_INITIAL_SPEED: 1, ROCKET_MAX_SPEED: 9,
+    ROCKET_THRUST: 0.25, ROCKET_STEER_STRENGTH: 0.12, ROCKET_VERTICAL_PHASE: 55, ROCKET_HIT_RADIUS: 28,
+    UPGRADE_TYPES: ['shield', 'double', 'rocket', 'pierce', 'heal'], DROP_CHANCE: 0.18, UPGRADE_FALL_SPEED: 3,
+    UPGRADE_W: 24, UPGRADE_H: 24, ROCKET_INTERVAL_MS: 5000, SHIELD_RECHARGE_MS: 5000,
+    EXPLOSION_PARTICLES: 18, PARTICLE_MAX_SIZE: 14, PARTICLE_LIFE: 28, PARTICLE_SPEED: 5,
+    ROCKET_TRAIL_SIZE: 5, ROCKET_TRAIL_LIFE: 14, ROCKET_TRAIL_DRAG: 0.25,
+    BULLET_SPEED: -10, INVADER_BULLET_SPEED: 4, INVADER_ROWS: 5, INVADER_COLS: 11,
+    INVADER_W: 36, INVADER_H: 24, INVADER_SHOOT_INTERVAL_BASE: 1000, PLAYER_SHOOT_COOLDOWN: 200
   };
 
-  let invaders = [];
-  let bullets = [];
-  let invaderBullets = [];
-  const BULLET_SPEED = -10;
-  const INVADER_BULLET_SPEED = 4;
-  const INVADER_ROWS = 5;
-  const INVADER_COLS = 11;
-  const INVADER_W = 36;
-  const INVADER_H = 24;
-  let invaderDir = 1;
-  let invaderDown = false;
-  let invaderTick = 0;
-  let lastInvaderShoot = 0;
-  const INVADER_SHOOT_INTERVAL_BASE = 1000;
-
-  function drawRect(x, y, w, h, fill, glow) {
+  function drawRect(ctx, x, y, w, h, fill, glow) {
     if (glow) {
       ctx.shadowColor = fill;
       ctx.shadowBlur = 15;
@@ -114,177 +37,6 @@
     ctx.fillStyle = fill;
     ctx.fillRect(x, y, w, h);
     ctx.shadowBlur = 0;
-  }
-
-  function drawPlayer() {
-    const { x, y, w, h } = player;
-    if (shieldHits > 0) {
-      ctx.strokeStyle = COLORS.shield;
-      ctx.shadowColor = COLORS.shield;
-      ctx.shadowBlur = 20;
-      ctx.lineWidth = 3;
-      ctx.strokeRect(x - 4, y - 4, w + 8, h + 8);
-      ctx.shadowBlur = 0;
-    }
-    drawRect(x, y, w, h, COLORS.player, true);
-    ctx.fillStyle = '#0a0a0f';
-    ctx.fillRect(x + 8, y + 4, 8, 8);
-    ctx.fillRect(x + w - 16, y + 4, 8, 8);
-  }
-
-  function drawUpgrades() {
-    const radius = UPGRADE_W / 2;
-    upgrades.forEach((u) => {
-      let c;
-      if (u.type === 'shield') c = COLORS.shield;
-      else if (u.type === 'double') c = COLORS.double;
-      else if (u.type === 'rocket') c = COLORS.rocket;
-      else if (u.type === 'pierce') c = COLORS.pierce;
-      else c = COLORS.heal;
-
-      const cx = u.x + radius;
-      const cy = u.y + radius;
-      ctx.shadowColor = c;
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = c;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    });
-  }
-
-  function spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2) {
-    for (let n = 0; n < EXPLOSION_PARTICLES; n++) {
-      const angle = angleStart + (angleRange * n) / EXPLOSION_PARTICLES + (Math.random() - 0.5) * (angleRange / EXPLOSION_PARTICLES);
-      const speed = PARTICLE_SPEED * (0.6 + Math.random() * 0.8);
-      const maxSize = PARTICLE_MAX_SIZE * (0.4 + Math.random() * 0.6);
-      particles.push({
-        x: cx,
-        y: cy,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        size: maxSize,
-        maxSize,
-        life: 0,
-        maxLife: PARTICLE_LIFE,
-        color,
-      });
-    }
-  }
-
-  function spawnRocketTrail(cx, cy, vx, vy) {
-    const speed = Math.sqrt(vx * vx + vy * vy) || 1;
-    const backX = (-vx / speed) * ROCKET_TRAIL_DRAG * speed;
-    const backY = (-vy / speed) * ROCKET_TRAIL_DRAG * speed;
-    particles.push({
-      x: cx,
-      y: cy,
-      vx: backX + (Math.random() - 0.5) * 1.5,
-      vy: backY + (Math.random() - 0.5) * 1.5,
-      size: ROCKET_TRAIL_SIZE,
-      maxSize: ROCKET_TRAIL_SIZE * (0.6 + Math.random() * 0.4),
-      life: 0,
-      maxLife: ROCKET_TRAIL_LIFE,
-      color: COLORS.rocket,
-    });
-  }
-
-  function updateParticles() {
-    particles = particles.filter((p) => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life++;
-      return p.life < p.maxLife;
-    });
-  }
-
-  function drawParticles() {
-    particles.forEach((p) => {
-      const t = p.life / p.maxLife;
-      const size = Math.max(0, p.maxSize * (1 - t));
-      if (size <= 0) return;
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 8;
-      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
-      ctx.shadowBlur = 0;
-    });
-  }
-
-  function drawRocketTargets() {
-    const neonRed = '#ff0844';
-    rockets.forEach((r) => {
-      let tx = r.targetX - INVADER_W / 2;
-      let ty = r.targetY - INVADER_H / 2;
-      let bestD = Infinity;
-      for (const inv of invaders) {
-        const icx = inv.x + inv.w / 2;
-        const icy = inv.y + inv.h / 2;
-        const d = (icx - r.targetX) ** 2 + (icy - r.targetY) ** 2;
-        if (d < bestD) {
-          bestD = d;
-          tx = inv.x;
-          ty = inv.y;
-        }
-      }
-      ctx.strokeStyle = neonRed;
-      ctx.shadowColor = neonRed;
-      ctx.shadowBlur = 18;
-      ctx.lineWidth = 3;
-      ctx.strokeRect(tx, ty, INVADER_W, INVADER_H);
-      ctx.shadowBlur = 0;
-    });
-  }
-
-  function drawRockets() {
-    rockets.forEach((r) => {
-      const cx = r.x + ROCKET_W / 2;
-      const cy = r.y + ROCKET_H / 2;
-      const angle = Math.atan2(r.vy, r.vx);
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(angle);
-      ctx.translate(-ROCKET_W / 2, -ROCKET_H / 2);
-      ctx.fillStyle = COLORS.rocket;
-      ctx.shadowColor = COLORS.rocket;
-      ctx.shadowBlur = 15;
-      ctx.fillRect(0, 0, ROCKET_W, ROCKET_H);
-      ctx.shadowBlur = 0;
-      ctx.restore();
-    });
-  }
-
-  function initInvaders() {
-    invaders = [];
-    const startX = 80;
-    const startY = 80;
-    const gap = 8;
-    const rows = Math.min(INVADER_ROWS + Math.floor(level / 2), 7);
-    const cols = Math.min(INVADER_COLS + Math.floor(level / 3), 14);
-    const block = Math.floor((level - 1) / 4);
-    const p = (level - 1) % 4;
-    baseHp = 1 + block;
-    higherHp = baseHp + 1;
-    rowsWithHigher = p * 2;
-
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const color =
-          row === 0 ? COLORS.invader3 :
-            row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
-        const maxHp = row < rowsWithHigher ? higherHp : baseHp;
-        invaders.push({
-          x: startX + col * (INVADER_W + gap),
-          y: startY + row * (INVADER_H + gap),
-          w: INVADER_W,
-          h: INVADER_H,
-          color,
-          maxHp,
-          hp: maxHp,
-        });
-      }
-    }
   }
 
   function darkenColor(hex, ratio) {
@@ -295,610 +47,780 @@
     return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
   }
 
-  function drawInvaders() {
-    invaders.forEach((inv) => {
-      const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
-      const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
-      drawRect(inv.x, inv.y, inv.w, inv.h, color, true);
-      if (debugMode) {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 14px Orbitron';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(inv.hp + '/' + inv.maxHp, inv.x + inv.w / 2, inv.y + inv.h / 2);
-      }
-    });
-  }
-
-  function drawBullets() {
-    ctx.fillStyle = COLORS.bullet;
-    ctx.shadowColor = COLORS.bullet;
-    ctx.shadowBlur = 8;
-    bullets.forEach((b) => {
-      ctx.fillRect(b.x, b.y, 4, 12);
-    });
-    ctx.shadowBlur = 0;
-
-    ctx.fillStyle = COLORS.invader1;
-    ctx.shadowColor = COLORS.invader1;
-    ctx.shadowBlur = 6;
-    invaderBullets.forEach((b) => {
-      ctx.fillRect(b.x, b.y, 6, 10);
-    });
-    ctx.shadowBlur = 0;
-  }
-
-  function updatePlayer(dt) {
-    player.x += player.dir * player.speed;
-    player.x = Math.max(0, Math.min(W - player.w, player.x));
-  }
-
-  function updateBullets(dt) {
-    bullets = bullets.filter((b) => {
-      b.y += BULLET_SPEED;
-      return b.y > -20;
-    });
-    invaderBullets = invaderBullets.filter((b) => {
-      b.y += INVADER_BULLET_SPEED;
-      return b.y < H + 20;
-    });
-  }
-
-  function updateInvaders(now) {
-    if (invaders.length === 0) return;
-
-    // Smooth speed calculation based on level
-    const speed = (40 + level * 15) / 60;
-    let moveDown = false;
-    const margin = 40;
-    const moveX = invaderDir * speed;
-
-    for (const inv of invaders) {
-      if (invaderDir > 0 && inv.x + inv.w + moveX >= W - margin) moveDown = true;
-      if (invaderDir < 0 && inv.x + moveX <= margin) moveDown = true;
+  class UIManager {
+    constructor() {
+      this.els = {
+        score: document.getElementById('score'),
+        level: document.getElementById('level'),
+        lives: document.getElementById('lives'),
+        shield: document.getElementById('shield'),
+        pierce: document.getElementById('pierce'),
+        damage: document.getElementById('damage'),
+        overlay: document.getElementById('overlay'),
+        overlayText: document.getElementById('overlay-text'),
+        startScreen: document.getElementById('start-screen'),
+        helpScreen: document.getElementById('help-screen'),
+        btnShoot: document.getElementById('btn-shoot'),
+        btnLeft: document.getElementById('btn-left'),
+        btnRight: document.getElementById('btn-right'),
+        btnPause: document.getElementById('btn-pause'),
+        restartBtn: document.getElementById('restart')
+      };
+      this.updateHighScores();
     }
 
-    if (moveDown) {
-      invaderDir *= -1;
-      invaders.forEach((inv) => (inv.y += 20));
-    } else {
-      invaders.forEach((inv) => (inv.x += moveX));
+    updateStats(gameState) {
+      this.els.score.textContent = gameState.score;
+      this.els.level.textContent = gameState.level;
+      this.els.lives.textContent = gameState.lives;
+      this.els.damage.textContent = gameState.playerDamage;
+      this.els.shield.textContent = gameState.shieldHits > 0 ? 'activated' : (gameState.hasShieldSystem ? 'deactivated' : 'no shield');
+      this.els.pierce.textContent = gameState.hasPierce ? 'active' : 'none';
     }
-  }
 
-  function playerShoot(now) {
-    if (!spacePressed || now - lastPlayerShot < PLAYER_SHOOT_COOLDOWN) return;
-    lastPlayerShot = now;
-    const maxBullets = 5 + shotCount * 2;
-    if (bullets.length < maxBullets) {
-      const spread = 14;
-      const startX = player.x + player.w / 2 - 2 - (shotCount - 1) * (spread / 2);
-      for (let i = 0; i < shotCount; i++) {
-        bullets.push({ x: startX + i * spread, y: player.y, w: 4, h: 12 });
-      }
+    setShootActive(isActive) {
+      if (this.els.btnShoot) this.els.btnShoot.classList.toggle('active', isActive);
     }
-  }
 
-  function invaderShoot(now) {
-    const shootInterval = Math.max(350, INVADER_SHOOT_INTERVAL_BASE - level * 60);
-    if (invaders.length === 0 || now - lastInvaderShoot < shootInterval) return;
-    lastInvaderShoot = now;
-    const idx = Math.floor(Math.random() * invaders.length);
-    const inv = invaders[idx];
-    invaderBullets.push({
-      x: inv.x + inv.w / 2 - 3,
-      y: inv.y + inv.h,
-      w: 6,
-      h: 10,
-    });
-  }
+    showStartScreen() {
+      this.els.startScreen.classList.remove('hidden');
+      this.els.overlay.classList.add('hidden');
+      this.els.helpScreen.classList.add('hidden');
+    }
 
-  function spawnUpgrade(x, y) {
-    if (Math.random() >= DROP_CHANCE) return;
+    hideScreens() {
+      this.els.startScreen.classList.add('hidden');
+      this.els.overlay.classList.add('hidden');
+      this.els.helpScreen.classList.add('hidden');
+    }
 
-    const availableTypes = UPGRADE_TYPES.filter(type => {
-      if (type === 'shield' && hasShieldSystem) return false;
-      if (type === 'rocket' && hasRocket) return false;
-      if (type === 'pierce' && hasPierce) return false;
-      if (type === 'heal' && lives >= 5) return false;
-      return true;
-    });
+    showGameOver(won) {
+      this.els.overlay.classList.remove('hidden');
+      this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
+      this.els.overlayText.classList.toggle('win', won);
+    }
 
-    if (availableTypes.length === 0) return;
+    toggleHelp(isVisible) {
+      this.els.helpScreen.classList.toggle('hidden', !isVisible);
+    }
 
-    const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-    upgrades.push({
-      x: x + INVADER_W / 2 - UPGRADE_W / 2,
-      y: y,
-      w: UPGRADE_W,
-      h: UPGRADE_H,
-      type,
-    });
-  }
-
-  function updateUpgrades() {
-    upgrades = upgrades.filter((u) => {
-      u.y += UPGRADE_FALL_SPEED;
-      if (u.y > H) return false;
-      if (
-        u.x + u.w > player.x && u.x < player.x + player.w &&
-        u.y + u.h > player.y && u.y < player.y + player.h
-      ) {
-        spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS[u.type], Math.PI, Math.PI);
-        if (!debugMode) {
-          if (u.type === 'shield') {
-            shieldHits = 1;
-            hasShieldSystem = true;
-            lastShieldLostTime = -1;
-            shieldEl.textContent = 'activated';
-          }
-          if (u.type === 'double') {
-            if (shotCount < 4) {
-              shotCount++;
-            } else {
-              playerDamage++;
-              damageEl.textContent = playerDamage;
-            }
-          }
-          if (u.type === 'rocket') hasRocket = true;
-          if (u.type === 'pierce') {
-            hasPierce = true;
-            pierceEl.textContent = 'active';
-          }
-          if (u.type === 'heal') {
-            if (lives < 5) {
-              lives++;
-              livesEl.textContent = lives;
-            }
-          }
-        }
-        return false;
+    updateHighScores(newScore) {
+      let scores = JSON.parse(localStorage.getItem('neonInvadersHighScores') || '[0,0,0]');
+      if (newScore !== undefined) {
+        scores.push(newScore);
+        scores.sort((a, b) => b - a);
+        scores = scores.slice(0, 3);
+        localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
       }
-      return true;
-    });
-  }
-
-  function getLowestRowInvaders() {
-    if (invaders.length === 0) return [];
-    const lowestY = Math.max(...invaders.map((inv) => inv.y));
-    return invaders.filter((inv) => inv.y >= lowestY - 2);
-  }
-
-  function updateRockets(now) {
-    const currentLowest = getLowestRowInvaders();
-    if (hasRocket && currentLowest.length > 0 && now - lastRocketTime >= ROCKET_INTERVAL_MS) {
-      lastRocketTime = now;
-      const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
-      rockets.push({
-        x: player.x + player.w / 2 - ROCKET_W / 2,
-        y: player.y,
-        w: ROCKET_W,
-        h: ROCKET_H,
-        targetX: targetInv.x + targetInv.w / 2,
-        targetY: targetInv.y + targetInv.h / 2,
-        vx: 0,
-        vy: -ROCKET_INITIAL_SPEED,
-        distanceTraveled: 0,
+      const listEls = document.querySelectorAll('.highscore-list');
+      listEls.forEach(listEl => {
+        listEl.innerHTML = '';
+        scores.forEach((s, i) => {
+          const li = document.createElement('li');
+          const rankSpan = document.createElement('span');
+          rankSpan.className = 'rank';
+          rankSpan.textContent = `${i + 1}.`;
+          const scoreSpan = document.createElement('span');
+          scoreSpan.className = 'score-val';
+          scoreSpan.textContent = s.toString().padStart(5, '0');
+          li.appendChild(rankSpan);
+          li.appendChild(scoreSpan);
+          listEl.appendChild(li);
+        });
       });
     }
-    rockets = rockets.filter((r) => {
-      if (currentLowest.length > 0) {
-        let bestInv = null;
-        let bestD = Infinity;
-        for (const inv of currentLowest) {
-          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
-          if (d < bestD) {
-            bestD = d;
-            bestInv = inv;
-          }
-        }
-        if (bestInv) {
-          r.targetX = bestInv.x + bestInv.w / 2;
-          r.targetY = bestInv.y + bestInv.h / 2;
-        }
-      }
-
-      const cx = r.x + ROCKET_W / 2;
-      const cy = r.y + ROCKET_H / 2;
-      const dx = r.targetX - cx;
-      const dy = r.targetY - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < ROCKET_HIT_RADIUS) {
-        let bestI = -1;
-        let bestD = Infinity;
-        for (let i = 0; i < invaders.length; i++) {
-          const inv = invaders[i];
-          if (!currentLowest.includes(inv)) continue;
-          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
-          if (d < bestD) {
-            bestD = d;
-            bestI = i;
-          }
-        }
-        if (bestI >= 0) {
-          const inv = invaders[bestI];
-          const invCx = inv.x + inv.w / 2;
-          const invCy = inv.y + inv.h / 2;
-          score += 15 * (inv.color === COLORS.invader3 ? 3 : inv.color === COLORS.invader1 ? 2 : 1);
-          spawnExplosion(invCx, invCy, inv.color);
-          spawnUpgrade(inv.x, inv.y);
-          invaders.splice(bestI, 1);
-          scoreEl.textContent = score;
-        }
-        return false;
-      }
-      if (dist > 0 && r.distanceTraveled >= ROCKET_VERTICAL_PHASE) {
-        const desiredDx = dx / dist;
-        const desiredDy = dy / dist;
-        const steerX = desiredDx * ROCKET_MAX_SPEED - r.vx;
-        const steerY = desiredDy * ROCKET_MAX_SPEED - r.vy;
-        r.vx += steerX * ROCKET_STEER_STRENGTH;
-        r.vy += steerY * ROCKET_STEER_STRENGTH;
-      }
-      const speed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
-      if (speed > 0) {
-        const thrustX = (r.vx / speed) * ROCKET_THRUST;
-        const thrustY = (r.vy / speed) * ROCKET_THRUST;
-        r.vx += thrustX;
-        r.vy += thrustY;
-        const newSpeed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
-        if (newSpeed > ROCKET_MAX_SPEED) {
-          r.vx = (r.vx / newSpeed) * ROCKET_MAX_SPEED;
-          r.vy = (r.vy / newSpeed) * ROCKET_MAX_SPEED;
-        }
-      }
-      r.x += r.vx;
-      r.y += r.vy;
-      spawnRocketTrail(r.x + ROCKET_W / 2, r.y + ROCKET_H / 2, r.vx, r.vy);
-      r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
-      if (r.y < -ROCKET_H * 2 || r.y > H + ROCKET_H || r.x < -ROCKET_W * 2 || r.x > W + ROCKET_W) return false;
-      return true;
-    });
   }
 
-  function updateShieldRecharge(now) {
-    if (shieldHits > 0 || lastShieldLostTime < 0) return;
-    if (now - lastShieldLostTime >= SHIELD_RECHARGE_MS) {
-      shieldHits = 1;
-      lastShieldLostTime = -1;
-      shieldEl.textContent = 'activated';
+  class ParticleSystem {
+    constructor() {
+      this.particles = [];
+    }
+
+    spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2) {
+      for (let n = 0; n < CONSTANTS.EXPLOSION_PARTICLES; n++) {
+        const angle = angleStart + (angleRange * n) / CONSTANTS.EXPLOSION_PARTICLES + (Math.random() - 0.5) * (angleRange / CONSTANTS.EXPLOSION_PARTICLES);
+        const speed = CONSTANTS.PARTICLE_SPEED * (0.6 + Math.random() * 0.8);
+        const maxSize = CONSTANTS.PARTICLE_MAX_SIZE * (0.4 + Math.random() * 0.6);
+        this.particles.push({
+          x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+          size: maxSize, maxSize, life: 0, maxLife: CONSTANTS.PARTICLE_LIFE, color,
+        });
+      }
+    }
+
+    spawnRocketTrail(cx, cy, vx, vy) {
+      const speed = Math.sqrt(vx * vx + vy * vy) || 1;
+      const backX = (-vx / speed) * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
+      const backY = (-vy / speed) * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
+      this.particles.push({
+        x: cx, y: cy, vx: backX + (Math.random() - 0.5) * 1.5, vy: backY + (Math.random() - 0.5) * 1.5,
+        size: CONSTANTS.ROCKET_TRAIL_SIZE, maxSize: CONSTANTS.ROCKET_TRAIL_SIZE * (0.6 + Math.random() * 0.4),
+        life: 0, maxLife: CONSTANTS.ROCKET_TRAIL_LIFE, color: COLORS.rocket,
+      });
+    }
+
+    update() {
+      this.particles = this.particles.filter((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life++;
+        return p.life < p.maxLife;
+      });
+    }
+
+    draw(ctx) {
+      this.particles.forEach((p) => {
+        const t = p.life / p.maxLife;
+        const size = Math.max(0, p.maxSize * (1 - t));
+        if (size <= 0) return;
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+        ctx.shadowBlur = 0;
+      });
     }
   }
 
-  function checkCollisions(now) {
-    bullets = bullets.filter((b) => {
-      for (let i = 0; i < invaders.length; i++) {
-        const inv = invaders[i];
-        if (
-          b.x + 4 > inv.x && b.x < inv.x + inv.w &&
-          b.y < inv.y + inv.h && b.y + 12 > inv.y
-        ) {
-          inv.hp -= playerDamage;
-          if (inv.hp <= 0) {
-            score += 10 * (invaders[i].color === COLORS.invader3 ? 3 : invaders[i].color === COLORS.invader1 ? 2 : 1);
-            spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
-            spawnUpgrade(inv.x, inv.y);
-            invaders.splice(i, 1);
-            scoreEl.textContent = score;
+  class Player {
+    constructor() {
+      this.w = 40;
+      this.h = 24;
+      this.x = W / 2 - this.w / 2;
+      this.y = H - 60;
+      this.speed = 6;
+      this.dir = 0;
+    }
 
-            if (hasPierce && !b.pierced) {
-              b.pierced = true;
-              return true;
+    reset() {
+      this.x = W / 2 - this.w / 2;
+      this.y = H - 60;
+      this.dir = 0;
+    }
+
+    update() {
+      this.x += this.dir * this.speed;
+      this.x = Math.max(0, Math.min(W - this.w, this.x));
+    }
+
+    draw(ctx, shieldHits) {
+      if (shieldHits > 0) {
+        ctx.strokeStyle = COLORS.shield;
+        ctx.shadowColor = COLORS.shield;
+        ctx.shadowBlur = 20;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(this.x - 4, this.y - 4, this.w + 8, this.h + 8);
+        ctx.shadowBlur = 0;
+      }
+      drawRect(ctx, this.x, this.y, this.w, this.h, COLORS.player, true);
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(this.x + 8, this.y + 4, 8, 8);
+      ctx.fillRect(this.x + this.w - 16, this.y + 4, 8, 8);
+    }
+  }
+
+  class Game {
+    constructor() {
+      this.ui = new UIManager();
+      this.particles = new ParticleSystem();
+      this.player = new Player();
+      
+      this.resetState();
+      this.bindInputs();
+      
+      this.gameLoop = this.gameLoop.bind(this);
+      requestAnimationFrame(this.gameLoop);
+    }
+
+    resetState() {
+      this.gameRunning = false;
+      this.isPaused = false;
+      this.debugMode = false;
+      this.score = 0;
+      this.lives = 3;
+      this.level = 1;
+      this.shotCount = 1;
+      this.playerDamage = 1;
+      this.shieldHits = 0;
+      this.hasShieldSystem = false;
+      this.lastShieldLostTime = -1;
+      this.hasRocket = false;
+      this.hasPierce = false;
+      this.spacePressed = false;
+      
+      this.invaders = [];
+      this.bullets = [];
+      this.invaderBullets = [];
+      this.upgrades = [];
+      this.rockets = [];
+      
+      this.lastPlayerShot = 0;
+      this.lastInvaderShoot = 0;
+      this.lastRocketTime = 0;
+      this.invaderDir = 1;
+      
+      this.ui.updateStats(this);
+      this.ui.setShootActive(false);
+      this.player.reset();
+    }
+
+    startGame() {
+      this.resetState();
+      this.ui.hideScreens();
+      this.initInvaders();
+      this.gameRunning = true;
+    }
+
+    endGame(won) {
+      this.gameRunning = false;
+      this.spacePressed = false;
+      this.ui.setShootActive(false);
+      this.ui.updateHighScores(this.score);
+      this.ui.showGameOver(won);
+    }
+
+    initInvaders() {
+      this.invaders = [];
+      const startX = 80;
+      const startY = 80;
+      const gap = 8;
+      const rows = Math.min(CONSTANTS.INVADER_ROWS + Math.floor(this.level / 2), 7);
+      const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.level / 3), 14);
+      const block = Math.floor((this.level - 1) / 4);
+      const p = (this.level - 1) % 4;
+      const baseHp = 1 + block;
+      const higherHp = baseHp + 1;
+      const rowsWithHigher = p * 2;
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const color =
+            row === 0 ? COLORS.invader3 :
+            row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
+          const maxHp = row < rowsWithHigher ? higherHp : baseHp;
+          this.invaders.push({
+            x: startX + col * (CONSTANTS.INVADER_W + gap),
+            y: startY + row * (CONSTANTS.INVADER_H + gap),
+            w: CONSTANTS.INVADER_W,
+            h: CONSTANTS.INVADER_H,
+            color,
+            maxHp,
+            hp: maxHp,
+          });
+        }
+      }
+      this.invaderDir = 1;
+    }
+
+    playerShoot(now) {
+      if (!this.spacePressed || now - this.lastPlayerShot < CONSTANTS.PLAYER_SHOOT_COOLDOWN) return;
+      this.lastPlayerShot = now;
+      const maxBullets = 5 + this.shotCount * 2;
+      if (this.bullets.length < maxBullets) {
+        const spread = 14;
+        const startX = this.player.x + this.player.w / 2 - 2 - (this.shotCount - 1) * (spread / 2);
+        for (let i = 0; i < this.shotCount; i++) {
+          this.bullets.push({ x: startX + i * spread, y: this.player.y, w: 4, h: 12 });
+        }
+      }
+    }
+
+    invaderShoot(now) {
+      const shootInterval = Math.max(350, CONSTANTS.INVADER_SHOOT_INTERVAL_BASE - this.level * 60);
+      if (this.invaders.length === 0 || now - this.lastInvaderShoot < shootInterval) return;
+      this.lastInvaderShoot = now;
+      const idx = Math.floor(Math.random() * this.invaders.length);
+      const inv = this.invaders[idx];
+      this.invaderBullets.push({
+        x: inv.x + inv.w / 2 - 3,
+        y: inv.y + inv.h,
+        w: 6,
+        h: 10,
+      });
+    }
+
+    spawnUpgrade(x, y) {
+      if (Math.random() >= CONSTANTS.DROP_CHANCE) return;
+
+      const availableTypes = CONSTANTS.UPGRADE_TYPES.filter(type => {
+        if (type === 'shield' && this.hasShieldSystem) return false;
+        if (type === 'rocket' && this.hasRocket) return false;
+        if (type === 'pierce' && this.hasPierce) return false;
+        if (type === 'heal' && this.lives >= 5) return false;
+        return true;
+      });
+
+      if (availableTypes.length === 0) return;
+
+      const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+      this.upgrades.push({
+        x: x + CONSTANTS.INVADER_W / 2 - CONSTANTS.UPGRADE_W / 2,
+        y: y,
+        w: CONSTANTS.UPGRADE_W,
+        h: CONSTANTS.UPGRADE_H,
+        type,
+      });
+    }
+
+    updateEntities(now) {
+      this.player.update();
+
+      // Update Bullets
+      this.bullets = this.bullets.filter(b => {
+        b.y += CONSTANTS.BULLET_SPEED;
+        return b.y > -20;
+      });
+      this.invaderBullets = this.invaderBullets.filter(b => {
+        b.y += CONSTANTS.INVADER_BULLET_SPEED;
+        return b.y < H + 20;
+      });
+
+      // Update Invaders
+      if (this.invaders.length > 0) {
+        const speed = (40 + this.level * 15) / 60;
+        let moveDown = false;
+        const margin = 40;
+        const moveX = this.invaderDir * speed;
+
+        for (const inv of this.invaders) {
+          if (this.invaderDir > 0 && inv.x + inv.w + moveX >= W - margin) moveDown = true;
+          if (this.invaderDir < 0 && inv.x + moveX <= margin) moveDown = true;
+        }
+
+        if (moveDown) {
+          this.invaderDir *= -1;
+          this.invaders.forEach(inv => (inv.y += 20));
+        } else {
+          this.invaders.forEach(inv => (inv.x += moveX));
+        }
+      }
+
+      // Update Upgrades
+      this.upgrades = this.upgrades.filter(u => {
+        u.y += CONSTANTS.UPGRADE_FALL_SPEED;
+        if (u.y > H) return false;
+        if (
+          u.x + u.w > this.player.x && u.x < this.player.x + this.player.w &&
+          u.y + u.h > this.player.y && u.y < this.player.y + this.player.h
+        ) {
+          this.particles.spawnExplosion(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, COLORS[u.type], Math.PI, Math.PI);
+          if (!this.debugMode) {
+            if (u.type === 'shield') {
+              this.shieldHits = 1;
+              this.hasShieldSystem = true;
+              this.lastShieldLostTime = -1;
             }
+            if (u.type === 'double') {
+              if (this.shotCount < 4) this.shotCount++;
+              else this.playerDamage++;
+            }
+            if (u.type === 'rocket') this.hasRocket = true;
+            if (u.type === 'pierce') this.hasPierce = true;
+            if (u.type === 'heal' && this.lives < 5) this.lives++;
+            this.ui.updateStats(this);
           }
           return false;
         }
-      }
-      return true;
-    });
+        return true;
+      });
 
-    invaderBullets = invaderBullets.filter((b) => {
-      if (
-        b.x + 6 > player.x && b.x < player.x + player.w &&
-        b.y + 10 > player.y && b.y < player.y + player.h
-      ) {
-        if (!debugMode) {
-          spawnExplosion(player.x + player.w / 2, player.y + player.h / 2, COLORS.player, Math.PI, Math.PI);
-          if (shieldHits > 0) {
-            shieldHits = 0;
-            lastShieldLostTime = now;
-            shieldEl.textContent = 'deactivated';
-          } else {
-            lives--;
-            livesEl.textContent = lives;
+      // Update Shield
+      if (this.hasShieldSystem && this.shieldHits === 0 && this.lastShieldLostTime >= 0) {
+        if (now - this.lastShieldLostTime >= CONSTANTS.SHIELD_RECHARGE_MS) {
+          this.shieldHits = 1;
+          this.lastShieldLostTime = -1;
+          this.ui.updateStats(this);
+        }
+      }
+      
+      this.updateRockets(now);
+    }
+
+    getLowestRowInvaders() {
+      if (this.invaders.length === 0) return [];
+      const lowestY = Math.max(...this.invaders.map((inv) => inv.y));
+      return this.invaders.filter((inv) => inv.y >= lowestY - 2);
+    }
+
+    updateRockets(now) {
+      const currentLowest = this.getLowestRowInvaders();
+      if (this.hasRocket && currentLowest.length > 0 && now - this.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
+        this.lastRocketTime = now;
+        const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
+        this.rockets.push({
+          x: this.player.x + this.player.w / 2 - CONSTANTS.ROCKET_W / 2,
+          y: this.player.y,
+          targetX: targetInv.x + targetInv.w / 2,
+          targetY: targetInv.y + targetInv.h / 2,
+          vx: 0, vy: -CONSTANTS.ROCKET_INITIAL_SPEED,
+          distanceTraveled: 0,
+        });
+      }
+
+      this.rockets = this.rockets.filter((r) => {
+        if (currentLowest.length > 0) {
+          let bestInv = null;
+          let bestD = Infinity;
+          for (const inv of currentLowest) {
+            const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
+            if (d < bestD) {
+              bestD = d;
+              bestInv = inv;
+            }
+          }
+          if (bestInv) {
+            r.targetX = bestInv.x + bestInv.w / 2;
+            r.targetY = bestInv.y + bestInv.h / 2;
           }
         }
-        return false;
-      }
-      return true;
-    });
-  }
 
-  function checkLose() {
-    if (debugMode) {
-      for (const inv of invaders) {
-        if (inv.y + inv.h >= player.y) return true;
-      }
-      return false;
-    }
-    for (const inv of invaders) {
-      if (inv.y + inv.h >= player.y) return true;
-    }
-    return lives <= 0;
-  }
+        const cx = r.x + CONSTANTS.ROCKET_W / 2;
+        const cy = r.y + CONSTANTS.ROCKET_H / 2;
+        const dx = r.targetX - cx;
+        const dy = r.targetY - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-  function endGame(won) {
-    gameRunning = false;
-    spacePressed = false;
-    if (btnShoot) btnShoot.classList.remove('active');
-    overlay.classList.remove('hidden');
-    overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
-    overlayText.classList.toggle('win', won);
-    updateHighScores(score);
-  }
-
-  function updateHighScores(newScore) {
-    let scores = JSON.parse(localStorage.getItem('neonInvadersHighScores') || '[0,0,0]');
-    if (newScore !== undefined) {
-      scores.push(newScore);
-      scores.sort((a, b) => b - a);
-      scores = scores.slice(0, 3);
-      localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
-    }
-    const listEls = document.querySelectorAll('.highscore-list');
-    listEls.forEach(listEl => {
-      listEl.innerHTML = '';
-      scores.forEach((s, i) => {
-        const li = document.createElement('li');
-
-        const rankSpan = document.createElement('span');
-        rankSpan.className = 'rank';
-        rankSpan.textContent = `${i + 1}.`;
-
-        const scoreSpan = document.createElement('span');
-        scoreSpan.className = 'score-val';
-        scoreSpan.textContent = s.toString().padStart(5, '0');
-
-        li.appendChild(rankSpan);
-        li.appendChild(scoreSpan);
-        listEl.appendChild(li);
-      });
-    });
-  }
-
-  function gameLoop(now = 0) {
-    if (!gameRunning) return;
-    if (isPaused) {
-      requestAnimationFrame(gameLoop);
-      return;
-    }
-
-    ctx.fillStyle = '#0d0d14';
-    ctx.fillRect(0, 0, W, H);
-
-    updatePlayer(16);
-    updateBullets(16);
-    playerShoot(now);
-    updateInvaders(now);
-    invaderShoot(now);
-    checkCollisions(now);
-    updateUpgrades();
-    updateRockets(now);
-    updateShieldRecharge(now);
-    updateParticles();
-
-    drawInvaders();
-    drawBullets();
-    drawRocketTargets();
-    drawRockets();
-    drawParticles();
-    drawUpgrades();
-    drawPlayer();
-
-    if (debugMode) {
-      ctx.font = 'bold 56px Orbitron';
-      ctx.fillStyle = '#ff0844';
-      ctx.shadowColor = '#ff0844';
-      ctx.shadowBlur = 20;
-      ctx.textAlign = 'center';
-      ctx.fillText('DEBUG MODE', W / 2, 72);
-      ctx.shadowBlur = 0;
-    }
-
-    if (invaders.length === 0) {
-      level++;
-      levelEl.textContent = level;
-      bullets = [];
-      invaderBullets = [];
-      upgrades = [];
-      rockets = [];
-      initInvaders();
-      lastInvaderShoot = now;
-      requestAnimationFrame(gameLoop);
-      return;
-    }
-    if (checkLose()) {
-      endGame(false);
-      return;
-    }
-
-    requestAnimationFrame(gameLoop);
-  }
-
-  function startGame() {
-    startScreen.classList.add('hidden');
-    overlay.classList.add('hidden');
-    helpScreen.classList.add('hidden');
-    score = 0;
-    lives = 3;
-    level = 1;
-    shotCount = 1;
-    playerDamage = 1;
-    isPaused = false;
-    scoreEl.textContent = score;
-    levelEl.textContent = level;
-    livesEl.textContent = lives;
-    damageEl.textContent = playerDamage;
-    player.x = W / 2 - 20;
-    player.y = H - 60;
-    bullets = [];
-    invaderBullets = [];
-    rockets = [];
-    upgrades = [];
-    particles = [];
-    shieldHits = 0;
-    hasShieldSystem = false;
-    lastShieldLostTime = -1;
-    shieldEl.textContent = 'no shield';
-    pierceEl.textContent = 'none';
-    hasRocket = false;
-    hasPierce = false;
-    lastRocketTime = 0;
-    invaderDir = 1;
-    lastInvaderShoot = 0;
-    spacePressed = false;
-    if (btnShoot) btnShoot.classList.remove('active');
-    initInvaders();
-    gameRunning = true;
-    requestAnimationFrame(gameLoop);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'KeyH' && gameRunning && overlay.classList.contains('hidden')) {
-      isPaused = !isPaused;
-      helpScreen.classList.toggle('hidden', !isPaused);
-      return;
-    }
-    if (isPaused) return;
-
-    if (e.code === 'KeyD' && gameRunning) {
-      debugMode = !debugMode;
-      if (debugMode) {
-        shieldHits = 0;
-        shotCount = 1;
-        hasRocket = false;
-        hasPierce = false;
-        shieldEl.textContent = 'no shield';
-        pierceEl.textContent = 'none';
-      }
-      return;
-    }
-    if (e.code === 'KeyA' && gameRunning && debugMode) {
-      invaders = [];
-      return;
-    }
-    if (e.code === 'ArrowLeft') player.dir = -1;
-    if (e.code === 'ArrowRight') player.dir = 1;
-    if (e.code === 'Space') {
-      e.preventDefault();
-      spacePressed = true;
-      if (!gameRunning && !startScreen.classList.contains('hidden')) {
-        startGame();
-        return;
-      }
-    }
-  });
-
-  document.addEventListener('keyup', (e) => {
-    if (e.code === 'ArrowLeft' && player.dir === -1) player.dir = 0;
-    if (e.code === 'ArrowRight' && player.dir === 1) player.dir = 0;
-    if (e.code === 'Space') spacePressed = false;
-  });
-
-  restartBtn.addEventListener('click', () => {
-    startScreen.classList.add('hidden');
-    startGame();
-  });
-
-  // Pointer controls for unified touch/mouse/pen handling
-  const handlePointerDown = (btn, action) => {
-    btn.addEventListener('pointerdown', (e) => {
-      // Only handle primary button (left click) or touch
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      e.preventDefault(); // Prevent default mobile behavior like scrolling
-      btn.setPointerCapture(e.pointerId);
-      action(true);
-    });
-  };
-
-  const handlePointerUp = (btn, action) => {
-    btn.addEventListener('pointerup', (e) => {
-      e.preventDefault();
-      btn.releasePointerCapture(e.pointerId);
-      action(false);
-    });
-    btn.addEventListener('pointercancel', (e) => {
-      e.preventDefault();
-      action(false);
-    });
-  };
-
-  if (btnLeft && btnRight && btnShoot && btnPause) {
-    handlePointerDown(btnLeft, (active) => { if (active) player.dir = -1; });
-    handlePointerUp(btnLeft, (active) => { if (!active && player.dir === -1) player.dir = 0; });
-
-    handlePointerDown(btnRight, (active) => { if (active) player.dir = 1; });
-    handlePointerUp(btnRight, (active) => { if (!active && player.dir === 1) player.dir = 0; });
-
-    handlePointerDown(btnShoot, (active) => {
-      if (!gameRunning || isPaused) {
-        if (!startScreen.classList.contains('hidden')) {
-          startGame();
-        } else if (isPaused) {
-          isPaused = false;
-          helpScreen.classList.add('hidden');
+        if (dist < CONSTANTS.ROCKET_HIT_RADIUS) {
+          let bestI = -1;
+          let bestD = Infinity;
+          for (let i = 0; i < this.invaders.length; i++) {
+            const inv = this.invaders[i];
+            if (!currentLowest.includes(inv)) continue;
+            const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
+            if (d < bestD) {
+              bestD = d;
+              bestI = i;
+            }
+          }
+          if (bestI >= 0) {
+            const inv = this.invaders[bestI];
+            this.score += 15 * (inv.color === COLORS.invader3 ? 3 : inv.color === COLORS.invader1 ? 2 : 1);
+            this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
+            this.spawnUpgrade(inv.x, inv.y);
+            this.invaders.splice(bestI, 1);
+            this.ui.updateStats(this);
+          }
+          return false;
         }
-        // Auto-shoot starts immediately when activating game via the shoot button
-        spacePressed = true;
-        btnShoot.classList.add('active');
+
+        if (dist > 0 && r.distanceTraveled >= CONSTANTS.ROCKET_VERTICAL_PHASE) {
+          const desiredDx = dx / dist;
+          const desiredDy = dy / dist;
+          const steerX = desiredDx * CONSTANTS.ROCKET_MAX_SPEED - r.vx;
+          const steerY = desiredDy * CONSTANTS.ROCKET_MAX_SPEED - r.vy;
+          r.vx += steerX * CONSTANTS.ROCKET_STEER_STRENGTH;
+          r.vy += steerY * CONSTANTS.ROCKET_STEER_STRENGTH;
+        }
+
+        const speed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
+        if (speed > 0) {
+          const thrustX = (r.vx / speed) * CONSTANTS.ROCKET_THRUST;
+          const thrustY = (r.vy / speed) * CONSTANTS.ROCKET_THRUST;
+          r.vx += thrustX;
+          r.vy += thrustY;
+          const newSpeed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
+          if (newSpeed > CONSTANTS.ROCKET_MAX_SPEED) {
+            r.vx = (r.vx / newSpeed) * CONSTANTS.ROCKET_MAX_SPEED;
+            r.vy = (r.vy / newSpeed) * CONSTANTS.ROCKET_MAX_SPEED;
+          }
+        }
+        r.x += r.vx;
+        r.y += r.vy;
+        this.particles.spawnRocketTrail(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2, r.vx, r.vy);
+        r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
+        
+        if (r.y < -CONSTANTS.ROCKET_H * 2 || r.y > H + CONSTANTS.ROCKET_H || r.x < -CONSTANTS.ROCKET_W * 2 || r.x > W + CONSTANTS.ROCKET_W) return false;
+        return true;
+      });
+    }
+
+    checkCollisions(now) {
+      this.bullets = this.bullets.filter(b => {
+        for (let i = 0; i < this.invaders.length; i++) {
+          const inv = this.invaders[i];
+          if (b.x + 4 > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + 12 > inv.y) {
+            inv.hp -= this.playerDamage;
+            if (inv.hp <= 0) {
+              this.score += 10 * (this.invaders[i].color === COLORS.invader3 ? 3 : this.invaders[i].color === COLORS.invader1 ? 2 : 1);
+              this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
+              this.spawnUpgrade(inv.x, inv.y);
+              this.invaders.splice(i, 1);
+              this.ui.updateStats(this);
+
+              if (this.hasPierce && !b.pierced) {
+                b.pierced = true;
+                return true;
+              }
+            }
+            return false;
+          }
+        }
+        return true;
+      });
+
+      this.invaderBullets = this.invaderBullets.filter(b => {
+        if (b.x + 6 > this.player.x && b.x < this.player.x + this.player.w && b.y + 10 > this.player.y && b.y < this.player.y + this.player.h) {
+          if (!this.debugMode) {
+            this.particles.spawnExplosion(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, COLORS.player, Math.PI, Math.PI);
+            if (this.shieldHits > 0) {
+              this.shieldHits = 0;
+              this.lastShieldLostTime = now;
+            } else {
+              this.lives--;
+            }
+            this.ui.updateStats(this);
+          }
+          return false;
+        }
+        return true;
+      });
+    }
+
+    checkLose() {
+      for (const inv of this.invaders) {
+        if (inv.y + inv.h >= this.player.y) return !this.debugMode;
+      }
+      return this.lives <= 0;
+    }
+
+    draw() {
+      ctx.fillStyle = '#0d0d14';
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw Invaders
+      this.invaders.forEach((inv) => {
+        const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
+        const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
+        drawRect(ctx, inv.x, inv.y, inv.w, inv.h, color, true);
+        if (this.debugMode) {
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px Orbitron';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(inv.hp + '/' + inv.maxHp, inv.x + inv.w / 2, inv.y + inv.h / 2);
+        }
+      });
+
+      // Draw Bullets
+      ctx.fillStyle = COLORS.bullet;
+      ctx.shadowColor = COLORS.bullet;
+      ctx.shadowBlur = 8;
+      this.bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 12));
+      
+      ctx.fillStyle = COLORS.invader1;
+      ctx.shadowColor = COLORS.invader1;
+      this.invaderBullets.forEach(b => ctx.fillRect(b.x, b.y, 6, 10));
+      ctx.shadowBlur = 0;
+
+      // Draw Rocket Targets
+      const neonRed = '#ff0844';
+      this.rockets.forEach(r => {
+        let tx = r.targetX - CONSTANTS.INVADER_W / 2;
+        let ty = r.targetY - CONSTANTS.INVADER_H / 2;
+        let bestD = Infinity;
+        for (const inv of this.invaders) {
+          const icx = inv.x + inv.w / 2;
+          const icy = inv.y + inv.h / 2;
+          const d = (icx - r.targetX) ** 2 + (icy - r.targetY) ** 2;
+          if (d < bestD) {
+            bestD = d;
+            tx = inv.x; ty = inv.y;
+          }
+        }
+        ctx.strokeStyle = neonRed; ctx.shadowColor = neonRed; ctx.shadowBlur = 18; ctx.lineWidth = 3;
+        ctx.strokeRect(tx, ty, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H);
+        ctx.shadowBlur = 0;
+      });
+
+      // Draw Rockets
+      this.rockets.forEach(r => {
+        const cx = r.x + CONSTANTS.ROCKET_W / 2;
+        const cy = r.y + CONSTANTS.ROCKET_H / 2;
+        const angle = Math.atan2(r.vy, r.vx);
+        ctx.save();
+        ctx.translate(cx, cy); ctx.rotate(angle); ctx.translate(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2);
+        ctx.fillStyle = COLORS.rocket; ctx.shadowColor = COLORS.rocket; ctx.shadowBlur = 15;
+        ctx.fillRect(0, 0, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      });
+
+      // Draw Upgrades
+      const radius = CONSTANTS.UPGRADE_W / 2;
+      this.upgrades.forEach(u => {
+        const c = COLORS[u.type] || COLORS.heal;
+        ctx.shadowColor = c; ctx.shadowBlur = 12; ctx.fillStyle = c;
+        ctx.beginPath(); ctx.arc(u.x + radius, u.y + radius, radius, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      this.particles.draw(ctx);
+      this.player.draw(ctx, this.shieldHits);
+
+      if (this.debugMode) {
+        ctx.font = 'bold 56px Orbitron'; ctx.fillStyle = '#ff0844'; ctx.shadowColor = '#ff0844'; ctx.shadowBlur = 20;
+        ctx.textAlign = 'center'; ctx.fillText('DEBUG MODE', W / 2, 72); ctx.shadowBlur = 0;
+      }
+    }
+
+    gameLoop(now) {
+      if (!this.gameRunning) return;
+      if (this.isPaused) {
+        requestAnimationFrame(this.gameLoop);
         return;
       }
 
-      spacePressed = !spacePressed;
-      btnShoot.classList.toggle('active', spacePressed);
-    });
+      this.updateEntities(now);
+      this.playerShoot(now);
+      this.invaderShoot(now);
+      this.checkCollisions(now);
+      this.particles.update();
+      this.draw();
 
-    handlePointerDown(btnPause, (active) => {
-      if (active && gameRunning && overlay.classList.contains('hidden')) {
-        isPaused = !isPaused;
-        helpScreen.classList.toggle('hidden', !isPaused);
+      if (this.invaders.length === 0) {
+        this.level++;
+        this.ui.updateStats(this);
+        this.bullets = []; this.invaderBullets = []; this.upgrades = []; this.rockets = [];
+        this.initInvaders();
+        this.lastInvaderShoot = now;
+      } else if (this.checkLose()) {
+        this.endGame(false);
+        return;
       }
-    });
+
+      requestAnimationFrame(this.gameLoop);
+    }
+
+    bindInputs() {
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'KeyH' && this.gameRunning && this.ui.els.overlay.classList.contains('hidden')) {
+          this.isPaused = !this.isPaused;
+          this.ui.toggleHelp(this.isPaused);
+          return;
+        }
+        if (this.isPaused) return;
+
+        if (e.code === 'KeyD' && this.gameRunning) {
+          this.debugMode = !this.debugMode;
+          if (this.debugMode) {
+            this.shieldHits = 0; this.shotCount = 1; this.hasRocket = false; this.hasPierce = false;
+            this.ui.updateStats(this);
+          }
+          return;
+        }
+        if (e.code === 'KeyA' && this.gameRunning && this.debugMode) {
+          this.invaders = [];
+          return;
+        }
+
+        if (e.code === 'ArrowLeft') this.player.dir = -1;
+        if (e.code === 'ArrowRight') this.player.dir = 1;
+        if (e.code === 'Space') {
+          e.preventDefault();
+          this.spacePressed = true;
+          this.ui.setShootActive(true);
+          if (!this.gameRunning && !this.ui.els.startScreen.classList.contains('hidden')) {
+            this.startGame();
+          }
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowLeft' && this.player.dir === -1) this.player.dir = 0;
+        if (e.code === 'ArrowRight' && this.player.dir === 1) this.player.dir = 0;
+        if (e.code === 'Space') {
+          this.spacePressed = false;
+          this.ui.setShootActive(false);
+        }
+      });
+
+      if (this.ui.els.restartBtn) {
+        this.ui.els.restartBtn.addEventListener('click', () => {
+          this.startGame();
+        });
+      }
+
+      const handlePointerDown = (btn, action) => {
+        if(!btn) return;
+        btn.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          e.preventDefault();
+          btn.setPointerCapture(e.pointerId);
+          action(true);
+        });
+      };
+
+      const handlePointerUp = (btn, action) => {
+        if(!btn) return;
+        btn.addEventListener('pointerup', (e) => {
+          e.preventDefault();
+          btn.releasePointerCapture(e.pointerId);
+          action(false);
+        });
+        btn.addEventListener('pointercancel', (e) => {
+          e.preventDefault();
+          action(false);
+        });
+      };
+
+      handlePointerDown(this.ui.els.btnLeft, (active) => { if (active) this.player.dir = -1; });
+      handlePointerUp(this.ui.els.btnLeft, (active) => { if (!active && this.player.dir === -1) this.player.dir = 0; });
+
+      handlePointerDown(this.ui.els.btnRight, (active) => { if (active) this.player.dir = 1; });
+      handlePointerUp(this.ui.els.btnRight, (active) => { if (!active && this.player.dir === 1) this.player.dir = 0; });
+
+      handlePointerDown(this.ui.els.btnShoot, () => {
+        if (!this.gameRunning || this.isPaused) {
+          if (!this.ui.els.startScreen.classList.contains('hidden')) {
+            this.startGame();
+          } else if (this.isPaused) {
+            this.isPaused = false;
+            this.ui.toggleHelp(false);
+          }
+          this.spacePressed = true;
+          this.ui.setShootActive(true);
+          return;
+        }
+        this.spacePressed = !this.spacePressed;
+        this.ui.setShootActive(this.spacePressed);
+      });
+
+      handlePointerDown(this.ui.els.btnPause, (active) => {
+        if (active && this.gameRunning && this.ui.els.overlay.classList.contains('hidden')) {
+          this.isPaused = !this.isPaused;
+          this.ui.toggleHelp(this.isPaused);
+        }
+      });
+
+      this.ui.els.startScreen.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        e.preventDefault();
+        if (this.gameRunning && !this.isPaused) return;
+        this.startGame();
+      });
+
+      this.ui.els.helpScreen.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        e.preventDefault();
+        if (this.isPaused) {
+          this.isPaused = false;
+          this.ui.toggleHelp(false);
+        }
+      });
+
+      this.ui.els.overlay.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (!this.ui.els.overlay.classList.contains('hidden')) {
+          if (e.target.id !== 'restart') {
+            e.preventDefault();
+            this.ui.els.startScreen.classList.add('hidden');
+            if (!this.gameRunning) this.startGame();
+          }
+        }
+      });
+    }
   }
 
-  // Tapping the start screen or game over screen to start/restart
-  const startHandler = (e) => {
-    // Only handle primary button (left click) or touch
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    e.preventDefault();
-    if (gameRunning && !isPaused) return; // Prevent double execution
-    startGame();
-  };
-  startScreen.addEventListener('pointerdown', startHandler);
-
-  const closeHelp = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    e.preventDefault();
-    if (isPaused) {
-      isPaused = false;
-      helpScreen.classList.add('hidden');
-    }
-  };
-  helpScreen.addEventListener('pointerdown', closeHelp);
-
-  const gameOverHandler = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    if (!overlay.classList.contains('hidden')) {
-      // Let the restart button handle its own click or touch
-      if (e.target.id !== 'restart') {
-        e.preventDefault();
-        startScreen.classList.add('hidden');
-        if (!gameRunning) startGame();
-      }
-    }
-  };
-  overlay.addEventListener('pointerdown', gameOverHandler);
-
-  updateHighScores();
+  // Init
+  const game = new Game();
 })();
