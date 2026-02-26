@@ -414,6 +414,7 @@
 
       const availableTypes = CONSTANTS.UPGRADE_TYPES.filter(type => {
         if (type === 'shield' && this.hasShieldSystem) return false;
+        if (type === 'double' && this.shotCount >= 4 && this.playerDamage >= 5) return false;
         if (type === 'rocket' && this.hasRocket) return false;
         if (type === 'pierce' && this.hasPierce) return false;
         if (type === 'heal' && this.lives >= 5) return false;
@@ -486,7 +487,7 @@
             }
             if (u.type === 'double') {
               if (this.shotCount < 4) this.shotCount++;
-              else this.playerDamage++;
+              else if (this.playerDamage < 5) this.playerDamage++;
             }
             if (u.type === 'rocket') this.hasRocket = true;
             if (u.type === 'pierce') this.hasPierce = true;

@@ -14,7 +14,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 - **Power-up System:**
   - `Shield`: Grants a temporary shield that absorbs one hit.
-  - `Double`: Increases shot count (up to 4) or damage.
+  - `Double`: Increases shot count (up to 4) or damage (up to 5). Stops dropping when maxed.
   - `Rocket`: Fires homing missiles at enemies.
   - `Pierce`: Shots pass through one enemy if the hit is fatal.
   - `Heal`: Restores 1 life (max 5 lives).
