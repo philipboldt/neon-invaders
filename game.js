@@ -281,9 +281,20 @@
 
     initInvaders() {
       this.invaders = [];
-      const startX = 80;
-      const startY = 80;
+      let startX = 80;
+      let startY = 80;
       const gap = 8;
+      
+      const isBossLevel = this.level % 10 === 0;
+      const isMiniBossLevel = this.level % 10 === 5;
+      
+      const bossW = isBossLevel ? CONSTANTS.INVADER_W * 6 : (isMiniBossLevel ? CONSTANTS.INVADER_W * 4 : 0);
+      const bossH = isBossLevel ? CONSTANTS.INVADER_H * 6 : (isMiniBossLevel ? CONSTANTS.INVADER_H * 4 : 0);
+      
+      if (isBossLevel || isMiniBossLevel) {
+        startY += bossH + gap * 2;
+      }
+
       const rows = Math.min(CONSTANTS.INVADER_ROWS + Math.floor(this.level / 2), 7);
       const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.level / 3), 14);
       const block = Math.floor((this.level - 1) / 4);
@@ -298,6 +309,7 @@
             row === 0 ? COLORS.invader3 :
             row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
           const maxHp = row < rowsWithHigher ? higherHp : baseHp;
+          const scoreValue = color === COLORS.invader3 ? 30 : color === COLORS.invader1 ? 20 : 10;
           this.invaders.push({
             x: startX + col * (CONSTANTS.INVADER_W + gap),
             y: startY + row * (CONSTANTS.INVADER_H + gap),
@@ -306,12 +318,32 @@
             color,
             maxHp,
             hp: maxHp,
+            isBoss: false,
+            scoreValue
           });
         }
       }
       this.invaderDir = 1;
       this.gridX = startX;
       this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
+      
+      if (isBossLevel || isMiniBossLevel) {
+        const bossMaxHp = isBossLevel ? higherHp * 10 : higherHp * 5;
+        const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
+        const bX = startX + this.gridW / 2 - bossW / 2;
+        const bY = 80;
+        this.invaders.push({
+          x: bX,
+          y: bY,
+          w: bossW,
+          h: bossH,
+          color: bossColor,
+          maxHp: bossMaxHp,
+          hp: bossMaxHp,
+          isBoss: true,
+          scoreValue: isBossLevel ? 500 : 250
+        });
+      }
     }
 
     playerShoot(now) {
@@ -495,9 +527,19 @@
           }
           if (bestI >= 0) {
             const inv = this.invaders[bestI];
-            this.score += 15 * (inv.color === COLORS.invader3 ? 3 : inv.color === COLORS.invader1 ? 2 : 1);
-            this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
-            this.spawnUpgrade(inv.x, inv.y);
+            this.score += Math.floor(inv.scoreValue * 1.5);
+            this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
+            
+            if (inv.isBoss) {
+              this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
+              this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
+              this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
+              this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
+              this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
+            } else {
+              this.spawnUpgrade(inv.x, inv.y);
+            }
+            
             this.invaders.splice(bestI, 1);
             this.ui.updateStats(this);
           }
@@ -542,9 +584,19 @@
           if (b.x + 4 > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + 12 > inv.y) {
             inv.hp -= this.playerDamage;
             if (inv.hp <= 0) {
-              this.score += 10 * (this.invaders[i].color === COLORS.invader3 ? 3 : this.invaders[i].color === COLORS.invader1 ? 2 : 1);
-              this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
-              this.spawnUpgrade(inv.x, inv.y);
+              this.score += inv.scoreValue;
+              this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
+              
+              if (inv.isBoss) {
+                this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
+                this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
+                this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
+                this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
+                this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
+              } else {
+                this.spawnUpgrade(inv.x, inv.y);
+              }
+              
               this.invaders.splice(i, 1);
               this.ui.updateStats(this);
 
