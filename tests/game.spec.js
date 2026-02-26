@@ -18,6 +18,68 @@ test.describe('Neon Invaders E2E Tests', () => {
         await expect(startScreen).toHaveText(/Press SPACE or Tap to start/);
     });
 
+    test('Visual: Start Screen should match visual baseline', async ({ page }) => {
+        await page.goto('/');
+        
+        // Wait for fonts to load for consistent rendering
+        await page.evaluate(() => document.fonts.ready);
+        
+        // Ensure the highscores are consistent for the snapshot
+        await page.evaluate(() => {
+            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([9999, 1234, 10]));
+            // Trigger a re-render by calling the globally accessible method if available, 
+            // but since it's in a closure, we'll reload after setting localStorage.
+        });
+        await page.goto('/');
+        await page.evaluate(() => document.fonts.ready);
+
+        // Hide the "Press SPACE" blink to avoid flaky snapshots
+        await page.addStyleTag({ content: '.blink { animation: none !important; opacity: 1 !important; }' });
+
+        const startScreen = page.locator('#start-screen');
+        await expect(startScreen).toHaveScreenshot('start-screen.png', {
+            mask: [page.locator('.blink')] // Just in case, mask the blinking text
+        });
+    });
+
+    test('Performance: Game should maintain high FPS during play', async ({ page }) => {
+        if (page.viewportSize()?.width < 768) test.skip(); // Desktop only for baseline
+        
+        await page.goto('/');
+        const client = await page.context().newCDPSession(page);
+        await client.send('Performance.enable');
+
+        // Start game
+        await page.keyboard.press('Space');
+        
+        // Simulate some play time
+        await page.keyboard.down('ArrowLeft');
+        await page.waitForTimeout(2000);
+        await page.keyboard.up('ArrowLeft');
+
+        // Get metrics
+        const metrics = await client.send('Performance.getMetrics');
+        const frames = metrics.metrics.find(m => m.name === 'FramesPerSecond');
+        
+        // Note: Playwright's CDP metrics for FPS can be tricky depending on the environment.
+        // A more reliable way in CI is to measure the time spent in the game loop.
+        const frameTime = await page.evaluate(async () => {
+            return new Promise(resolve => {
+                let frames = 0;
+                const start = performance.now();
+                function count() {
+                    frames++;
+                    if (frames < 60) requestAnimationFrame(count);
+                    else resolve((performance.now() - start) / 60);
+                }
+                requestAnimationFrame(count);
+            });
+        });
+
+        // 60 FPS = 16.67ms per frame. 55 FPS = 18.18ms.
+        expect(frameTime).toBeLessThan(18.2);
+    });
+
     test('desktop: can start the game and shoot using keyboard', async ({ page }) => {
         // Only run this test on desktop browsers where keyboard is primary
         if (page.viewportSize()?.width < 768) test.skip();
