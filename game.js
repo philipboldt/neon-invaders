@@ -310,6 +310,8 @@
         }
       }
       this.invaderDir = 1;
+      this.gridX = startX;
+      this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
     }
 
     playerShoot(now) {
@@ -382,15 +384,14 @@
         const margin = 40;
         const moveX = this.invaderDir * speed;
 
-        for (const inv of this.invaders) {
-          if (this.invaderDir > 0 && inv.x + inv.w + moveX >= W - margin) moveDown = true;
-          if (this.invaderDir < 0 && inv.x + moveX <= margin) moveDown = true;
-        }
+        if (this.invaderDir > 0 && this.gridX + this.gridW + moveX >= W - margin) moveDown = true;
+        if (this.invaderDir < 0 && this.gridX + moveX <= margin) moveDown = true;
 
         if (moveDown) {
           this.invaderDir *= -1;
           this.invaders.forEach(inv => (inv.y += 20));
         } else {
+          this.gridX += moveX;
           this.invaders.forEach(inv => (inv.x += moveX));
         }
       }

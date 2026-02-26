@@ -37,6 +37,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Gameplay Fix (Invader Movement):** Modified the invader swarm to move based on the logical width of the original grid rather than individual surviving invaders. This prevents the swarm from traveling further to the edges when columns are destroyed, fixing a potential safe-zone exploit.
 - **Architecture Refactoring:** Rewrote the main `game.js` file into modular ES6 classes (`Game`, `Player`, `ParticleSystem`, `UIManager`) for better maintainability and cleaner structure.
 - **Highscore List:** Added a persistent top 3 highscore list that saves to `localStorage` and displays on both the Start and Game Over screens.
 - **HUD Layout Fix:** Addressed an issue where extremely large scores caused the HUD elements to wrap. Fixed via CSS Grid and text-truncation.
