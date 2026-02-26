@@ -251,11 +251,13 @@
       this.invaders = [];
       this.bullets = [];
       this.invaderBullets = [];
+      this.bossMissiles = [];
       this.upgrades = [];
       this.rockets = [];
       
       this.lastPlayerShot = 0;
       this.lastInvaderShoot = 0;
+      this.lastBossShoot = 0;
       this.lastRocketTime = 0;
       this.invaderDir = 1;
       
@@ -373,6 +375,40 @@
       });
     }
 
+    bossShoot(now) {
+      if (now - this.lastBossShoot < 3000) return;
+      const bosses = this.invaders.filter(inv => inv.isBoss);
+      if (bosses.length === 0) return;
+      
+      this.lastBossShoot = now;
+      bosses.forEach(boss => {
+        const startX = boss.x + boss.w / 2;
+        const startY = boss.y + boss.h;
+        
+        // Calculate vector towards player
+        const playerCx = this.player.x + this.player.w / 2;
+        const playerCy = this.player.y + this.player.h / 2;
+        
+        const dx = playerCx - startX;
+        const dy = playerCy - startY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        const speed = 5; // Fixed missile speed
+        const vx = (dx / dist) * speed;
+        const vy = (dy / dist) * speed;
+        
+        this.bossMissiles.push({
+          x: startX - 4, // 8px width
+          y: startY,
+          w: 8,
+          h: 16,
+          vx,
+          vy,
+          angle: Math.atan2(vy, vx)
+        });
+      });
+    }
+
     spawnUpgrade(x, y) {
       if (Math.random() >= CONSTANTS.DROP_CHANCE) return;
 
@@ -407,6 +443,11 @@
       this.invaderBullets = this.invaderBullets.filter(b => {
         b.y += CONSTANTS.INVADER_BULLET_SPEED;
         return b.y < H + 20;
+      });
+      this.bossMissiles = this.bossMissiles.filter(m => {
+        m.x += m.vx;
+        m.y += m.vy;
+        return m.y < H + 50 && m.x > -50 && m.x < W + 50;
       });
 
       // Update Invaders
@@ -627,6 +668,23 @@
         }
         return true;
       });
+
+      this.bossMissiles = this.bossMissiles.filter(m => {
+        if (m.x + m.w > this.player.x && m.x < this.player.x + this.player.w && m.y + m.h > this.player.y && m.y < this.player.y + this.player.h) {
+          if (!this.debugMode) {
+            this.particles.spawnExplosion(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, COLORS.player, Math.PI, Math.PI);
+            if (this.shieldHits > 0) {
+              this.shieldHits = 0;
+              this.lastShieldLostTime = now;
+            } else {
+              this.lives--;
+            }
+            this.ui.updateStats(this);
+          }
+          return false;
+        }
+        return true;
+      });
     }
 
     checkLose() {
@@ -663,6 +721,19 @@
       ctx.fillStyle = COLORS.invader1;
       ctx.shadowColor = COLORS.invader1;
       this.invaderBullets.forEach(b => ctx.fillRect(b.x, b.y, 6, 10));
+      
+      // Draw Boss Missiles
+      ctx.fillStyle = '#ff0844'; // Use boss color for its missiles
+      ctx.shadowColor = '#ff0844';
+      ctx.shadowBlur = 12;
+      this.bossMissiles.forEach(m => {
+        ctx.save();
+        ctx.translate(m.x + m.w / 2, m.y + m.h / 2);
+        // Add PI/2 because default draw expects straight down
+        ctx.rotate(m.angle - Math.PI / 2);
+        ctx.fillRect(-m.w / 2, -m.h / 2, m.w, m.h);
+        ctx.restore();
+      });
       ctx.shadowBlur = 0;
 
       // Draw Rocket Targets
@@ -725,6 +796,7 @@
       this.updateEntities(now);
       this.playerShoot(now);
       this.invaderShoot(now);
+      this.bossShoot(now);
       this.checkCollisions(now);
       this.particles.update();
       this.draw();
@@ -732,9 +804,10 @@
       if (this.invaders.length === 0) {
         this.level++;
         this.ui.updateStats(this);
-        this.bullets = []; this.invaderBullets = []; this.upgrades = []; this.rockets = [];
+        this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.upgrades = []; this.rockets = [];
         this.initInvaders();
         this.lastInvaderShoot = now;
+        this.lastBossShoot = now;
       } else if (this.checkLose()) {
         this.endGame(false);
       }
