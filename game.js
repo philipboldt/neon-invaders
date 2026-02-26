@@ -136,14 +136,19 @@
       this.particles = [];
     }
 
-    spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2) {
-      for (let n = 0; n < CONSTANTS.EXPLOSION_PARTICLES; n++) {
-        const angle = angleStart + (angleRange * n) / CONSTANTS.EXPLOSION_PARTICLES + (Math.random() - 0.5) * (angleRange / CONSTANTS.EXPLOSION_PARTICLES);
-        const speed = CONSTANTS.PARTICLE_SPEED * (0.6 + Math.random() * 0.8);
-        const maxSize = CONSTANTS.PARTICLE_MAX_SIZE * (0.4 + Math.random() * 0.6);
+    spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
+      const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
+      for (let n = 0; n < particleCount; n++) {
+        const angle = angleStart + (angleRange * n) / particleCount + (Math.random() - 0.5) * (angleRange / particleCount);
+        const speedBase = radius > 0 ? radius * 0.15 : CONSTANTS.PARTICLE_SPEED;
+        const speed = speedBase * (0.6 + Math.random() * 0.8);
+        const sizeBase = radius > 0 ? CONSTANTS.PARTICLE_MAX_SIZE * 2 : CONSTANTS.PARTICLE_MAX_SIZE;
+        const maxSize = sizeBase * (0.4 + Math.random() * 0.6);
+        const lifeBase = radius > 0 ? CONSTANTS.PARTICLE_LIFE * 1.5 : CONSTANTS.PARTICLE_LIFE;
+        
         this.particles.push({
           x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-          size: maxSize, maxSize, life: 0, maxLife: CONSTANTS.PARTICLE_LIFE, color,
+          size: maxSize, maxSize, life: 0, maxLife: lifeBase, color,
         });
       }
     }
@@ -244,7 +249,7 @@
       this.shieldHits = 0;
       this.hasShieldSystem = false;
       this.lastShieldLostTime = -1;
-      this.hasRocket = false;
+      this.rocketLevel = 0;
       this.hasPierce = false;
       this.spacePressed = false;
       
@@ -415,7 +420,7 @@
       const availableTypes = CONSTANTS.UPGRADE_TYPES.filter(type => {
         if (type === 'shield' && this.hasShieldSystem) return false;
         if (type === 'double' && this.shotCount >= 4 && this.playerDamage >= 5) return false;
-        if (type === 'rocket' && this.hasRocket) return false;
+        if (type === 'rocket' && this.rocketLevel >= 5) return false;
         if (type === 'pierce' && this.hasPierce) return false;
         if (type === 'heal' && this.lives >= 5) return false;
         return true;
@@ -489,7 +494,7 @@
               if (this.shotCount < 4) this.shotCount++;
               else if (this.playerDamage < 5) this.playerDamage++;
             }
-            if (u.type === 'rocket') this.hasRocket = true;
+            if (u.type === 'rocket' && this.rocketLevel < 5) this.rocketLevel++;
             if (u.type === 'pierce') this.hasPierce = true;
             if (u.type === 'heal' && this.lives < 5) this.lives++;
             this.ui.updateStats(this);
@@ -519,7 +524,7 @@
 
     updateRockets(now) {
       const currentLowest = this.getLowestRowInvaders();
-      if (this.hasRocket && currentLowest.length > 0 && now - this.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
+      if (this.rocketLevel > 0 && currentLowest.length > 0 && now - this.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
         this.lastRocketTime = now;
         const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
         this.rockets.push({
@@ -556,35 +561,40 @@
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < CONSTANTS.ROCKET_HIT_RADIUS) {
-          let bestI = -1;
-          let bestD = Infinity;
-          for (let i = 0; i < this.invaders.length; i++) {
+          const blastRadius = this.rocketLevel * CONSTANTS.INVADER_W;
+          
+          // Huge visual explosion
+          this.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius);
+          this.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.5);
+
+          // Find and damage all enemies in blast radius
+          for (let i = this.invaders.length - 1; i >= 0; i--) {
             const inv = this.invaders[i];
-            if (!currentLowest.includes(inv)) continue;
-            const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
-            if (d < bestD) {
-              bestD = d;
-              bestI = i;
+            const invCx = inv.x + inv.w / 2;
+            const invCy = inv.y + inv.h / 2;
+            const distToInv = Math.sqrt((invCx - cx) ** 2 + (invCy - cy) ** 2);
+            
+            if (distToInv <= blastRadius + Math.max(inv.w, inv.h) / 2) {
+              inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
+              if (inv.hp <= 0) {
+                this.score += Math.floor(inv.scoreValue * 1.5);
+                this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2);
+                
+                if (inv.isBoss) {
+                  this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
+                  this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
+                  this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
+                  this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
+                  this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
+                } else {
+                  this.spawnUpgrade(inv.x, inv.y);
+                }
+                
+                this.invaders.splice(i, 1);
+              }
             }
           }
-          if (bestI >= 0) {
-            const inv = this.invaders[bestI];
-            this.score += Math.floor(inv.scoreValue * 1.5);
-            this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
-            
-            if (inv.isBoss) {
-              this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
-              this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
-              this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
-              this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
-              this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
-            } else {
-              this.spawnUpgrade(inv.x, inv.y);
-            }
-            
-            this.invaders.splice(bestI, 1);
-            this.ui.updateStats(this);
-          }
+          this.ui.updateStats(this);
           return false;
         }
 
@@ -826,7 +836,7 @@
         if (e.code === 'KeyD' && this.gameRunning) {
           this.debugMode = !this.debugMode;
           if (this.debugMode) {
-            this.shieldHits = 0; this.shotCount = 1; this.hasRocket = false; this.hasPierce = false;
+            this.shieldHits = 0; this.shotCount = 1; this.rocketLevel = 0; this.hasPierce = false;
             this.ui.updateStats(this);
           }
           return;
