@@ -50,7 +50,7 @@ body::before {
 
 .hud {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   width: 100%;
   margin: 0 auto 0.5rem;
   font-size: 0.85rem;
@@ -79,6 +79,11 @@ body::before {
 .hud .damage strong {
   color: #00f5ff;
   text-shadow: 0 0 8px #00f5ff;
+}
+
+.hud .rocket strong {
+  color: #ff6600;
+  text-shadow: 0 0 8px #ff6600;
 }
 
 #game {

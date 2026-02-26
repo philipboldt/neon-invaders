@@ -64,7 +64,8 @@
         btnLeft: document.getElementById('btn-left'),
         btnRight: document.getElementById('btn-right'),
         btnPause: document.getElementById('btn-pause'),
-        restartBtn: document.getElementById('restart')
+        restartBtn: document.getElementById('restart'),
+        rocket: document.getElementById('rocket')
       };
       this.updateHighScores();
     }
@@ -76,6 +77,7 @@
       this.els.damage.textContent = gameState.playerDamage;
       this.els.shield.textContent = gameState.shieldHits > 0 ? 'activated' : (gameState.hasShieldSystem ? 'deactivated' : 'no shield');
       this.els.pierce.textContent = gameState.hasPierce ? 'active' : 'none';
+      this.els.rocket.textContent = gameState.rocketLevel > 0 ? `Level ${gameState.rocketLevel}` : 'none';
     }
 
     setShootActive(isActive) {
