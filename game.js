@@ -411,7 +411,7 @@
 
       // Update Invaders
       if (this.invaders.length > 0) {
-        const speed = (40 + this.level * 15) / 60;
+        const speed = (40 + this.level * 5) / 60;
         let moveDown = false;
         const margin = 40;
         const moveX = this.invaderDir * speed;
