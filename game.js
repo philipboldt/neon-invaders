@@ -254,6 +254,7 @@
       this.rocketLevel = 0;
       this.hasPierce = false;
       this.spacePressed = false;
+      this.shake = 0;
       
       this.invaders = [];
       this.bullets = [];
@@ -443,6 +444,11 @@
     }
 
     updateEntities(now) {
+      if (this.shake > 0) {
+        this.shake *= 0.9;
+        if (this.shake < 0.1) this.shake = 0;
+      }
+
       this.player.update();
 
       // Update Bullets
@@ -566,6 +572,7 @@
 
         if (dist < CONSTANTS.ROCKET_HIT_RADIUS) {
           const blastRadius = this.rocketLevel * CONSTANTS.INVADER_W;
+          this.shake = 10;
           
           // Huge visual explosion
           this.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius);
@@ -585,6 +592,7 @@
                 this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2);
                 
                 if (inv.isBoss) {
+                  this.shake = 40;
                   this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
                   this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
                   this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
@@ -639,11 +647,13 @@
           const inv = this.invaders[i];
           if (b.x + 4 > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + 12 > inv.y) {
             inv.hp -= this.playerDamage;
+            if (inv.isBoss) this.shake = Math.min(this.shake + 1, 5);
             if (inv.hp <= 0) {
               this.score += inv.scoreValue;
               this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
               
               if (inv.isBoss) {
+                this.shake = 30;
                 this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
                 this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
                 this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
@@ -670,6 +680,7 @@
       this.invaderBullets = this.invaderBullets.filter(b => {
         if (b.x + 6 > this.player.x && b.x < this.player.x + this.player.w && b.y + 10 > this.player.y && b.y < this.player.y + this.player.h) {
           if (!this.debugMode) {
+            this.shake = 15;
             this.particles.spawnExplosion(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, COLORS.player, Math.PI, Math.PI);
             if (this.shieldHits > 0) {
               this.shieldHits = 0;
@@ -687,6 +698,7 @@
       this.bossMissiles = this.bossMissiles.filter(m => {
         if (m.x + m.w > this.player.x && m.x < this.player.x + this.player.w && m.y + m.h > this.player.y && m.y < this.player.y + this.player.h) {
           if (!this.debugMode) {
+            this.shake = 15;
             this.particles.spawnExplosion(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, COLORS.player, Math.PI, Math.PI);
             if (this.shieldHits > 0) {
               this.shieldHits = 0;
@@ -710,6 +722,13 @@
     }
 
     draw() {
+      ctx.save();
+      if (this.shake > 0) {
+        const sx = (Math.random() - 0.5) * this.shake * 2;
+        const sy = (Math.random() - 0.5) * this.shake * 2;
+        ctx.translate(sx, sy);
+      }
+      
       ctx.fillStyle = '#0d0d14';
       ctx.fillRect(0, 0, W, H);
 
@@ -800,6 +819,8 @@
         ctx.font = 'bold 56px Orbitron'; ctx.fillStyle = '#ff0844'; ctx.shadowColor = '#ff0844'; ctx.shadowBlur = 20;
         ctx.textAlign = 'center'; ctx.fillText('DEBUG MODE', W / 2, 72); ctx.shadowBlur = 0;
       }
+      
+      ctx.restore();
     }
 
     gameLoop(now) {

@@ -39,6 +39,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
 - **Boss Mechanics:** Bosses and Mini-Bosses now fire unguided, high-speed, targeted missiles directly at the player every 3 seconds, increasing their threat level significantly.
 - **Boss Fights:** Added massive Boss and Mini-Boss enemies. Mini-Bosses spawn on levels ending in 5 with 5x health and 4x size. True Bosses spawn on levels ending in 0 with 10x health, 6x size, and guarantee multiple power-up drops upon defeat. They spawn above the regular alien formation and act as tough damage-sponges.
 - **Gameplay Fix (Invader Movement):** Modified the invader swarm to move based on the logical width of the original grid rather than individual surviving invaders. This prevents the swarm from traveling further to the edges when columns are destroyed, fixing a potential safe-zone exploit.
