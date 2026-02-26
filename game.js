@@ -665,11 +665,10 @@
     }
 
     gameLoop(now) {
+      requestAnimationFrame(this.gameLoop);
+
       if (!this.gameRunning) return;
-      if (this.isPaused) {
-        requestAnimationFrame(this.gameLoop);
-        return;
-      }
+      if (this.isPaused) return;
 
       this.updateEntities(now);
       this.playerShoot(now);
@@ -686,10 +685,7 @@
         this.lastInvaderShoot = now;
       } else if (this.checkLose()) {
         this.endGame(false);
-        return;
       }
-
-      requestAnimationFrame(this.gameLoop);
     }
 
     bindInputs() {
