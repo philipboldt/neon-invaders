@@ -47,6 +47,26 @@
     return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
   }
 
+  class SpriteManager {
+    constructor() {
+      this.sprites = {};
+    }
+
+    preRender(key, w, h, drawFn) {
+      const canvas = document.createElement('canvas');
+      canvas.width = w + 40; // Extra space for glow
+      canvas.height = h + 40;
+      const ctx = canvas.getContext('2d');
+      ctx.translate(20, 20); // Center the drawing
+      drawFn(ctx);
+      this.sprites[key] = canvas;
+    }
+
+    get(key) {
+      return this.sprites[key];
+    }
+  }
+
   class UIManager {
     constructor() {
       this.els = {
@@ -135,12 +155,27 @@
 
   class ParticleSystem {
     constructor() {
-      this.particles = [];
+      this.maxParticles = 1024;
+      this.pool = [];
+      for (let i = 0; i < this.maxParticles; i++) {
+        this.pool.push({
+          active: false,
+          x: 0, y: 0, vx: 0, vy: 0,
+          size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff'
+        });
+      }
+    }
+
+    getFreeParticle() {
+      return this.pool.find(p => !p.active);
     }
 
     spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
       const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
       for (let n = 0; n < particleCount; n++) {
+        const p = this.getFreeParticle();
+        if (!p) break;
+
         const angle = angleStart + (angleRange * n) / particleCount + (Math.random() - 0.5) * (angleRange / particleCount);
         const speedBase = radius > 0 ? radius * 0.15 : CONSTANTS.PARTICLE_SPEED;
         const speed = speedBase * (0.6 + Math.random() * 0.8);
@@ -148,44 +183,64 @@
         const maxSize = sizeBase * (0.4 + Math.random() * 0.6);
         const lifeBase = radius > 0 ? CONSTANTS.PARTICLE_LIFE * 1.5 : CONSTANTS.PARTICLE_LIFE;
         
-        this.particles.push({
-          x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-          size: maxSize, maxSize, life: 0, maxLife: lifeBase, color,
-        });
+        p.active = true;
+        p.x = cx; p.y = cy; 
+        p.vx = Math.cos(angle) * speed; 
+        p.vy = Math.sin(angle) * speed;
+        p.size = maxSize; p.maxSize = maxSize; 
+        p.life = 0; p.maxLife = lifeBase; 
+        p.color = color;
       }
     }
 
     spawnRocketTrail(cx, cy, vx, vy) {
+      const p = this.getFreeParticle();
+      if (!p) return;
+
       const speed = Math.sqrt(vx * vx + vy * vy) || 1;
       const backX = (-vx / speed) * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
       const backY = (-vy / speed) * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
-      this.particles.push({
-        x: cx, y: cy, vx: backX + (Math.random() - 0.5) * 1.5, vy: backY + (Math.random() - 0.5) * 1.5,
-        size: CONSTANTS.ROCKET_TRAIL_SIZE, maxSize: CONSTANTS.ROCKET_TRAIL_SIZE * (0.6 + Math.random() * 0.4),
-        life: 0, maxLife: CONSTANTS.ROCKET_TRAIL_LIFE, color: COLORS.rocket,
-      });
+      
+      p.active = true;
+      p.x = cx; p.y = cy;
+      p.vx = backX + (Math.random() - 0.5) * 1.5;
+      p.vy = backY + (Math.random() - 0.5) * 1.5;
+      p.size = CONSTANTS.ROCKET_TRAIL_SIZE;
+      p.maxSize = CONSTANTS.ROCKET_TRAIL_SIZE * (0.6 + Math.random() * 0.4);
+      p.life = 0;
+      p.maxLife = CONSTANTS.ROCKET_TRAIL_LIFE;
+      p.color = COLORS.rocket;
     }
 
     update() {
-      this.particles = this.particles.filter((p) => {
+      for (let i = 0; i < this.maxParticles; i++) {
+        const p = this.pool[i];
+        if (!p.active) continue;
+        
         p.x += p.vx;
         p.y += p.vy;
         p.life++;
-        return p.life < p.maxLife;
-      });
+        if (p.life >= p.maxLife) {
+          p.active = false;
+        }
+      }
     }
 
     draw(ctx) {
-      this.particles.forEach((p) => {
+      ctx.shadowBlur = 8;
+      for (let i = 0; i < this.maxParticles; i++) {
+        const p = this.pool[i];
+        if (!p.active) continue;
+
         const t = p.life / p.maxLife;
         const size = Math.max(0, p.maxSize * (1 - t));
-        if (size <= 0) return;
+        if (size <= 0) continue;
+        
         ctx.fillStyle = p.color;
         ctx.shadowColor = p.color;
-        ctx.shadowBlur = 8;
         ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
-        ctx.shadowBlur = 0;
-      });
+      }
+      ctx.shadowBlur = 0;
     }
   }
 
@@ -231,12 +286,23 @@
       this.ui = new UIManager();
       this.particles = new ParticleSystem();
       this.player = new Player();
+      this.sprites = new SpriteManager();
+      this.initSprites();
       
       this.resetState();
       this.bindInputs();
       
       this.gameLoop = this.gameLoop.bind(this);
       requestAnimationFrame(this.gameLoop);
+    }
+
+    initSprites() {
+      // Pre-render invaders
+      [COLORS.invader1, COLORS.invader2, COLORS.invader3, '#ff0844'].forEach(color => {
+        this.sprites.preRender(`inv_${color}`, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, (ctx) => {
+          drawRect(ctx, -CONSTANTS.INVADER_W/2, -CONSTANTS.INVADER_H/2, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
+        });
+      });
     }
 
     resetState() {
@@ -734,9 +800,18 @@
 
       // Draw Invaders
       this.invaders.forEach((inv) => {
-        const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
-        const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
-        drawRect(ctx, inv.x, inv.y, inv.w, inv.h, color, true);
+        if (!inv.isBoss) {
+          const sprite = this.sprites.get(`inv_${inv.color}`);
+          if (sprite) {
+            ctx.drawImage(sprite, inv.x - 20, inv.y - 20);
+          }
+        } else {
+          // Bosses are still rendered manually for now
+          const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
+          const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
+          drawRect(ctx, inv.x, inv.y, inv.w, inv.h, color, true);
+        }
+
         if (this.debugMode) {
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 14px Orbitron';

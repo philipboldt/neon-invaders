@@ -30,15 +30,21 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
   - **Health Drops:** 'Heal' power-ups only drop if player has fewer than 5 lives.
   - **Scoring:** Points awarded for destroying enemies.
+- **Performance Optimizations:**
+  - **Sprite Pre-rendering:** Invaders are pre-rendered to offscreen canvases to minimize expensive real-time shadow and glow calculations.
+  - **Object Pooling:** Particle system utilizes a pre-allocated pool (1024 particles) to eliminate Garbage Collection spikes and ensure smooth 60 FPS gameplay even during heavy combat.
+  - **Draw Batching:** Optimized canvas state management to reduce overhead during high-entity frames.
 
 ## Technical Stack
 - **Language:** JavaScript (ES6+)
-- **Rendering:** HTML5 Canvas API (Responsive scaling)
+- **Rendering:** HTML5 Canvas API with Offscreen Buffering
+- **Optimization:** Object Pooling (1024 entities) & Sprite Caching
 - **Styling:** CSS3 (Neon aesthetic)
 - **Input:** Keyboard & Modern Pointer Events (Mobile-friendly)
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Performance Overhaul:** Implemented a `SpriteManager` for pre-rendering invader assets and a high-performance `ParticleSystem` with object pooling (1024 entities). This significantly reduces CPU/GPU overhead and eliminates micro-stuttering on lower-end devices.
 - **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
 - **Boss Mechanics:** Bosses and Mini-Bosses now fire unguided, high-speed, targeted missiles directly at the player every 3 seconds, increasing their threat level significantly.
 - **Boss Fights:** Added massive Boss and Mini-Boss enemies. Mini-Bosses spawn on levels ending in 5 with 5x health and 4x size. True Bosses spawn on levels ending in 0 with 10x health, 6x size, and guarantee multiple power-up drops upon defeat. They spawn above the regular alien formation and act as tough damage-sponges.
