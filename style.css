@@ -70,15 +70,34 @@ body::before {
   text-shadow: 0 0 8px #39ff14;
 }
 
+.hud .score strong {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
 .hud .level strong {
   color: #ff6600;
   text-shadow: 0 0 8px #ff6600;
 }
 
-.hud .shield strong,
-.hud .damage strong {
+.hud .lives strong {
+  color: #ff3366;
+  text-shadow: 0 0 8px #ff3366;
+}
+
+.hud .shield strong {
   color: #00f5ff;
   text-shadow: 0 0 8px #00f5ff;
+}
+
+.hud .pierce strong {
+  color: #ffff00;
+  text-shadow: 0 0 8px #ffff00;
+}
+
+.hud .damage strong {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
 }
 
 .hud .rocket strong {
