@@ -300,7 +300,7 @@
       // Pre-render invaders
       [COLORS.invader1, COLORS.invader2, COLORS.invader3, '#ff0844'].forEach(color => {
         this.sprites.preRender(`inv_${color}`, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, (ctx) => {
-          drawRect(ctx, -CONSTANTS.INVADER_W/2, -CONSTANTS.INVADER_H/2, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
+          drawRect(ctx, 0, 0, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
         });
       });
     }
@@ -864,7 +864,7 @@
         
         if (bestInv) {
           ctx.strokeStyle = neonRed; ctx.shadowColor = neonRed; ctx.shadowBlur = 18; ctx.lineWidth = 3;
-          ctx.strokeRect(bestInv.x, bestInv.y, bestInv.w, bestInv.h);
+          ctx.strokeRect(Math.floor(bestInv.x), Math.floor(bestInv.y), Math.floor(bestInv.w), Math.floor(bestInv.h));
           ctx.shadowBlur = 0;
         }
       });
