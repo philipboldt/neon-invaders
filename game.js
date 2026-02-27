@@ -401,7 +401,7 @@
       this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
       
       if (isBossLevel || isMiniBossLevel) {
-        const bossMaxHp = isBossLevel ? actualMaxHp * 10 : actualMaxHp * 5;
+        const bossMaxHp = isBossLevel ? actualMaxHp * 100 : actualMaxHp * 50;
         const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
         const bX = startX + this.gridW / 2 - bossW / 2;
         const bY = startY - bossH - gap * 2;
