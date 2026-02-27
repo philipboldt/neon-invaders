@@ -850,8 +850,7 @@
       // Draw Rocket Targets
       const neonRed = '#ff0844';
       this.rockets.forEach(r => {
-        let tx = r.targetX - CONSTANTS.INVADER_W / 2;
-        let ty = r.targetY - CONSTANTS.INVADER_H / 2;
+        let bestInv = null;
         let bestD = Infinity;
         for (const inv of this.invaders) {
           const icx = inv.x + inv.w / 2;
@@ -859,12 +858,15 @@
           const d = (icx - r.targetX) ** 2 + (icy - r.targetY) ** 2;
           if (d < bestD) {
             bestD = d;
-            tx = inv.x; ty = inv.y;
+            bestInv = inv;
           }
         }
-        ctx.strokeStyle = neonRed; ctx.shadowColor = neonRed; ctx.shadowBlur = 18; ctx.lineWidth = 3;
-        ctx.strokeRect(tx, ty, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H);
-        ctx.shadowBlur = 0;
+        
+        if (bestInv) {
+          ctx.strokeStyle = neonRed; ctx.shadowColor = neonRed; ctx.shadowBlur = 18; ctx.lineWidth = 3;
+          ctx.strokeRect(bestInv.x, bestInv.y, bestInv.w, bestInv.h);
+          ctx.shadowBlur = 0;
+        }
       });
 
       // Draw Rockets

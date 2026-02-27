@@ -57,6 +57,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **HUD Layout Fix:** Addressed an issue where extremely large scores caused the HUD elements to wrap. Fixed via CSS Grid and text-truncation.
 - **Mobile Auto-Fire Toggle:** Refactored the Mobile Shoot button to toggle auto-fire on and off with single taps. Added visual `.active` feedback so players know when auto-fire is locked on.
 - **Mobile Layout Fix:** Swapped position of right arrow and pause buttons for improved reachability.
+- **Bug Fix (Rocket Target):** Corrected the positioning and scaling of the homing rocket target indicator, ensuring it properly highlights enemies of all sizes (including Bosses) on both desktop and mobile.
 - **Mobile Support:** Added responsive canvas scaling and on-screen touch controls.
 - **Pointer Events:** Migrated UI interaction to `pointerdown`/`pointerup` for seamless Android Chrome & iOS Safari compatibility.
 - **Testing:** Integrated Playwright framework with E2E tests for desktop keyboard and mobile touch interactions, including highscore and layout shift tests.
