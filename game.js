@@ -401,7 +401,7 @@
       this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
       
       if (isBossLevel || isMiniBossLevel) {
-        const bossMaxHp = isBossLevel ? actualMaxHp * 100 : actualMaxHp * 50;
+        const bossMaxHp = isBossLevel ? actualMaxHp * 500 : actualMaxHp * 250;
         const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
         const bX = startX + this.gridW / 2 - bossW / 2;
         const bY = startY - bossH - gap * 2;
@@ -652,7 +652,9 @@
             const distToInv = Math.sqrt((invCx - cx) ** 2 + (invCy - cy) ** 2);
             
             if (distToInv <= blastRadius + Math.max(inv.w, inv.h) / 2) {
-              inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
+              if (!inv.isBoss) {
+                inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
+              }
               if (inv.hp <= 0) {
                 this.score += Math.floor(inv.scoreValue * 1.5);
                 this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2);

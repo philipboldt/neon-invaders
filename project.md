@@ -7,8 +7,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Core Gameplay:**
   - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
 - **Wave-based invader spawning:** Increasing difficulty, with special Boss encounters.
-  - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 50x health and 4x size.
-  - **Bosses:** Spawn at levels ending in 0 (e.g., 10, 20), featuring 100x health, 6x size, unique color, and massive point drops.
+  - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 250x health and 4x size. Immune to rockets.
+  - **Bosses:** Spawn at levels ending in 0 (e.g., 10, 20), featuring 500x health, 6x size, unique color, and massive point drops. Immune to rockets.
   - Enemy types with different colors and hit points.
   - Collision detection for bullets, enemies, and player.
 
@@ -46,9 +46,11 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 ## Recent Changes
 - **Performance Overhaul:** Implemented a `SpriteManager` for pre-rendering invader assets and a high-performance `ParticleSystem` with object pooling (1024 entities). This significantly reduces CPU/GPU overhead and eliminates micro-stuttering on lower-end devices.
 - **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
-- **Boss Balance:** Increased Boss and Mini-Boss health by 10x (Bosses now have 100x base health, Mini-Bosses 50x) to make them significantly more challenging.
+- **Boss Balance:**
+  - Bosses and Mini-Bosses are now **immune to Player Rockets**, requiring direct bullet fire to defeat.
+  - Increased Boss and Mini-Boss health significantly (Bosses now have 500x base health, Mini-Bosses 250x).
 - **Boss Mechanics:** Bosses and Mini-Bosses now fire unguided, high-speed, targeted missiles directly at the player every 3 seconds, increasing their threat level significantly.
-- **Boss Fights:** Added massive Boss and Mini-Boss enemies. Mini-Bosses spawn on levels ending in 5 with 5x health and 4x size. True Bosses spawn on levels ending in 0 with 10x health, 6x size, and guarantee multiple power-up drops upon defeat. They spawn above the regular alien formation and act as tough damage-sponges.
+- **Boss Fights:** Added massive Boss and Mini-Boss enemies. Mini-Bosses spawn on levels ending in 5 with 250x health and 4x size. True Bosses spawn on levels ending in 0 with 500x health, 6x size, and guarantee multiple power-up drops upon defeat. They spawn above the regular alien formation and act as tough damage-sponges.
 - **Gameplay Fix (Invader Movement):** Modified the invader swarm to move based on the logical width of the original grid rather than individual surviving invaders. This prevents the swarm from traveling further to the edges when columns are destroyed, fixing a potential safe-zone exploit.
 - **Architecture Refactoring:** Rewrote the main `game.js` file into modular ES6 classes (`Game`, `Player`, `ParticleSystem`, `UIManager`) for better maintainability and cleaner structure.
 - **Highscore List:** Added a persistent top 3 highscore list that saves to `localStorage` and displays on both the Start and Game Over screens.
