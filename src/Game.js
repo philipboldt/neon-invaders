@@ -427,6 +427,7 @@ export class Game {
         return false;
       }
 
+      const dist = Math.sqrt(distSq);
       if (dist > 0 && r.distanceTraveled >= CONSTANTS.ROCKET_VERTICAL_PHASE) {
         const desiredDx = dx / dist;
         const desiredDy = dy / dist;

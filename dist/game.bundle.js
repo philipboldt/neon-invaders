@@ -514,10 +514,10 @@
         const playerCy = this.player.y + this.player.h / 2;
         const dx = playerCx - startX;
         const dy = playerCy - startY;
-        const dist2 = Math.sqrt(dx * dx + dy * dy);
+        const dist = Math.sqrt(dx * dx + dy * dy);
         const speed = 5;
-        const vx = dx / dist2 * speed;
-        const vy = dy / dist2 * speed;
+        const vx = dx / dist * speed;
+        const vy = dy / dist * speed;
         this.bossMissiles.push({
           x: startX - 4,
           // 8px width
@@ -695,6 +695,7 @@
           this.ui.updateStats(this);
           return false;
         }
+        const dist = Math.sqrt(distSq);
         if (dist > 0 && r.distanceTraveled >= CONSTANTS.ROCKET_VERTICAL_PHASE) {
           const desiredDx = dx / dist;
           const desiredDy = dy / dist;

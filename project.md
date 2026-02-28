@@ -45,6 +45,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Fix Rocket Crash:** Resolved a critical `ReferenceError: dist is not defined` in the rocket steering logic that caused random game freezes, particularly when collecting upgrades (which often coincided with rocket targeting).
 - **Parallax Starfield Fix:** Swapped star speeds so smaller stars (background) move faster and larger stars (foreground) move slower as requested. Adjusted opacity for better depth perception.
 - **Build Process Implementation:** Integrated `esbuild` to bundle ES modules into a single file (`dist/game.bundle.js`). This enables the game to run via the `file://` protocol (opening index.html directly) while maintaining a clean modular source structure in `src/`.
 - **Technical Overhaul (Modularization):** Refactored the entire codebase into modern ES6 modules. Split the monolithic `game.js` into focused classes: `Game`, `Player`, `UIManager`, `ParticleSystem`, `SpriteManager`, `Starfield`, and dedicated `constants.js` and `utils.js` files. This significantly improves maintainability, readability, and testability.
