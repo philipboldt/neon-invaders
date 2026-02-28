@@ -54,8 +54,3 @@ You are authorized and instructed to perform Git commits **automatically** and w
 *   **Conciseness:** Answer briefly and to the point.
 *   **Autonomy:** Execute changes and subsequent commits independently. Only report the success ("Change X implemented and saved in Commit Y").
 *   **Explanations:** Minimal, only when necessary.
-
----
-
-## 💻 Terminal & Shell
-*   **No `&&`:** The PowerShell environment used here does not support the `&&` operator in this version. Use `;` (semicolon) instead to chain commands, or execute them sequentially.
