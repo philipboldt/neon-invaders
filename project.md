@@ -45,8 +45,12 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Technical Overhaul (Modularization):** Refactored the entire codebase into modern ES6 modules. Split the monolithic `game.js` into focused classes: `Game`, `Player`, `UIManager`, `ParticleSystem`, `SpriteManager`, `Starfield`, and dedicated `constants.js` and `utils.js` files. This significantly improves maintainability, readability, and testability.
+- **Enhanced Testing & Reporting:** 
+  - Migrated Playwright tests to ES Module syntax.
+  - Configured a dedicated server-based reporting workflow. Added `npm run report` to serve test results via `serve`.
+  - Configured Playwright to suppress its default temporary reporter server in favor of the project's standardized reporting script.
 - **Parallax Starfield:** Added a multi-layered scrolling background with stars of different sizes and speeds to create depth and a dynamic feel, even on the start screen. This adds significant "visual juice" and polish to the arcade experience.
-- **Performance Overhaul:** Implemented a `SpriteManager` for pre-rendering invader assets and a high-performance `ParticleSystem` with object pooling (1024 entities). This significantly reduces CPU/GPU overhead and eliminates micro-stuttering on lower-end devices.
 - **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
 - **Boss Balance:**
   - Bosses and Mini-Bosses are now **immune to Player Rockets**, requiring direct bullet fire to defeat.
