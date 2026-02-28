@@ -105,20 +105,25 @@ body::before {
   text-shadow: 0 0 8px #ff6600;
 }
 
-#game {
-  display: block;
-  margin: 0 auto;
+.canvas-container {
+  position: relative;
   width: 100%;
-  height: auto;
-  max-height: 60vh;
-  object-fit: contain;
-  background: #0d0d14;
+  margin: 0 auto;
   border: 2px solid #00f5ff;
   box-shadow:
     0 0 20px rgba(0, 245, 255, 0.3),
     inset 0 0 60px rgba(0, 245, 255, 0.03);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #0d0d14;
   touch-action: none;
 }
 

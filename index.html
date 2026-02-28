@@ -20,7 +20,45 @@
       <span class="damage">Damage: <strong id="damage">1</strong></span>
       <span class="rocket">Rocket Blast: <strong id="rocket">none</strong></span>
     </div>
-    <canvas id="game" width="800" height="600"></canvas>
+    <div class="canvas-container">
+      <canvas id="game" width="800" height="600"></canvas>
+      <div id="help-screen" class="overlay hidden">
+        <h2>UPGRADES</h2>
+        <div class="upgrade-info">
+          <p><span class="dot" style="background: #00f5ff"></span> <strong>Shield:</strong> Permanent recharge system</p>
+          <p><span class="dot" style="background: #39ff14"></span> <strong>Double:</strong> Add projectile (max 4), then
+            +1 damage</p>
+          <p><span class="dot" style="background: #ff6600"></span> <strong>Rocket:</strong> Auto-targeting missile</p>
+          <p><span class="dot" style="background: #ffff00"></span> <strong>Pierce:</strong> Shot passes through 1 enemy on
+            kill</p>
+          <p><span class="dot" style="background: #ff3366"></span> <strong>Heal:</strong> Restores 1 life</p>
+        </div>
+        <p class="small">Press H or Tap to continue</p>
+      </div>
+      <div id="overlay" class="overlay hidden">
+        <div class="highscore-container">
+          <h2>HIGH SCORES</h2>
+          <ol class="highscore-list">
+            <li>---</li>
+            <li>---</li>
+            <li>---</li>
+          </ol>
+        </div>
+        <p id="overlay-text">GAME OVER</p>
+        <button id="restart">Play again</button>
+      </div>
+      <div id="start-screen" class="overlay">
+        <div class="highscore-container">
+          <h2>HIGH SCORES</h2>
+          <ol class="highscore-list">
+            <li>---</li>
+            <li>---</li>
+            <li>---</li>
+          </ol>
+        </div>
+        <p class="blink">Press SPACE or Tap to start</p>
+      </div>
+    </div>
     <div id="touch-controls" class="touch-controls">
       <button id="btn-left" class="touch-btn">◀</button>
       <button id="btn-shoot" class="touch-btn shoot">SHOOT</button>
@@ -28,42 +66,6 @@
       <button id="btn-right" class="touch-btn">▶</button>
     </div>
     <p class="controls">← → move · SPACE shoot · H help</p>
-    <div id="help-screen" class="overlay hidden">
-      <h2>UPGRADES</h2>
-      <div class="upgrade-info">
-        <p><span class="dot" style="background: #00f5ff"></span> <strong>Shield:</strong> Permanent recharge system</p>
-        <p><span class="dot" style="background: #39ff14"></span> <strong>Double:</strong> Add projectile (max 4), then
-          +1 damage</p>
-        <p><span class="dot" style="background: #ff6600"></span> <strong>Rocket:</strong> Auto-targeting missile</p>
-        <p><span class="dot" style="background: #ffff00"></span> <strong>Pierce:</strong> Shot passes through 1 enemy on
-          kill</p>
-        <p><span class="dot" style="background: #ff3366"></span> <strong>Heal:</strong> Restores 1 life</p>
-      </div>
-      <p class="small">Press H or Tap to continue</p>
-    </div>
-    <div id="overlay" class="overlay hidden">
-      <div class="highscore-container">
-        <h2>HIGH SCORES</h2>
-        <ol class="highscore-list">
-          <li>---</li>
-          <li>---</li>
-          <li>---</li>
-        </ol>
-      </div>
-      <p id="overlay-text">GAME OVER</p>
-      <button id="restart">Play again</button>
-    </div>
-    <div id="start-screen" class="overlay">
-      <div class="highscore-container">
-        <h2>HIGH SCORES</h2>
-        <ol class="highscore-list">
-          <li>---</li>
-          <li>---</li>
-          <li>---</li>
-        </ol>
-      </div>
-      <p class="blink">Press SPACE or Tap to start</p>
-    </div>
   </div>
   <script src="dist/game.bundle.js"></script>
 </body>
