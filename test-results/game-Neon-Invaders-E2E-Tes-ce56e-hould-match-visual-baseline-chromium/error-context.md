@@ -1,0 +1,43 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - heading "NEON INVADERS" [level=1] [ref=e3]
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - text: "Score:"
+      - strong [ref=e6]: "0"
+    - generic [ref=e7]:
+      - text: "Level:"
+      - strong [ref=e8]: "1"
+    - generic [ref=e9]:
+      - text: "Lives:"
+      - strong [ref=e10]: "3"
+    - generic [ref=e11]:
+      - text: "Shield:"
+      - strong [ref=e12]: no shield
+    - generic [ref=e13]:
+      - text: "Pierce:"
+      - strong [ref=e14]: none
+    - generic [ref=e15]:
+      - text: "Damage:"
+      - strong [ref=e16]: "1"
+    - generic [ref=e17]:
+      - text: "Rocket Blast:"
+      - strong [ref=e18]: none
+  - paragraph [ref=e20]: ← → move · SPACE shoot · H help
+  - generic [ref=e21] [cursor=pointer]:
+    - generic [ref=e22]:
+      - heading "HIGH SCORES" [level=2] [ref=e23]
+      - list [ref=e24]:
+        - listitem [ref=e25]:
+          - generic [ref=e26]: "1."
+          - generic [ref=e27]: "00000"
+        - listitem [ref=e28]:
+          - generic [ref=e29]: "2."
+          - generic [ref=e30]: "00000"
+        - listitem [ref=e31]:
+          - generic [ref=e32]: "3."
+          - generic [ref=e33]: "00000"
+    - paragraph [ref=e34]: Press SPACE or Tap to start
+```

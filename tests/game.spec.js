@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Neon Invaders E2E Tests', () => {
 
+    test.beforeEach(async ({ page }) => {
+        // Fail the test if any console error or unhandled exception occurs
+        page.on('pageerror', (exception) => {
+            throw new Error(`Uncaught exception: ${exception.message}`);
+        });
+        page.on('console', (msg) => {
+            if (msg.type() === 'error') {
+                throw new Error(`Console error: ${msg.text()}`);
+            }
+        });
+    });
+
     test('should load the game and show the start screen', async ({ page }) => {
         await page.goto('/');
 
