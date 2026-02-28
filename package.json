@@ -5,6 +5,7 @@
   "main": "game.js",
   "type": "module",
   "scripts": {
+    "build": "esbuild game.js --bundle --outfile=dist/game.bundle.js",
     "test": "playwright test",
     "test:report": "playwright test ; npm run report",
     "report": "serve playwright-report"
@@ -22,6 +23,7 @@
   "homepage": "https://github.com/philipboldt/neon-invaders#readme",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "esbuild": "^0.27.3",
     "serve": "^14.2.5"
   }
 }
