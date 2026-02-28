@@ -34,6 +34,21 @@ export class Game {
         drawRect(ctx, 0, 0, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
       });
     });
+
+    // Pre-render upgrades
+    CONSTANTS.UPGRADE_TYPES.forEach(type => {
+      const color = COLORS[type] || COLORS.heal;
+      const size = CONSTANTS.UPGRADE_W;
+      const radius = size / 2;
+      this.sprites.preRender(`upg_${type}`, size, size, (ctx) => {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(radius, radius, radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    });
   }
 
   resetState() {
@@ -365,10 +380,12 @@ export class Game {
       const cy = r.y + CONSTANTS.ROCKET_H / 2;
       const dx = r.targetX - cx;
       const dy = r.targetY - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const distSq = dx * dx + dy * dy;
+      const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
 
-      if (dist < CONSTANTS.ROCKET_HIT_RADIUS) {
+      if (distSq < hitRadiusSq) {
         const blastRadius = this.rocketLevel * CONSTANTS.INVADER_W;
+        const blastRadiusSq = blastRadius * blastRadius;
         this.shake = 10;
         
         // Huge visual explosion
@@ -380,9 +397,10 @@ export class Game {
           const inv = this.invaders[i];
           const invCx = inv.x + inv.w / 2;
           const invCy = inv.y + inv.h / 2;
-          const distToInv = Math.sqrt((invCx - cx) ** 2 + (invCy - cy) ** 2);
+          const distSqToInv = (invCx - cx) ** 2 + (invCy - cy) ** 2;
+          const checkRange = blastRadius + Math.max(inv.w, inv.h) / 2;
           
-          if (distToInv <= blastRadius + Math.max(inv.w, inv.h) / 2) {
+          if (distSqToInv <= checkRange * checkRange) {
             if (!inv.isBoss) {
               inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
             }
@@ -556,19 +574,20 @@ export class Game {
     });
 
     // Draw Bullets
+    this.ctx.shadowBlur = 8;
     this.ctx.fillStyle = COLORS.bullet;
     this.ctx.shadowColor = COLORS.bullet;
-    this.ctx.shadowBlur = 8;
     this.bullets.forEach(b => this.ctx.fillRect(b.x, b.y, 4, 12));
     
     this.ctx.fillStyle = COLORS.invader1;
     this.ctx.shadowColor = COLORS.invader1;
     this.invaderBullets.forEach(b => this.ctx.fillRect(b.x, b.y, 6, 10));
+    this.ctx.shadowBlur = 0;
     
     // Draw Boss Missiles
+    this.ctx.shadowBlur = 12;
     this.ctx.fillStyle = '#ff0844'; // Use boss color for its missiles
     this.ctx.shadowColor = '#ff0844';
-    this.ctx.shadowBlur = 12;
     this.bossMissiles.forEach(m => {
       this.ctx.save();
       this.ctx.translate(m.x + m.w / 2, m.y + m.h / 2);
@@ -615,12 +634,12 @@ export class Game {
     });
 
     // Draw Upgrades
-    const radius = CONSTANTS.UPGRADE_W / 2;
     this.upgrades.forEach(u => {
-      const c = COLORS[u.type] || COLORS.heal;
-      this.ctx.shadowColor = c; this.ctx.shadowBlur = 12; this.ctx.fillStyle = c;
-      this.ctx.beginPath(); this.ctx.arc(u.x + radius, u.y + radius, radius, 0, Math.PI * 2); this.ctx.fill();
-      this.ctx.shadowBlur = 0;
+      const sprite = this.sprites.get(`upg_${u.type}`);
+      if (sprite) {
+        // Sprites are pre-rendered with 20px padding for glow
+        this.ctx.drawImage(sprite, u.x - 20, u.y - 20);
+      }
     });
 
     this.particles.draw(this.ctx);
