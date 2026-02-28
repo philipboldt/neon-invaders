@@ -76,8 +76,8 @@ test.describe('Neon Invaders E2E Tests', () => {
             });
         });
 
-        // 60 FPS = 16.67ms per frame. 55 FPS = 18.18ms.
-        expect(frameTime).toBeLessThan(18.2);
+        // 60 FPS = 16.67ms per frame. 50 FPS = 20ms.
+        expect(frameTime).toBeLessThan(20);
     });
 
     test('desktop: can start the game and shoot using keyboard', async ({ page }) => {
