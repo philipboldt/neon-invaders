@@ -3,9 +3,9 @@ export class Starfield {
     this.W = W;
     this.H = H;
     this.layers = [
-      { size: 1, speed: 0.5, count: 50, stars: [] },
+      { size: 1, speed: 2.5, count: 50, stars: [] }, // Smallest = Fastest
       { size: 2, speed: 1.2, count: 30, stars: [] },
-      { size: 3, speed: 2.5, count: 15, stars: [] }
+      { size: 3, speed: 0.5, count: 15, stars: [] }  // Biggest = Slower
     ];
     this.init();
   }
@@ -35,7 +35,8 @@ export class Starfield {
 
   draw(ctx) {
     this.layers.forEach((layer, index) => {
-      const opacity = 0.3 + (index * 0.3);
+      // Smallest (Faster) layers have lower opacity to look further away
+      const opacity = 0.2 + (index * 0.3); 
       ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
       layer.stars.forEach(star => {
         ctx.fillRect(star.x, star.y, layer.size, layer.size);

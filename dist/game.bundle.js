@@ -297,9 +297,11 @@
       this.W = W;
       this.H = H;
       this.layers = [
-        { size: 1, speed: 0.5, count: 50, stars: [] },
+        { size: 1, speed: 2.5, count: 50, stars: [] },
+        // Smallest = Fastest
         { size: 2, speed: 1.2, count: 30, stars: [] },
-        { size: 3, speed: 2.5, count: 15, stars: [] }
+        { size: 3, speed: 0.5, count: 15, stars: [] }
+        // Biggest = Slower
       ];
       this.init();
     }
@@ -326,7 +328,7 @@
     }
     draw(ctx2) {
       this.layers.forEach((layer, index) => {
-        const opacity = 0.3 + index * 0.3;
+        const opacity = 0.2 + index * 0.3;
         ctx2.fillStyle = `rgba(255, 255, 255, ${opacity})`;
         layer.stars.forEach((star) => {
           ctx2.fillRect(star.x, star.y, layer.size, layer.size);
