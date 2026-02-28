@@ -168,6 +168,8 @@
     constructor() {
       this.maxParticles = 1024;
       this.pool = [];
+      this.activeIndices = [];
+      this.freeIndices = [];
       for (let i = 0; i < this.maxParticles; i++) {
         this.pool.push({
           active: false,
@@ -181,16 +183,18 @@
           maxLife: 0,
           color: "#fff"
         });
+        this.freeIndices.push(i);
       }
     }
-    getFreeParticle() {
-      return this.pool.find((p) => !p.active);
+    getFreeParticleIndex() {
+      return this.freeIndices.pop();
     }
     spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
       const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
       for (let n = 0; n < particleCount; n++) {
-        const p = this.getFreeParticle();
-        if (!p) break;
+        if (this.freeIndices.length === 0) break;
+        const idx = this.freeIndices.pop();
+        const p = this.pool[idx];
         const angle = angleStart + angleRange * n / particleCount + (Math.random() - 0.5) * (angleRange / particleCount);
         const speedBase = radius > 0 ? radius * 0.15 : CONSTANTS.PARTICLE_SPEED;
         const speed = speedBase * (0.6 + Math.random() * 0.8);
@@ -207,11 +211,13 @@
         p.life = 0;
         p.maxLife = lifeBase;
         p.color = color;
+        this.activeIndices.push(idx);
       }
     }
     spawnRocketTrail(cx, cy, vx, vy) {
-      const p = this.getFreeParticle();
-      if (!p) return;
+      if (this.freeIndices.length === 0) return;
+      const idx = this.freeIndices.pop();
+      const p = this.pool[idx];
       const speed = Math.sqrt(vx * vx + vy * vy) || 1;
       const backX = -vx / speed * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
       const backY = -vy / speed * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
@@ -225,30 +231,44 @@
       p.life = 0;
       p.maxLife = CONSTANTS.ROCKET_TRAIL_LIFE;
       p.color = COLORS.rocket;
+      this.activeIndices.push(idx);
     }
     update() {
-      for (let i = 0; i < this.maxParticles; i++) {
-        const p = this.pool[i];
-        if (!p.active) continue;
+      for (let i = this.activeIndices.length - 1; i >= 0; i--) {
+        const idx = this.activeIndices[i];
+        const p = this.pool[idx];
         p.x += p.vx;
         p.y += p.vy;
         p.life++;
         if (p.life >= p.maxLife) {
           p.active = false;
+          this.freeIndices.push(idx);
+          this.activeIndices[i] = this.activeIndices[this.activeIndices.length - 1];
+          this.activeIndices.pop();
         }
       }
     }
     draw(ctx2) {
+      if (this.activeIndices.length === 0) return;
+      const byColor = {};
+      for (let i = 0; i < this.activeIndices.length; i++) {
+        const p = this.pool[this.activeIndices[i]];
+        if (!byColor[p.color]) byColor[p.color] = [];
+        byColor[p.color].push(p);
+      }
       ctx2.shadowBlur = 8;
-      for (let i = 0; i < this.maxParticles; i++) {
-        const p = this.pool[i];
-        if (!p.active) continue;
-        const t = p.life / p.maxLife;
-        const size = Math.max(0, p.maxSize * (1 - t));
-        if (size <= 0) continue;
-        ctx2.fillStyle = p.color;
-        ctx2.shadowColor = p.color;
-        ctx2.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+      for (const color in byColor) {
+        ctx2.fillStyle = color;
+        ctx2.shadowColor = color;
+        const particles = byColor[color];
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const t = p.life / p.maxLife;
+          const size = p.maxSize * (1 - t);
+          if (size > 0) {
+            ctx2.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+          }
+        }
       }
       ctx2.shadowBlur = 0;
     }
@@ -330,9 +350,10 @@
       this.layers.forEach((layer, index) => {
         const opacity = 0.2 + index * 0.3;
         ctx2.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        layer.stars.forEach((star) => {
+        for (let i = 0; i < layer.stars.length; i++) {
+          const star = layer.stars[i];
           ctx2.fillRect(star.x, star.y, layer.size, layer.size);
-        });
+        }
       });
     }
   };
@@ -661,10 +682,9 @@
         const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
         if (distSq < hitRadiusSq) {
           const blastRadius = this.rocketLevel * CONSTANTS.INVADER_W;
-          const blastRadiusSq = blastRadius * blastRadius;
           this.shake = 10;
-          this.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius);
-          this.particles.spawnExplosion(cx, cy, "#ffffff", 0, Math.PI * 2, blastRadius * 0.5);
+          this.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
+          this.particles.spawnExplosion(cx, cy, "#ffffff", 0, Math.PI * 2, blastRadius * 0.4);
           for (let i = this.invaders.length - 1; i >= 0; i--) {
             const inv = this.invaders[i];
             const invCx = inv.x + inv.w / 2;
@@ -677,11 +697,11 @@
               }
               if (inv.hp <= 0) {
                 this.score += Math.floor(inv.scoreValue * 1.5);
-                this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2);
+                this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2, 0);
                 if (inv.isBoss) {
                   this.shake = 40;
-                  this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
-                  this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
+                  this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, 20);
+                  this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, 20);
                   this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                   this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                   this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);

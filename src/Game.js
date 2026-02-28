@@ -385,12 +385,11 @@ export class Game {
 
       if (distSq < hitRadiusSq) {
         const blastRadius = this.rocketLevel * CONSTANTS.INVADER_W;
-        const blastRadiusSq = blastRadius * blastRadius;
         this.shake = 10;
         
-        // Huge visual explosion
-        this.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius);
-        this.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.5);
+        // Optimized visual explosion: fewer but bigger particles
+        this.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
+        this.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
 
         // Find and damage all enemies in blast radius
         for (let i = this.invaders.length - 1; i >= 0; i--) {
@@ -402,16 +401,17 @@ export class Game {
           
           if (distSqToInv <= checkRange * checkRange) {
             if (!inv.isBoss) {
-              inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
+              inv.hp -= this.playerDamage * 2;
             }
             if (inv.hp <= 0) {
               this.score += Math.floor(inv.scoreValue * 1.5);
-              this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2);
+              // Smaller individual explosions when part of a rocket blast
+              this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2, 0);
               
               if (inv.isBoss) {
                 this.shake = 40;
-                this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
-                this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
+                this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, 20);
+                this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, 20);
                 this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                 this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);

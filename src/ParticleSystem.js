@@ -4,24 +4,30 @@ export class ParticleSystem {
   constructor() {
     this.maxParticles = 1024;
     this.pool = [];
+    this.activeIndices = []; // Keep track of active particles for faster iteration
+    this.freeIndices = [];   // Stack of free indices
+    
     for (let i = 0; i < this.maxParticles; i++) {
       this.pool.push({
         active: false,
         x: 0, y: 0, vx: 0, vy: 0,
         size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff'
       });
+      this.freeIndices.push(i);
     }
   }
 
-  getFreeParticle() {
-    return this.pool.find(p => !p.active);
+  getFreeParticleIndex() {
+    return this.freeIndices.pop();
   }
 
   spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
     const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
     for (let n = 0; n < particleCount; n++) {
-      const p = this.getFreeParticle();
-      if (!p) break;
+      if (this.freeIndices.length === 0) break;
+      
+      const idx = this.freeIndices.pop();
+      const p = this.pool[idx];
 
       const angle = angleStart + (angleRange * n) / particleCount + (Math.random() - 0.5) * (angleRange / particleCount);
       const speedBase = radius > 0 ? radius * 0.15 : CONSTANTS.PARTICLE_SPEED;
@@ -37,12 +43,16 @@ export class ParticleSystem {
       p.size = maxSize; p.maxSize = maxSize; 
       p.life = 0; p.maxLife = lifeBase; 
       p.color = color;
+      
+      this.activeIndices.push(idx);
     }
   }
 
   spawnRocketTrail(cx, cy, vx, vy) {
-    const p = this.getFreeParticle();
-    if (!p) return;
+    if (this.freeIndices.length === 0) return;
+
+    const idx = this.freeIndices.pop();
+    const p = this.pool[idx];
 
     const speed = Math.sqrt(vx * vx + vy * vy) || 1;
     const backX = (-vx / speed) * CONSTANTS.ROCKET_TRAIL_DRAG * speed;
@@ -57,35 +67,53 @@ export class ParticleSystem {
     p.life = 0;
     p.maxLife = CONSTANTS.ROCKET_TRAIL_LIFE;
     p.color = COLORS.rocket;
+    
+    this.activeIndices.push(idx);
   }
 
   update() {
-    for (let i = 0; i < this.maxParticles; i++) {
-      const p = this.pool[i];
-      if (!p.active) continue;
+    for (let i = this.activeIndices.length - 1; i >= 0; i--) {
+      const idx = this.activeIndices[i];
+      const p = this.pool[idx];
       
       p.x += p.vx;
       p.y += p.vy;
       p.life++;
+      
       if (p.life >= p.maxLife) {
         p.active = false;
+        this.freeIndices.push(idx);
+        // Faster remove from active array
+        this.activeIndices[i] = this.activeIndices[this.activeIndices.length - 1];
+        this.activeIndices.pop();
       }
     }
   }
 
   draw(ctx) {
-    ctx.shadowBlur = 8;
-    for (let i = 0; i < this.maxParticles; i++) {
-      const p = this.pool[i];
-      if (!p.active) continue;
+    if (this.activeIndices.length === 0) return;
 
-      const t = p.life / p.maxLife;
-      const size = Math.max(0, p.maxSize * (1 - t));
-      if (size <= 0) continue;
-      
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+    // Group by color to minimize state changes
+    const byColor = {};
+    for (let i = 0; i < this.activeIndices.length; i++) {
+      const p = this.pool[this.activeIndices[i]];
+      if (!byColor[p.color]) byColor[p.color] = [];
+      byColor[p.color].push(p);
+    }
+
+    ctx.shadowBlur = 8;
+    for (const color in byColor) {
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      const particles = byColor[color];
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const t = p.life / p.maxLife;
+        const size = p.maxSize * (1 - t);
+        if (size > 0) {
+          ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+        }
+      }
     }
     ctx.shadowBlur = 0;
   }

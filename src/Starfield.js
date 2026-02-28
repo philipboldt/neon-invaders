@@ -35,12 +35,13 @@ export class Starfield {
 
   draw(ctx) {
     this.layers.forEach((layer, index) => {
-      // Smallest (Faster) layers have lower opacity to look further away
       const opacity = 0.2 + (index * 0.3); 
       ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-      layer.stars.forEach(star => {
+      // Batch drawing stars of the same layer
+      for (let i = 0; i < layer.stars.length; i++) {
+        const star = layer.stars[i];
         ctx.fillRect(star.x, star.y, layer.size, layer.size);
-      });
+      }
     });
   }
 }
