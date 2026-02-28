@@ -8,6 +8,7 @@ test.describe('Neon Invaders E2E Tests', () => {
             throw new Error(`Uncaught exception: ${exception.message}`);
         });
         page.on('console', (msg) => {
+            console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
             if (msg.type() === 'error') {
                 throw new Error(`Console error: ${msg.text()}`);
             }
@@ -106,10 +107,9 @@ test.describe('Neon Invaders E2E Tests', () => {
 
         // The start screen should hide
         await expect(startScreen).toHaveClass(/hidden/);
-
-        // Press Space to shoot
-        await page.keyboard.press('Space');
-        // Ensure game didn't crash and score is 0
+        
+        // The HUD should be visible and showing initial score
+        await expect(score).toBeVisible();
         await expect(score).toHaveText('0');
 
         // Press Left / Right

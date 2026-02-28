@@ -693,7 +693,7 @@ export class Game {
         e.preventDefault();
         this.spacePressed = true;
         this.ui.setShootActive(true);
-        if (!this.gameRunning && !this.ui.els.startScreen.classList.contains('hidden')) {
+        if (!this.gameRunning) {
           this.startGame();
         }
       }
@@ -768,8 +768,8 @@ export class Game {
 
     this.ui.els.startScreen.addEventListener('pointerdown', (e) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (this.gameRunning || this.isPaused) return;
       e.preventDefault();
-      if (this.gameRunning && !this.isPaused) return;
       this.startGame();
     });
 
