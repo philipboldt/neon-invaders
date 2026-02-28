@@ -300,7 +300,7 @@
       // Pre-render invaders
       [COLORS.invader1, COLORS.invader2, COLORS.invader3, '#ff0844'].forEach(color => {
         this.sprites.preRender(`inv_${color}`, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, (ctx) => {
-          drawRect(ctx, -CONSTANTS.INVADER_W/2, -CONSTANTS.INVADER_H/2, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
+          drawRect(ctx, 0, 0, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
         });
       });
     }
@@ -401,7 +401,7 @@
       this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
       
       if (isBossLevel || isMiniBossLevel) {
-        const bossMaxHp = isBossLevel ? actualMaxHp * 10 : actualMaxHp * 5;
+        const bossMaxHp = isBossLevel ? actualMaxHp * 500 : actualMaxHp * 250;
         const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
         const bX = startX + this.gridW / 2 - bossW / 2;
         const bY = startY - bossH - gap * 2;
@@ -652,7 +652,9 @@
             const distToInv = Math.sqrt((invCx - cx) ** 2 + (invCy - cy) ** 2);
             
             if (distToInv <= blastRadius + Math.max(inv.w, inv.h) / 2) {
-              inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
+              if (!inv.isBoss) {
+                inv.hp -= this.playerDamage * 2; // Rockets do double player damage to make them impactful
+              }
               if (inv.hp <= 0) {
                 this.score += Math.floor(inv.scoreValue * 1.5);
                 this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2);
@@ -848,8 +850,7 @@
       // Draw Rocket Targets
       const neonRed = '#ff0844';
       this.rockets.forEach(r => {
-        let tx = r.targetX - CONSTANTS.INVADER_W / 2;
-        let ty = r.targetY - CONSTANTS.INVADER_H / 2;
+        let bestInv = null;
         let bestD = Infinity;
         for (const inv of this.invaders) {
           const icx = inv.x + inv.w / 2;
@@ -857,12 +858,15 @@
           const d = (icx - r.targetX) ** 2 + (icy - r.targetY) ** 2;
           if (d < bestD) {
             bestD = d;
-            tx = inv.x; ty = inv.y;
+            bestInv = inv;
           }
         }
-        ctx.strokeStyle = neonRed; ctx.shadowColor = neonRed; ctx.shadowBlur = 18; ctx.lineWidth = 3;
-        ctx.strokeRect(tx, ty, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H);
-        ctx.shadowBlur = 0;
+        
+        if (bestInv) {
+          ctx.strokeStyle = neonRed; ctx.shadowColor = neonRed; ctx.shadowBlur = 18; ctx.lineWidth = 3;
+          ctx.strokeRect(Math.floor(bestInv.x), Math.floor(bestInv.y), Math.floor(bestInv.w), Math.floor(bestInv.h));
+          ctx.shadowBlur = 0;
+        }
       });
 
       // Draw Rockets
