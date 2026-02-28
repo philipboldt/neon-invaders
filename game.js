@@ -281,12 +281,57 @@
     }
   }
 
+  class Starfield {
+    constructor() {
+      this.layers = [
+        { size: 1, speed: 0.5, count: 50, stars: [] },
+        { size: 2, speed: 1.2, count: 30, stars: [] },
+        { size: 3, speed: 2.5, count: 15, stars: [] }
+      ];
+      this.init();
+    }
+
+    init() {
+      this.layers.forEach(layer => {
+        for (let i = 0; i < layer.count; i++) {
+          layer.stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H
+          });
+        }
+      });
+    }
+
+    update() {
+      this.layers.forEach(layer => {
+        layer.stars.forEach(star => {
+          star.y += layer.speed;
+          if (star.y > H) {
+            star.y = -layer.size;
+            star.x = Math.random() * W;
+          }
+        });
+      });
+    }
+
+    draw(ctx) {
+      this.layers.forEach((layer, index) => {
+        const opacity = 0.3 + (index * 0.3);
+        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+        layer.stars.forEach(star => {
+          ctx.fillRect(star.x, star.y, layer.size, layer.size);
+        });
+      });
+    }
+  }
+
   class Game {
     constructor() {
       this.ui = new UIManager();
       this.particles = new ParticleSystem();
       this.player = new Player();
       this.sprites = new SpriteManager();
+      this.starfield = new Starfield();
       this.initSprites();
       
       this.resetState();
@@ -799,6 +844,7 @@
       
       ctx.fillStyle = '#0d0d14';
       ctx.fillRect(0, 0, W, H);
+      this.starfield.draw(ctx);
 
       // Draw Invaders
       this.invaders.forEach((inv) => {
@@ -905,16 +951,21 @@
     gameLoop(now) {
       requestAnimationFrame(this.gameLoop);
 
+      this.starfield.update();
+      
+      if (this.gameRunning && !this.isPaused) {
+        this.updateEntities(now);
+        this.playerShoot(now);
+        this.invaderShoot(now);
+        this.bossShoot(now);
+        this.checkCollisions(now);
+        this.particles.update();
+      }
+      
+      this.draw();
+
       if (!this.gameRunning) return;
       if (this.isPaused) return;
-
-      this.updateEntities(now);
-      this.playerShoot(now);
-      this.invaderShoot(now);
-      this.bossShoot(now);
-      this.checkCollisions(now);
-      this.particles.update();
-      this.draw();
 
       if (this.invaders.length === 0) {
         this.level++;

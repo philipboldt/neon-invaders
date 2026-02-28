@@ -19,12 +19,13 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - `Pierce`: Shots pass through one enemy if the hit is fatal.
   - `Heal`: Restores 1 life (max 5 lives).
 
+- **Parallax Starfield:** Multi-layered scrolling background with stars of different sizes and speeds to create depth and a dynamic feel, even on the start screen. **[NEW]**
 - **UI/HUD:**
   - Lives, Score, Level, Shield Status, Damage Multiplier.
   - Pierce Status (None/Active).
   - Responsive Mobile Touch Controls (Left, Shoot, Right, Pause).
   - Mobile Shoot Button acts as an Auto-Fire Toggle.
-  - **Highscore List**: Persistent top 3 scores saved in `localStorage`, displayed on Start and Game Over screens. **[NEW]**
+  - **Highscore List**: Persistent top 3 scores saved in `localStorage`, displayed on Start and Game Over screens.
 
 - **Mechanics:**
   - **Lives:** Player starts with 3 lives. Max lives capped at 5.
@@ -44,6 +45,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Parallax Starfield:** Added a multi-layered scrolling background with stars of different sizes and speeds to create depth and a dynamic feel, even on the start screen. This adds significant "visual juice" and polish to the arcade experience.
 - **Performance Overhaul:** Implemented a `SpriteManager` for pre-rendering invader assets and a high-performance `ParticleSystem` with object pooling (1024 entities). This significantly reduces CPU/GPU overhead and eliminates micro-stuttering on lower-end devices.
 - **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
 - **Boss Balance:**
