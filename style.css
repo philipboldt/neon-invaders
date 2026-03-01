@@ -36,7 +36,6 @@ body::before {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 800px;
   max-height: 100vh;
   z-index: 1;
 }
@@ -56,6 +55,7 @@ body::before {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
+  max-width: 800px;
   margin: 0 auto 0.5rem;
   font-size: min(0.85rem, 3.5vw);
   gap: 5px;
@@ -112,10 +112,9 @@ body::before {
 
 .canvas-container {
   position: relative;
-  width: 100%;
-  /* Best fit: ensure container doesn't exceed screen height minus other UI elements */
-  max-height: calc(100vh - 180px);
-  aspect-ratio: 4 / 3;
+  /* Shrink-wrap the canvas exactly */
+  width: fit-content;
+  max-width: calc(100vw - 20px);
   margin: 0 auto;
   border: 2px solid #00f5ff;
   box-shadow:
@@ -124,14 +123,16 @@ body::before {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   background: #0d0d14;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  line-height: 0; /* Remove descender gap */
 }
 
 #game {
-  width: 100%;
-  height: 100%;
+  display: block;
+  /* Scale based on intrinsic 800x600 but fit within viewport */
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 180px); /* Leave room for Title, HUD, and Controls */
   object-fit: contain;
   touch-action: none;
 }
