@@ -42,12 +42,13 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 ## Technical Stack
 - **Language:** JavaScript (ES6+)
+- **Standards:** Formally enforced via the custom **`pure-javascript`** Agent Skill (ES2020+, ESM, Async/Await). **[NEW]**
 - **Rendering:** HTML5 Canvas API with Offscreen Buffering & Dynamic Color Darkening
 - **Optimization:** Object Pooling (1024 entities) & Sprite Caching
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**. **[ENHANCED]**
 
 ## Recent Changes
 - **Testing Infrastructure (MCP-Ready):** Rewrote the entire Playwright test suite to leverage the new **Playwright MCP Server** capabilities. The game now exposes its internal state via `window.game`, allowing tests to inspect and manipulate levels, HP, and game status directly. Added visual snapshot testing for complex effects like the **Stunning Boss Explosion** and **Dynamic Brightness**.
-- **Layout Fix (Alignment & Scaling):** Resolved a width mismatch between the game border, HUD, and internal parallax scrolling. Standardized the container and canvas dimensions to a fixed **800x600** pixels. This ensures a 1:1 pixel ratio for game logic, fixing the "Safe Zone" exploit and ensuring all visual elements (including the starfield) align perfectly with the neon borders.
+- **Layout Fix (True Best Fit):** Implemented a robust "True Best Fit" responsive strategy. The game width is now dynamically calculated to respect both viewport width and available vertical space (reserving room for HUD/Title). This ensures the game maintains its 4:3 aspect ratio and 1:1 pixel logic while guaranteeing the player ship at the bottom is always visible on all devices, from vertical phones to ultra-wide monitors. Fixed border alignment issues where gaps would appear on certain resolutions. **[NEW]**
 - **Visual Feedback (Dynamic Brightness):** Implemented a linear brightness reduction for all enemies with more than 1 HP. Damaged units gradually darken from 100% to 45% brightness.
 - **Boss Explosion Effect:** Added a stunning, multi-layered particle explosion for bosses and mini-bosses, featuring core flashes and lingering embers.

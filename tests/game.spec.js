@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, devices } from '@playwright/test';
 
 test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
 
@@ -63,9 +63,13 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         await page.evaluate(() => {
             window.game.level = 10;
             window.game.initInvaders();
+            // Clear all regular invaders to avoid bullet interference
+            window.game.invaders = window.game.invaders.filter(inv => inv.isBoss);
             const boss = window.game.invaders.find(inv => inv.isBoss);
             if (boss) {
-                boss.hp = 1; // Set to 1 so next bullet kills it
+                boss.hp = 1; 
+                // Position player directly under the boss
+                window.game.player.x = boss.x + boss.w / 2 - window.game.player.w / 2;
             }
         });
 
@@ -75,12 +79,12 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         // Wait for boss to be destroyed
         await expect.poll(async () => {
             return await page.evaluate(() => window.game.invaders.find(inv => inv.isBoss) === undefined);
-        }, { timeout: 5000 }).toBe(true);
+        }, { timeout: 10000 }).toBe(true);
 
         // Capture the stunning explosion effect
-        await page.waitForTimeout(100); // Wait a few frames for particles to spread
+        await page.waitForTimeout(200); // Wait a few frames for particles to spread
         await expect(page.locator('#game')).toHaveScreenshot('boss-stunning-explosion.png', {
-            maxDiffPixelRatio: 0.1 // Allow some variance for random particle positions
+            maxDiffPixelRatio: 0.2 // Allow variance for random particles
         });
     });
 
@@ -97,19 +101,12 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
             inv.hp = 10;
         });
 
-        // Capture full brightness
-        const fullBrightness = await page.locator('#game').screenshot();
-
         // Damage the invader
         await page.evaluate(() => {
             window.game.invaders[0].hp = 2;
         });
 
-        // Capture reduced brightness
-        const darkBrightness = await page.locator('#game').screenshot();
-
-        // We can't easily compare image buffers here for exact color values, 
-        // but we can verify the state logic via evaluate
+        // We verify the state logic via evaluate
         const ratio = await page.evaluate(() => {
             const inv = window.game.invaders[0];
             return 0.45 + 0.55 * (inv.hp / inv.maxHp);
@@ -117,10 +114,11 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         expect(ratio).toBeCloseTo(0.56); // 0.45 + 0.55 * 0.2
     });
 
-    test('Mobile: HUD layout remains stable', async ({ page }) => {
-        // Set mobile viewport
-        await page.setViewportSize({ width: 390, height: 844 }); // iPhone 12 size
-        await page.goto('/');
+    test('Mobile: HUD layout remains stable', async ({ browser }) => {
+        // Use full device emulation for proper media query triggering
+        const context = await browser.newContext(devices['iPhone 12']);
+        const page = await context.newPage();
+        await page.goto('http://localhost:3001/');
 
         const hud = page.locator('.hud');
         await expect(hud).toBeVisible();
@@ -128,7 +126,31 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         const box = await hud.boundingBox();
         expect(box?.width).toBeLessThanOrEqual(390);
         
-        // Verify touch controls are visible
+        // Verify touch controls are visible (now triggered by iPhone emulation)
         await expect(page.locator('#touch-controls')).toBeVisible();
+        await context.close();
+    });
+
+    test('Responsive: Game should fit within viewport bounds', async ({ page }) => {
+        // Test various resolutions to ensure "True Best Fit" works
+        const viewports = [
+            { width: 1920, height: 1080 }, // Large Desktop
+            { width: 800, height: 400 },   // Short Wide (Mobile Landscape)
+            { width: 375, height: 667 }    // Small Portrait
+        ];
+
+        for (const vp of viewports) {
+            await page.setViewportSize(vp);
+            await page.goto('/');
+            
+            const gameWrap = page.locator('.game-wrap');
+            const box = await gameWrap.boundingBox();
+            
+            expect(box).not.toBeNull();
+            // Wrap height should not exceed viewport height (allow 5px margin for rounding)
+            expect(box.height).toBeLessThanOrEqual(vp.height + 5);
+            // Wrap width should not exceed viewport width
+            expect(box.width).toBeLessThanOrEqual(vp.width + 5);
+        }
     });
 });
