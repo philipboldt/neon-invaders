@@ -37,7 +37,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - **Draw Batching:** Optimized canvas state management to reduce overhead during high-entity frames.
 
 - **Visual Feedback:**
-  - **Dynamic Brightness:** Enemies with multiple HP (including regular invaders and bosses) now visually darken as they take damage. This provides immediate tactical feedback on their remaining health. The brightness reduces linearly from 100% at full HP to a minimum of 45% as they approach 0 HP. **[NEW]**
+  - **Dynamic Brightness:** Enemies with multiple HP (including regular invaders and bosses) now visually darken as they take damage.
+  - **Smooth Level Transitions:** Levels now only end after all active visual effects—including particle explosions, rockets, and boss missiles—have fully cleared. This ensures players can appreciate the full impact of their final shots before the next wave begins. **[NEW]**
 
 ## Technical Stack
 - **Language:** JavaScript (ES6+)

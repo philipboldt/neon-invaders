@@ -674,7 +674,7 @@ export class Game {
     if (!this.gameRunning) return;
     if (this.isPaused) return;
 
-    if (this.invaders.length === 0) {
+    if (this.invaders.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0) {
       this.level++;
       this.ui.updateStats(this);
       this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.upgrades = []; this.rockets = [];

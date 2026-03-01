@@ -21,6 +21,10 @@ export class ParticleSystem {
     return this.freeIndices.pop();
   }
 
+  get hasActiveParticles() {
+    return this.activeIndices.length > 0;
+  }
+
   spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
     const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
     for (let n = 0; n < particleCount; n++) {
