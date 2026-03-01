@@ -401,7 +401,7 @@ export class Game {
           
           if (distSqToInv <= checkRange * checkRange) {
             if (!inv.isBoss) {
-              inv.hp -= this.playerDamage * 2;
+              inv.hp -= this.playerDamage;
             }
             if (inv.hp <= 0) {
               this.score += Math.floor(inv.scoreValue * 1.5);
