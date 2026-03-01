@@ -36,15 +36,19 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - **Object Pooling:** Particle system utilizes a pre-allocated pool (1024 particles) to eliminate Garbage Collection spikes and ensure smooth 60 FPS gameplay even during heavy combat.
   - **Draw Batching:** Optimized canvas state management to reduce overhead during high-entity frames.
 
+- **Visual Feedback:**
+  - **Dynamic Brightness:** Enemies with multiple HP (including regular invaders and bosses) now visually darken as they take damage. This provides immediate tactical feedback on their remaining health. The brightness reduces linearly from 100% at full HP to a minimum of 45% as they approach 0 HP. **[NEW]**
+
 ## Technical Stack
 - **Language:** JavaScript (ES6+)
-- **Rendering:** HTML5 Canvas API with Offscreen Buffering
+- **Rendering:** HTML5 Canvas API with Offscreen Buffering & Dynamic Color Darkening
 - **Optimization:** Object Pooling (1024 entities) & Sprite Caching
 - **Styling:** CSS3 (Neon aesthetic)
 - **Input:** Keyboard & Modern Pointer Events (Mobile-friendly)
 - **Testing:** Playwright E2E Tests **[NEW]**
 
 ## Recent Changes
+- **Visual Feedback (Dynamic Brightness):** Implemented a linear brightness reduction for all enemies with more than 1 HP. This feature provides a clear visual indicator of enemy health, where damaged units gradually darken as they take hits. It uses a specialized `darkenColor` utility to maintain the neon aesthetic while reducing overall luminance, capped at a 45% minimum brightness for visibility.
 - **Layout Fix (Canvas Alignment):** Introduced a `.canvas-container` to wrap the game canvas and all UI overlays. This ensures that the neon border and glow are now perfectly aligned with the playable area, and overlays no longer bleed out into the header/HUD space.
 - **Fix Rocket Crash:** Resolved a critical `ReferenceError: dist is not defined` in the rocket steering logic that caused random game freezes, particularly when collecting upgrades (which often coincided with rocket targeting).
 - **Parallax Starfield Fix:** Swapped star speeds so smaller stars (background) move faster and larger stars (foreground) move slower as requested. Adjusted opacity for better depth perception.

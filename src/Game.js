@@ -553,14 +553,16 @@ export class Game {
 
     // Draw Invaders
     this.invaders.forEach((inv) => {
-      if (!inv.isBoss) {
+      // Linear reduction between 1.0 (full) and 0.45 (min brightness)
+      const ratio = inv.maxHp > 1 ? 0.45 + 0.55 * (inv.hp / inv.maxHp) : 1;
+
+      if (!inv.isBoss && ratio >= 1) {
         const sprite = this.sprites.get(`inv_${inv.color}`);
         if (sprite) {
           this.ctx.drawImage(sprite, inv.x - 20, inv.y - 20);
         }
       } else {
-        // Bosses are still rendered manually for now
-        const ratio = 0.45 + 0.55 * (inv.hp / inv.maxHp);
+        // Use manual draw for damaged enemies or bosses to apply darkening
         const color = ratio >= 1 ? inv.color : darkenColor(inv.color, ratio);
         drawRect(this.ctx, inv.x, inv.y, inv.w, inv.h, color, true);
       }
