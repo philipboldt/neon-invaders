@@ -53,11 +53,11 @@ export class ParticleSystem {
   }
 
   spawnStunningExplosion(cx, cy, color) {
-    // A more elaborate, layered explosion for bosses
+    // A more elaborate, layered explosion for bosses with larger particles
     const layers = [
-      { count: 64, speed: 8, life: 60, size: 6, color: '#ffffff' }, // Core flash
-      { count: 128, speed: 4, life: 90, size: 4, color: color },    // Main burst
-      { count: 128, speed: 2, life: 120, size: 3, color: color },   // Slow lingering embers
+      { count: 64, speed: 10, life: 70, size: 14, color: '#ffffff' }, // Core flash (larger)
+      { count: 128, speed: 6, life: 100, size: 10, color: color },    // Main burst (larger)
+      { count: 128, speed: 3, life: 140, size: 8, color: color },     // Slow lingering embers (larger)
     ];
 
     layers.forEach(layer => {
