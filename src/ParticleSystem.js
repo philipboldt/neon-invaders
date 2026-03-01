@@ -53,11 +53,11 @@ export class ParticleSystem {
   }
 
   spawnStunningExplosion(cx, cy, color) {
-    // A massive, layered explosion for bosses that dwarfs regular rocket blasts
+    // A screen-filling, massive explosion for bosses
     const layers = [
-      { count: 64, speed: 25, life: 80, size: 30, color: '#ffffff' }, // High-speed core flash
-      { count: 128, speed: 15, life: 110, size: 22, color: color },   // Fast main burst
-      { count: 128, speed: 8, life: 150, size: 15, color: color },    // Wide-reaching embers
+      { count: 128, speed: 45, life: 100, size: 50, color: '#ffffff' }, // Ultra-fast core flash
+      { count: 256, speed: 25, life: 150, size: 35, color: color },    // Massive main burst
+      { count: 256, speed: 12, life: 200, size: 20, color: color },    // Screen-covering embers
     ];
 
     layers.forEach(layer => {

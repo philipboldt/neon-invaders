@@ -410,7 +410,8 @@ export class Game {
               
               if (inv.isBoss) {
                 this.shake = 40;
-                this.particles.spawnStunningExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
+                this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, 20);
+                this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, 20);
                 this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                 this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
