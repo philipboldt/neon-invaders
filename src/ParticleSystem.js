@@ -48,6 +48,38 @@ export class ParticleSystem {
     }
   }
 
+  spawnStunningExplosion(cx, cy, color) {
+    // A more elaborate, layered explosion for bosses
+    const layers = [
+      { count: 64, speed: 8, life: 60, size: 6, color: '#ffffff' }, // Core flash
+      { count: 128, speed: 4, life: 90, size: 4, color: color },    // Main burst
+      { count: 128, speed: 2, life: 120, size: 3, color: color },   // Slow lingering embers
+    ];
+
+    layers.forEach(layer => {
+      for (let n = 0; n < layer.count; n++) {
+        if (this.freeIndices.length === 0) break;
+        
+        const idx = this.freeIndices.pop();
+        const p = this.pool[idx];
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = layer.speed * (0.5 + Math.random() * 0.5);
+        const maxSize = layer.size * (0.5 + Math.random() * 1);
+        
+        p.active = true;
+        p.x = cx; p.y = cy; 
+        p.vx = Math.cos(angle) * speed; 
+        p.vy = Math.sin(angle) * speed;
+        p.size = maxSize; p.maxSize = maxSize; 
+        p.life = 0; p.maxLife = layer.life * (0.8 + Math.random() * 0.4); 
+        p.color = layer.color;
+        
+        this.activeIndices.push(idx);
+      }
+    });
+  }
+
   spawnRocketTrail(cx, cy, vx, vy) {
     if (this.freeIndices.length === 0) return;
 

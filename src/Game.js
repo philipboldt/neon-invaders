@@ -466,23 +466,22 @@ export class Game {
         if (b.x + 4 > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + 12 > inv.y) {
           inv.hp -= this.playerDamage;
           if (inv.isBoss) this.shake = Math.min(this.shake + 1, 5);
-          if (inv.hp <= 0) {
-            this.score += inv.scoreValue;
-            this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
-            
-            if (inv.isBoss) {
-              this.shake = 30;
-              this.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color);
-              this.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color);
-              this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
-              this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
-              this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
-            } else {
-              this.spawnUpgrade(inv.x, inv.y);
-            }
-            
-            this.invaders.splice(i, 1);
-            this.ui.updateStats(this);
+            if (inv.hp <= 0) {
+              this.score += inv.scoreValue;
+              
+              if (inv.isBoss) {
+                this.shake = 30;
+                this.particles.spawnStunningExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
+                this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
+                this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
+                this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
+              } else {
+                this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
+                this.spawnUpgrade(inv.x, inv.y);
+              }
+              
+              this.invaders.splice(i, 1);
+              this.ui.updateStats(this);
 
             if (this.hasPierce && !b.pierced) {
               b.pierced = true;
