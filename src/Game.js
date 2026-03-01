@@ -117,8 +117,8 @@ export class Game {
     const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.level / 3), 14);
     const block = Math.floor((this.level - 1) / 4);
     const p = (this.level - 1) % 4;
-    const baseHp = 1 + block;
-    const higherHp = baseHp + 1;
+    const baseHp = 1 + block * 2;
+    const higherHp = baseHp + 2;
     const rowsWithHigher = p * 2;
     const actualMaxHp = rowsWithHigher > 0 ? higherHp : baseHp;
 
@@ -147,7 +147,7 @@ export class Game {
     this.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
     
     if (isBossLevel || isMiniBossLevel) {
-      const bossMaxHp = isBossLevel ? actualMaxHp * 500 : actualMaxHp * 250;
+      const bossMaxHp = isBossLevel ? actualMaxHp * 250 : actualMaxHp * 125;
       const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
       const bX = startX + this.gridW / 2 - bossW / 2;
       const bY = startY - bossH - gap * 2;

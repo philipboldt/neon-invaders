@@ -7,8 +7,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Core Gameplay:**
   - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
 - **Wave-based invader spawning:** Increasing difficulty, with special Boss encounters.
-  - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 250x health and 4x size. Immune to rockets.
-  - **Bosses:** Spawn at levels ending in 0 (e.g., 10, 20), featuring 500x health, 6x size, unique color, and massive point drops. Immune to rockets.
+  - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 125x health and 4x size. Immune to rockets. **[BALANCED]**
+  - **Bosses:** Spawn at levels ending in 0 (e.g., 10, 20), featuring 250x health, 6x size, unique color, and massive point drops. Immune to rockets. **[BALANCED]**
   - Enemy types with different colors and hit points.
   - Collision detection for bullets, enemies, and player.
 
@@ -48,7 +48,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**. **[ENHANCED]**
 
 ## Recent Changes
-- **Enhanced Boss Explosions:** Significantly increased the size and speed of particles in the boss's "Stunning Explosion" effect. The core flash and main burst now feature much larger particles, making boss defeats feel more impactful and visually distinct from regular enemy destructions. **[NEW]**
+- **Balance Update (HP):** Reduced Boss and Mini-Boss HP by a factor of 2 (250x and 125x multipliers respectively) while increasing the HP growth of normal enemies from +1 to +2 per block (every 4 levels). This makes regular waves more challenging over time while making boss fights more fast-paced. **[NEW]**
+- **Enhanced Boss Explosions:** Significantly increased the size and speed of particles in the boss's "Stunning Explosion" effect. The core flash and main burst now feature much larger particles, making boss defeats feel more impactful and visually distinct from regular enemy destructions.
 - **Canvas-Rendered HUD:** Completely moved the HUD from HTML/CSS to direct canvas rendering. This increases the effective screen size for the game and ensures the HUD is always perfectly aligned and styled within the game's coordinate system. The new HUD features two rows of stats at the top of the screen with a consistent neon aesthetic.
 - **HUD Update (Rocket):** Simplified the "Rocket Blast" label to "Rocket" and changed the value display to show only the level number (or 'none'), consistent with other stats.
 - **MCP Server Fix:** Resolved the "Connection closed" error during discovery by updating the Playwright MCP server configuration to use the correct package name, `@playwright/mcp`. This ensures proper communication between the Gemini CLI and the browser automation tools.
