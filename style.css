@@ -10,11 +10,13 @@ body {
   min-height: 100vh;
   background: #0a0a0f;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: 'Orbitron', sans-serif;
   color: #00f5ff;
   overflow: hidden;
+  padding: 10px;
 }
 
 body::before {
@@ -30,22 +32,24 @@ body::before {
 
 .game-wrap {
   position: relative;
-  text-align: center;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   max-width: 800px;
-  padding: 10px;
+  max-height: 100vh;
+  z-index: 1;
 }
 
 .title {
-  font-size: 2rem;
+  font-size: min(2rem, 6vw);
   font-weight: 900;
   letter-spacing: 0.3em;
   margin-bottom: 0.5rem;
+  flex-shrink: 0;
   text-shadow:
     0 0 10px #00f5ff,
-    0 0 20px #00f5ff,
-    0 0 40px #00f5ff;
+    0 0 20px #00f5ff;
 }
 
 .hud {
@@ -53,8 +57,9 @@ body::before {
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
   margin: 0 auto 0.5rem;
-  font-size: 0.85rem;
+  font-size: min(0.85rem, 3.5vw);
   gap: 5px;
+  flex-shrink: 0;
 }
 
 .hud span {
@@ -108,6 +113,9 @@ body::before {
 .canvas-container {
   position: relative;
   width: 100%;
+  /* Best fit: ensure container doesn't exceed screen height minus other UI elements */
+  max-height: calc(100vh - 180px);
+  aspect-ratio: 4 / 3;
   margin: 0 auto;
   border: 2px solid #00f5ff;
   box-shadow:
@@ -115,14 +123,16 @@ body::before {
     inset 0 0 60px rgba(0, 245, 255, 0.03);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  aspect-ratio: 4 / 3;
+  background: #0d0d14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #game {
-  display: block;
   width: 100%;
-  height: auto;
-  background: #0d0d14;
+  height: 100%;
+  object-fit: contain;
   touch-action: none;
 }
 
@@ -130,16 +140,17 @@ body::before {
   margin-top: 0.5rem;
   font-size: 0.75rem;
   opacity: 0.8;
+  flex-shrink: 0;
 }
 
 .touch-controls {
   display: none;
-  margin-top: 15px;
+  margin-top: 10px;
   width: 100%;
   justify-content: center;
   gap: 10px;
   touch-action: none;
-  /* Prevent browser handling of touches */
+  flex-shrink: 0;
 }
 
 .touch-btn {
