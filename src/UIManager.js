@@ -28,7 +28,7 @@ export class UIManager {
     this.els.damage.textContent = gameState.playerDamage;
     this.els.shield.textContent = gameState.shieldHits > 0 ? 'activated' : (gameState.hasShieldSystem ? 'deactivated' : 'no shield');
     this.els.pierce.textContent = gameState.hasPierce ? 'active' : 'none';
-    this.els.rocket.textContent = gameState.rocketLevel > 0 ? `Level ${gameState.rocketLevel}` : 'none';
+    this.els.rocket.textContent = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'none';
   }
 
   setShootActive(isActive) {
