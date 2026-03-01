@@ -32,8 +32,7 @@ body::before {
   position: relative;
   text-align: center;
   z-index: 1;
-  width: 100%;
-  max-width: 800px;
+  width: 800px;
   padding: 10px;
 }
 
@@ -51,7 +50,7 @@ body::before {
 .hud {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  width: 100%;
+  width: 800px;
   margin: 0 auto 0.5rem;
   font-size: 0.85rem;
   gap: 5px;
@@ -107,7 +106,8 @@ body::before {
 
 .canvas-container {
   position: relative;
-  width: 100%;
+  width: 800px;
+  height: 600px;
   margin: 0 auto;
   border: 2px solid #00f5ff;
   box-shadow:
@@ -119,10 +119,8 @@ body::before {
 
 #game {
   display: block;
-  width: 100%;
-  height: auto;
-  max-height: 70vh;
-  object-fit: contain;
+  width: 800px;
+  height: 600px;
   background: #0d0d14;
   touch-action: none;
 }

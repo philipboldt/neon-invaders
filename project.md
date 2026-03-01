@@ -43,35 +43,10 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Language:** JavaScript (ES6+)
 - **Rendering:** HTML5 Canvas API with Offscreen Buffering & Dynamic Color Darkening
 - **Optimization:** Object Pooling (1024 entities) & Sprite Caching
-- **Styling:** CSS3 (Neon aesthetic)
-- **Input:** Keyboard & Modern Pointer Events (Mobile-friendly)
-- **Testing:** Playwright E2E Tests **[NEW]**
+- **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**. **[ENHANCED]**
 
 ## Recent Changes
-- **Visual Feedback (Dynamic Brightness):** Implemented a linear brightness reduction for all enemies with more than 1 HP. This feature provides a clear visual indicator of enemy health, where damaged units gradually darken as they take hits. It uses a specialized `darkenColor` utility to maintain the neon aesthetic while reducing overall luminance, capped at a 45% minimum brightness for visibility.
-- **Layout Fix (Canvas Alignment):** Introduced a `.canvas-container` to wrap the game canvas and all UI overlays. This ensures that the neon border and glow are now perfectly aligned with the playable area, and overlays no longer bleed out into the header/HUD space.
-- **Fix Rocket Crash:** Resolved a critical `ReferenceError: dist is not defined` in the rocket steering logic that caused random game freezes, particularly when collecting upgrades (which often coincided with rocket targeting).
-- **Parallax Starfield Fix:** Swapped star speeds so smaller stars (background) move faster and larger stars (foreground) move slower as requested. Adjusted opacity for better depth perception.
-- **Build Process Implementation:** Integrated `esbuild` to bundle ES modules into a single file (`dist/game.bundle.js`). This enables the game to run via the `file://` protocol (opening index.html directly) while maintaining a clean modular source structure in `src/`.
-- **Technical Overhaul (Modularization):** Refactored the entire codebase into modern ES6 modules. Split the monolithic `game.js` into focused classes: `Game`, `Player`, `UIManager`, `ParticleSystem`, `SpriteManager`, `Starfield`, and dedicated `constants.js` and `utils.js` files. This significantly improves maintainability, readability, and testability.
-- **Enhanced Testing & Reporting:** 
-  - Migrated Playwright tests to ES Module syntax.
-  - Configured a dedicated server-based reporting workflow. Added `npm run report` to serve test results via `serve`.
-  - Configured Playwright to suppress its default temporary reporter server in favor of the project's standardized reporting script.
-- **Parallax Starfield:** Added a multi-layered scrolling background with stars of different sizes and speeds to create depth and a dynamic feel, even on the start screen. This adds significant "visual juice" and polish to the arcade experience.
-- **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
-- **Boss Balance:**
-  - Bosses and Mini-Bosses are now **immune to Player Rockets**, requiring direct bullet fire to defeat.
-  - Increased Boss and Mini-Boss health significantly (Bosses now have 500x base health, Mini-Bosses 250x).
-- **Boss Mechanics:** Bosses and Mini-Bosses now fire unguided, high-speed, targeted missiles directly at the player every 3 seconds, increasing their threat level significantly.
-- **Boss Fights:** Added massive Boss and Mini-Boss enemies. Mini-Bosses spawn on levels ending in 5 with 250x health and 4x size. True Bosses spawn on levels ending in 0 with 500x health, 6x size, and guarantee multiple power-up drops upon defeat. They spawn above the regular alien formation and act as tough damage-sponges.
-- **Gameplay Fix (Invader Movement):** Modified the invader swarm to move based on the logical width of the original grid rather than individual surviving invaders. This prevents the swarm from traveling further to the edges when columns are destroyed, fixing a potential safe-zone exploit.
-- **Architecture Refactoring:** Rewrote the main `game.js` file into modular ES6 classes (`Game`, `Player`, `ParticleSystem`, `UIManager`) for better maintainability and cleaner structure.
-- **Highscore List:** Added a persistent top 3 highscore list that saves to `localStorage` and displays on both the Start and Game Over screens.
-- **HUD Layout Fix:** Addressed an issue where extremely large scores caused the HUD elements to wrap. Fixed via CSS Grid and text-truncation.
-- **Mobile Auto-Fire Toggle:** Refactored the Mobile Shoot button to toggle auto-fire on and off with single taps. Added visual `.active` feedback so players know when auto-fire is locked on.
-- **Mobile Layout Fix:** Swapped position of right arrow and pause buttons for improved reachability.
-- **Bug Fix (Rocket Target):** Corrected the positioning and scaling of the homing rocket target indicator, ensuring it properly highlights enemies of all sizes (including Bosses) on both desktop and mobile. Improved sub-pixel alignment for consistent rendering on high-DPI displays.
-- **Mobile Support:** Added responsive canvas scaling and on-screen touch controls.
-- **Pointer Events:** Migrated UI interaction to `pointerdown`/`pointerup` for seamless Android Chrome & iOS Safari compatibility.
-- **Testing:** Integrated Playwright framework with E2E tests for desktop keyboard and mobile touch interactions, including highscore and layout shift tests.
+- **Testing Infrastructure (MCP-Ready):** Rewrote the entire Playwright test suite to leverage the new **Playwright MCP Server** capabilities. The game now exposes its internal state via `window.game`, allowing tests to inspect and manipulate levels, HP, and game status directly. Added visual snapshot testing for complex effects like the **Stunning Boss Explosion** and **Dynamic Brightness**.
+- **Layout Fix (Alignment & Scaling):** Resolved a width mismatch between the game border, HUD, and internal parallax scrolling. Standardized the container and canvas dimensions to a fixed **800x600** pixels. This ensures a 1:1 pixel ratio for game logic, fixing the "Safe Zone" exploit and ensuring all visual elements (including the starfield) align perfectly with the neon borders.
+- **Visual Feedback (Dynamic Brightness):** Implemented a linear brightness reduction for all enemies with more than 1 HP. Damaged units gradually darken from 100% to 45% brightness.
+- **Boss Explosion Effect:** Added a stunning, multi-layered particle explosion for bosses and mini-bosses, featuring core flashes and lingering embers.
