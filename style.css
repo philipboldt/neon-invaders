@@ -35,7 +35,8 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   max-height: 100vh;
   z-index: 1;
 }
@@ -46,6 +47,8 @@ body::before {
   letter-spacing: 0.3em;
   margin-bottom: 0.5rem;
   flex-shrink: 0;
+  width: 100%;
+  text-align: center;
   text-shadow:
     0 0 10px #00f5ff,
     0 0 20px #00f5ff;
@@ -55,8 +58,7 @@ body::before {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto 0.5rem;
+  margin-bottom: 0.5rem;
   font-size: min(0.85rem, 3.5vw);
   gap: 5px;
   flex-shrink: 0;
