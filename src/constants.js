@@ -10,12 +10,13 @@ export const COLORS = {
   rocket: '#ff6600',
   heal: '#ff3366',
   pierce: '#ffff00',
+  points: '#ffff00', // Neon yellow for points upgrade
 };
 
 export const CONSTANTS = {
   ROCKET_W: 10, ROCKET_H: 24, ROCKET_INITIAL_SPEED: 1, ROCKET_MAX_SPEED: 9,
   ROCKET_THRUST: 0.25, ROCKET_STEER_STRENGTH: 0.12, ROCKET_VERTICAL_PHASE: 55, ROCKET_HIT_RADIUS: 28,
-  UPGRADE_TYPES: ['shield', 'double', 'rocket', 'pierce', 'heal'], DROP_CHANCE: 0.18, UPGRADE_FALL_SPEED: 3,
+  UPGRADE_TYPES: ['shield', 'double', 'rocket', 'pierce', 'heal', 'points'], DROP_CHANCE: 0.18, UPGRADE_FALL_SPEED: 3,
   UPGRADE_W: 24, UPGRADE_H: 24, ROCKET_INTERVAL_MS: 5000, SHIELD_RECHARGE_MS: 5000,
   EXPLOSION_PARTICLES: 18, PARTICLE_MAX_SIZE: 14, PARTICLE_LIFE: 28, PARTICLE_SPEED: 5,
   ROCKET_TRAIL_SIZE: 5, ROCKET_TRAIL_LIFE: 14, ROCKET_TRAIL_DRAG: 0.25,

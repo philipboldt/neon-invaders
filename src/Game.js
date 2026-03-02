@@ -320,8 +320,12 @@ export class Game {
           if (u.type === 'rocket' && this.rocketLevel < 5) this.rocketLevel++;
           if (u.type === 'pierce') this.hasPierce = true;
           if (u.type === 'heal' && this.lives < 5) this.lives++;
-          this.ui.updateStats(this);
-        }
+          if (u.type === 'points') {
+            const amount = this.level * 100;
+            this.score += amount;
+            this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, amount);
+          }
+          this.ui.updateStats(this);        }
         return false;
       }
       return true;
