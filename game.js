@@ -929,6 +929,15 @@
     }
 
     bindInputs() {
+      const handleStart = (e) => {
+        if (this.gameRunning && !this.isPaused) return;
+        if (!this.ui.els.startScreen.classList.contains('hidden')) {
+          if (e && e.type.startsWith('pointer') && e.pointerType === 'mouse' && e.button !== 0) return;
+          this.startGame();
+          if (e) e.preventDefault();
+        }
+      };
+
       document.addEventListener('keydown', (e) => {
         if (e.code === 'KeyH' && this.gameRunning && this.ui.els.overlay.classList.contains('hidden')) {
           this.isPaused = !this.isPaused;
@@ -952,12 +961,13 @@
 
         if (e.code === 'ArrowLeft') this.player.dir = -1;
         if (e.code === 'ArrowRight') this.player.dir = 1;
-        if (e.code === 'Space') {
-          e.preventDefault();
+        if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
           this.spacePressed = true;
           this.ui.setShootActive(true);
           if (!this.gameRunning && !this.ui.els.startScreen.classList.contains('hidden')) {
-            this.startGame();
+            handleStart(e);
+          } else {
+            e.preventDefault();
           }
         }
       });
@@ -965,7 +975,7 @@
       document.addEventListener('keyup', (e) => {
         if (e.code === 'ArrowLeft' && this.player.dir === -1) this.player.dir = 0;
         if (e.code === 'ArrowRight' && this.player.dir === 1) this.player.dir = 0;
-        if (e.code === 'Space') {
+        if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
           this.spacePressed = false;
           this.ui.setShootActive(false);
         }
@@ -1006,10 +1016,10 @@
       handlePointerDown(this.ui.els.btnRight, (active) => { if (active) this.player.dir = 1; });
       handlePointerUp(this.ui.els.btnRight, (active) => { if (!active && this.player.dir === 1) this.player.dir = 0; });
 
-      handlePointerDown(this.ui.els.btnShoot, () => {
+      handlePointerDown(this.ui.els.btnShoot, (e) => {
         if (!this.gameRunning || this.isPaused) {
           if (!this.ui.els.startScreen.classList.contains('hidden')) {
-            this.startGame();
+            handleStart(e);
           } else if (this.isPaused) {
             this.isPaused = false;
             this.ui.toggleHelp(false);
@@ -1029,12 +1039,7 @@
         }
       });
 
-      this.ui.els.startScreen.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        e.preventDefault();
-        if (this.gameRunning && !this.isPaused) return;
-        this.startGame();
-      });
+      this.ui.els.startScreen.addEventListener('pointerdown', handleStart);
 
       this.ui.els.helpScreen.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -1051,7 +1056,9 @@
           if (e.target.id !== 'restart') {
             e.preventDefault();
             this.ui.els.startScreen.classList.add('hidden');
-            if (!this.gameRunning) this.startGame();
+            if (!this.gameRunning) {
+              this.startGame();
+            }
           }
         }
       });

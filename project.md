@@ -41,9 +41,13 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Optimization:** Object Pooling (1024 entities) & Sprite Caching
 - **Styling:** CSS3 (Neon aesthetic)
 - **Input:** Keyboard & Modern Pointer Events (Mobile-friendly)
-- **Testing:** Playwright E2E Tests **[NEW]**
+- **Overlay System:** Fixed overlays for universal interaction coverage. **[NEW]**
+- **Testing:** Playwright E2E Tests
 
 ## Recent Changes
+- **Mobile Interaction Fix:** Improved mobile and keyboard start logic. Fixed an issue where the game couldn't be started on some mobile devices by tapping or pressing Space.
+- **Overlay Refactor:** Changed overlays (`start-screen`, `game-over`, `help-screen`) to `position: fixed` with a higher `z-index`, ensuring they cover the entire viewport and capture all user interactions regardless of the game area's size or centering.
+- **Robust Input Handling:** Unified the start-game trigger into a single robust handler and expanded `Space` key detection to include `e.key` and `e.keyCode` fallbacks.
 - **Performance Overhaul:** Implemented a `SpriteManager` for pre-rendering invader assets and a high-performance `ParticleSystem` with object pooling (1024 entities). This significantly reduces CPU/GPU overhead and eliminates micro-stuttering on lower-end devices.
 - **Screen Shake Effect:** Added a dynamic "juice" effect where the screen shakes upon taking damage, hitting bosses, or destroying large enemies, enhancing the game's tactile feedback and arcade feel.
 - **Boss Balance:**

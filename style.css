@@ -227,7 +227,7 @@ body::before {
 
 
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -237,6 +237,7 @@ body::before {
   color: #00f5ff;
   cursor: pointer;
   touch-action: none;
+  z-index: 100;
 }
 
 .overlay.hidden {
