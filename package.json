@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "A Space Invaders–style arcade game with a neon aesthetic. Shoot the invaders before they reach you or hit you with their shots.",
   "main": "game.js",
+  "type": "module",
   "scripts": {
-    "test": "playwright test"
+    "build": "esbuild game.js --bundle --outfile=dist/game.bundle.js",
+    "test": "playwright test",
+    "test:report": "playwright test ; npm run report",
+    "report": "serve playwright-report"
   },
   "repository": {
     "type": "git",
@@ -13,13 +17,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/philipboldt/neon-invaders/issues"
   },
   "homepage": "https://github.com/philipboldt/neon-invaders#readme",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "esbuild": "^0.27.3",
     "serve": "^14.2.5"
   }
 }
