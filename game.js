@@ -934,9 +934,23 @@
         if (!this.ui.els.startScreen.classList.contains('hidden')) {
           if (e && e.type.startsWith('pointer') && e.pointerType === 'mouse' && e.button !== 0) return;
           this.startGame();
-          if (e) e.preventDefault();
+          if (e && typeof e.preventDefault === 'function') e.preventDefault();
         }
       };
+
+      // Global pointerdown listener to catch start on any mobile tap
+      window.addEventListener('pointerdown', (e) => {
+        if (!this.gameRunning && !this.ui.els.startScreen.classList.contains('hidden')) {
+          handleStart(e);
+        }
+      }, { capture: true });
+
+      // Support generic click as well
+      window.addEventListener('click', (e) => {
+        if (!this.gameRunning && !this.ui.els.startScreen.classList.contains('hidden')) {
+          handleStart(e);
+        }
+      }, { capture: true });
 
       document.addEventListener('keydown', (e) => {
         if (e.code === 'KeyH' && this.gameRunning && this.ui.els.overlay.classList.contains('hidden')) {

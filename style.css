@@ -238,6 +238,7 @@ body::before {
   cursor: pointer;
   touch-action: none;
   z-index: 100;
+  pointer-events: auto;
 }
 
 .overlay.hidden {

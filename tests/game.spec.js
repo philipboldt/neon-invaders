@@ -124,7 +124,7 @@ test.describe('Neon Invaders E2E Tests', () => {
         await expect(touchControls).toBeVisible();
 
         // Tap to start
-        await startScreen.tap();
+        await startScreen.tap({ force: true });
 
         // Start screen should hide
         await expect(startScreen).toHaveClass(/hidden/);
