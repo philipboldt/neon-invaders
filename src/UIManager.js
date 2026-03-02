@@ -95,12 +95,23 @@ export class UIManager {
   }
 
   updateHighScores(newScore) {
-    let scores = JSON.parse(localStorage.getItem('neonInvadersHighScores') || '[0,0,0]');
+    let scores = [0, 0, 0];
+    try {
+      const saved = localStorage.getItem('neonInvadersHighScores');
+      if (saved) scores = JSON.parse(saved);
+    } catch (e) {
+      console.warn('LocalStorage not available', e);
+    }
+
     if (newScore !== undefined) {
       scores.push(newScore);
       scores.sort((a, b) => b - a);
       scores = scores.slice(0, 3);
-      localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
+      try {
+        localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
+      } catch (e) {
+        console.warn('Failed to save highscore', e);
+      }
     }
     const listEls = document.querySelectorAll('.highscore-list');
     listEls.forEach(listEl => {

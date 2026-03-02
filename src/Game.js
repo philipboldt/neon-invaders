@@ -23,6 +23,7 @@ export class Game {
     this.resetState();
     this.bindInputs();
     
+    console.log('Neon Invaders Initialized');
     this.gameLoop = this.gameLoop.bind(this);
     requestAnimationFrame(this.gameLoop);
   }
