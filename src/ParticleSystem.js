@@ -11,7 +11,8 @@ export class ParticleSystem {
       this.pool.push({
         active: false,
         x: 0, y: 0, vx: 0, vy: 0,
-        size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff'
+        size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff',
+        text: null, isText: false
       });
       this.freeIndices.push(i);
     }
@@ -23,6 +24,28 @@ export class ParticleSystem {
 
   get hasActiveParticles() {
     return this.activeIndices.length > 0;
+  }
+
+  spawnScoreText(x, y, amount) {
+    if (this.freeIndices.length === 0) return;
+
+    const idx = this.freeIndices.pop();
+    const p = this.pool[idx];
+
+    p.active = true;
+    p.x = x;
+    p.y = y;
+    p.vx = 0;
+    p.vy = -1.5; // Slow move to top
+    p.size = 16;  // Start font size
+    p.maxSize = 32; // End font size
+    p.life = 0;
+    p.maxLife = 45; // ~0.75s at 60fps
+    p.color = '#ffff00'; // Neon yellow
+    p.text = `+${amount}`;
+    p.isText = true;
+
+    this.activeIndices.push(idx);
   }
 
   spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
@@ -47,6 +70,8 @@ export class ParticleSystem {
       p.size = maxSize; p.maxSize = maxSize; 
       p.life = 0; p.maxLife = lifeBase; 
       p.color = color;
+      p.isText = false;
+      p.text = null;
       
       this.activeIndices.push(idx);
     }
@@ -78,6 +103,8 @@ export class ParticleSystem {
         p.size = maxSize; p.maxSize = maxSize; 
         p.life = 0; p.maxLife = layer.life * (0.8 + Math.random() * 0.4); 
         p.color = layer.color;
+        p.isText = false;
+        p.text = null;
         
         this.activeIndices.push(idx);
       }
@@ -103,6 +130,8 @@ export class ParticleSystem {
     p.life = 0;
     p.maxLife = CONSTANTS.ROCKET_TRAIL_LIFE;
     p.color = COLORS.rocket;
+    p.isText = false;
+    p.text = null;
     
     this.activeIndices.push(idx);
   }
@@ -129,14 +158,20 @@ export class ParticleSystem {
   draw(ctx) {
     if (this.activeIndices.length === 0) return;
 
-    // Group by color to minimize state changes
+    const textParticles = [];
     const byColor = {};
+
     for (let i = 0; i < this.activeIndices.length; i++) {
       const p = this.pool[this.activeIndices[i]];
-      if (!byColor[p.color]) byColor[p.color] = [];
-      byColor[p.color].push(p);
+      if (p.isText) {
+        textParticles.push(p);
+      } else {
+        if (!byColor[p.color]) byColor[p.color] = [];
+        byColor[p.color].push(p);
+      }
     }
 
+    // Draw regular particles
     ctx.shadowBlur = 8;
     for (const color in byColor) {
       ctx.fillStyle = color;
@@ -151,6 +186,25 @@ export class ParticleSystem {
         }
       }
     }
+
+    // Draw text particles (growing and fading)
+    for (let i = 0; i < textParticles.length; i++) {
+      const p = textParticles[i];
+      const t = p.life / p.maxLife;
+      const opacity = 1 - t;
+      const fontSize = p.size + (p.maxSize - p.size) * t;
+      
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 15;
+      ctx.font = `bold ${Math.floor(fontSize)}px Orbitron`;
+      ctx.textAlign = 'center';
+      ctx.fillText(p.text, p.x, p.y);
+      ctx.restore();
+    }
+    
     ctx.shadowBlur = 0;
   }
 }

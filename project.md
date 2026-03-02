@@ -37,7 +37,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 - **Visual Feedback:**
   - **Dynamic Brightness:** Enemies with multiple HP (including regular invaders and bosses) now visually darken as they take damage.
-  - **Smooth Level Transitions:** Levels now only end after all active visual effects—including particle explosions, rockets, and boss missiles—have fully cleared. This ensures players can appreciate the full impact of their final shots before the next wave begins. **[NEW]**
+  - **Smooth Level Transitions:** Levels now only end after all active visual effects—including particle explosions, rockets, and boss missiles—have fully cleared. This ensures players can appreciate the full impact of their final shots before the next wave begins.
+  - **Floating Score Text:** Whenever the player earns points, a neon yellow particle (e.g., "+20") spawns above the player, growing in size while slowly floating upwards and fading out. **[NEW]**
 
 ## Technical Stack
 - **Language:** JavaScript (ES6+ Modules)

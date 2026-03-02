@@ -404,7 +404,9 @@ export class Game {
               inv.hp -= this.playerDamage;
             }
             if (inv.hp <= 0) {
-              this.score += Math.floor(inv.scoreValue * 1.5);
+              const gain = Math.floor(inv.scoreValue * 1.5);
+              this.score += gain;
+              this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, gain);
               // Smaller individual explosions when part of a rocket blast
               this.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2, 0);
               
@@ -468,6 +470,7 @@ export class Game {
           if (inv.isBoss) this.shake = Math.min(this.shake + 1, 5);
             if (inv.hp <= 0) {
               this.score += inv.scoreValue;
+              this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, inv.scoreValue);
               
               if (inv.isBoss) {
                 this.shake = 30;
