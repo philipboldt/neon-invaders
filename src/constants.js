@@ -9,7 +9,7 @@ export const COLORS = {
   double: '#39ff14',
   rocket: '#ff6600',
   heal: '#ff3366',
-  pierce: '#ffff00',
+  pierce: '#bc13fe', // New neon purple for Pierce
   points: '#ffff00', // Neon yellow for points upgrade
 };
 

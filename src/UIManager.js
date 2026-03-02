@@ -49,7 +49,7 @@ export class UIManager {
 
     // Row 2
     const y2 = y + 25;
-    this.drawStat(ctx, 'Pierce: ', gameState.hasPierce ? 'YES' : 'NONE', padding, y2, '#ffff00');
+    this.drawStat(ctx, 'Pierce: ', gameState.hasPierce ? 'YES' : 'NONE', padding, y2, '#bc13fe');
     this.drawStat(ctx, 'Damage: ', gameState.playerDamage, padding + colWidth, y2, '#39ff14');
     this.drawStat(ctx, 'Rocket: ', gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE', padding + colWidth * 2, y2, '#ff6600');
 
