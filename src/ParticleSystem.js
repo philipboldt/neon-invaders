@@ -36,7 +36,7 @@ export class ParticleSystem {
     p.x = x;
     p.y = y;
     p.vx = 0;
-    p.vy = -1.5; // Slow move to top
+    p.vy = -3.5; // Increased vertical speed (was -1.5)
     p.size = 16;  // Start font size
     p.maxSize = 32; // End font size
     p.life = 0;
