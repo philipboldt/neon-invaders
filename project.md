@@ -40,21 +40,22 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - **Smooth Level Transitions:** Levels now only end after all active visual effects—including particle explosions, rockets, and boss missiles—have fully cleared. This ensures players can appreciate the full impact of their final shots before the next wave begins. **[NEW]**
 
 ## Technical Stack
-- **Language:** JavaScript (ES6+)
-- **Standards:** Formally enforced via the custom **`pure-javascript`** Agent Skill (ES2020+, ESM, Async/Await). **[NEW]**
+- **Language:** JavaScript (ES6+ Modules)
+- **Deployment:** Zero-build architecture. Runs directly in the browser via native ESM. **[NEW]**
+- **Standards:** Formally enforced via the custom **`pure-javascript`** Agent Skill (ES2020+, ESM, Async/Await).
 - **Rendering:** HTML5 Canvas API with Offscreen Buffering & Dynamic Color Darkening
 - **Optimization:** Object Pooling (1024 entities) & Sprite Caching
 - **Input:** Keyboard & Modern Pointer Events (Mobile-friendly)
-- **Overlay System:** Fixed overlays for universal interaction coverage. **[NEW]**
-- **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**. **[ENHANCED]**
+- **Overlay System:** Fixed overlays for universal interaction coverage.
+- **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Zero-Build Architecture:** Migrated `index.html` to load source files directly via `<script type="module">`. This eliminates the need for manual bundling (`npm run build`) before pushing changes to GitHub Pages. The source code *is* the game. **[NEW]**
 - **Mobile Interaction Fix:** Improved mobile and keyboard start logic. Fixed an issue where the game couldn't be started on some mobile devices by tapping or pressing Space.
 - **Overlay Refactor:** Changed overlays (`start-screen`, `game-over`, `help-screen`) to `position: fixed` with a higher `z-index`, ensuring they cover the entire viewport and capture all user interactions regardless of the game area's size or centering.
-- **Canvas-Rendered HUD:** Completely moved the HUD from HTML/CSS to direct canvas rendering. This increases the effective screen size for the game and ensures the HUD is always perfectly aligned and styled within the game's coordinate system.
+- **Canvas-Rendered HUD:** Completely moved the HUD from HTML/CSS to direct canvas rendering.
 - **Robust Input Handling:** Unified the start-game trigger into a single robust handler and expanded `Space` key detection to include `e.key` and `e.keyCode` fallbacks.
-- **Balance Update (HP):** Reduced Boss and Mini-Boss HP by a factor of 2 (250x and 125x multipliers respectively) while increasing the HP growth of normal enemies from +1 to +2 per block (every 4 levels).
-- **Enhanced Boss Explosions:** Significantly increased the size and speed of particles in the boss's "Stunning Explosion" effect.
-- **Layout Fix (True Best Fit):** Implemented a robust "True Best Fit" responsive strategy. The game width is now dynamically calculated to respect both viewport width and available vertical space.
-- **Visual Feedback (Dynamic Brightness):** Implemented a linear brightness reduction for all enemies with more than 1 HP.
 - **Architecture Refactoring:** Rewrote the main game into modular ES6 classes for better maintainability and cleaner structure.
+- **Balance Update (HP):** Reduced Boss and Mini-Boss HP by a factor of 2 while increasing regular enemy HP growth.
+- **Enhanced Boss Explosions:** Significantly increased particle size and speed for boss destructions.
+- **Layout Fix (True Best Fit):** Implemented a robust responsive strategy that respects both width and height constraints.
