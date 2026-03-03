@@ -253,6 +253,7 @@ export class Game {
       w: CONSTANTS.UPGRADE_W,
       h: CONSTANTS.UPGRADE_H,
       type,
+      level: this.level // Store level for points upgrade
     });
   }
 
@@ -649,6 +650,16 @@ export class Game {
       if (sprite) {
         // Sprites are pre-rendered with 20px padding for glow
         this.ctx.drawImage(sprite, u.x - 20, u.y - 20);
+        
+        // Draw point value for points upgrade
+        if (u.type === 'points') {
+          this.ctx.fillStyle = '#000000';
+          this.ctx.font = 'bold 10px Orbitron';
+          this.ctx.textAlign = 'center';
+          this.ctx.textBaseline = 'middle';
+          // Center text in the 24x24 upgrade circle
+          this.ctx.fillText(u.level * 100, u.x + u.w / 2, u.y + u.h / 2 + 1);
+        }
       }
     });
 
