@@ -36,10 +36,17 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - **Object Pooling:** Particle system utilizes a pre-allocated pool (1024 particles) to eliminate Garbage Collection spikes and ensure smooth 60 FPS gameplay even during heavy combat.
   - **Draw Batching:** Optimized canvas state management to reduce overhead during high-entity frames.
 
+- **Lightning Attack:**
+  - Automatically targets a random enemy every 1.0s.
+  - Visual: Thick zigzag bolt with black border and color transition (Grey -> Neon Blue -> White).
+  - Deals player damage and triggers matching hit particle effects. **[NEW]**
+
 - **Visual Feedback:**
   - **Dynamic Brightness:** Enemies with multiple HP (including regular invaders and bosses) now visually darken as they take damage.
-  - **Smooth Level Transitions:** Levels now only end after all active visual effects—including particle explosions, rockets, and boss missiles—have fully cleared. This ensures players can appreciate the full impact of their final shots before the next wave begins.
-  - **Floating Score Text:** Whenever the player earns points, a neon yellow particle (e.g., "+20") spawns above the player, growing in size while slowly floating upwards and fading out. **[NEW]**
+  - **Smooth Level Transitions:** Levels now only end after all active visual effects—including particle explosions, rockets, boss missiles, upgrades, and the lightning bolt—have fully cleared.
+  - **Floating Score Text:** Whenever the player earns points, a neon yellow particle (e.g., "+20") spawns above the player, growing in size while slowly floating upwards and fading out.
+  - **Damage Markers:** Enemies display a static, growing neon red "-X" with a black border when taking damage, creating a "pop" effect. **[NEW]**
+  - **Lightning Hit Particles:** Hits from the lightning attack spawn particles that transition colors matching the bolt. **[NEW]**
 
 ## Technical Stack
 - **Language:** JavaScript (ES6+ Modules)
