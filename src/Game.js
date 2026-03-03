@@ -358,42 +358,32 @@ export class Game {
 
     // Check interval
     if (now - this.lastLightningTime >= CONSTANTS.LIGHTNING_INTERVAL_MS) {
-      // Find closest enemy
-      let closest = null;
-      let minDist = Infinity;
-      const px = this.player.x + this.player.w / 2;
-      const py = this.player.y;
+      // Find random enemy
+      const randomIdx = Math.floor(Math.random() * this.invaders.length);
+      const target = this.invaders[randomIdx];
 
-      for (const inv of this.invaders) {
-        const dx = (inv.x + inv.w / 2) - px;
-        const dy = (inv.y + inv.h / 2) - py;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < minDist) {
-          minDist = distSq;
-          closest = inv;
-        }
-      }
-
-      if (closest) {
+      if (target) {
         this.lastLightningTime = now;
         
-        // Damage closest enemy
-        this.particles.spawnDamageText(closest.x + closest.w / 2, closest.y + closest.h / 2, this.playerDamage);
-        closest.hp -= this.playerDamage;
-        if (closest.hp <= 0) {
-          this.score += closest.scoreValue;
-          this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, closest.scoreValue);
-          this.particles.spawnExplosion(closest.x + closest.w / 2, closest.y + closest.h / 2, closest.color);
-          this.spawnUpgrade(closest.x, closest.y);
-          this.invaders = this.invaders.filter(i => i !== closest);
+        // Damage target
+        this.particles.spawnDamageText(target.x + target.w / 2, target.y + target.h / 2, this.playerDamage);
+        target.hp -= this.playerDamage;
+        if (target.hp <= 0) {
+          this.score += target.scoreValue;
+          this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, target.scoreValue);
+          this.particles.spawnExplosion(target.x + target.w / 2, target.y + target.h / 2, target.color);
+          this.spawnUpgrade(target.x, target.y);
+          this.invaders.splice(randomIdx, 1);
           this.ui.updateStats(this);
         }
 
         // Generate zigzag points
+        const px = this.player.x + this.player.w / 2;
+        const py = this.player.y;
         const segments = CONSTANTS.LIGHTNING_ZIGZAG_SEGMENTS;
         const points = [];
-        const targetX = closest.x + closest.w / 2;
-        const targetY = closest.y + closest.h / 2;
+        const targetX = target.x + target.w / 2;
+        const targetY = target.y + target.h / 2;
 
         for (let i = 0; i <= segments; i++) {
           const t = i / segments;
@@ -412,7 +402,7 @@ export class Game {
         this.activeLightning = {
           startTime: now,
           points,
-          target: closest // Keep reference to target to adjust end point too if needed
+          target: target // Keep reference to target to adjust end point too if needed
         };
       }
     }
@@ -780,8 +770,18 @@ export class Game {
       const color = t < 0.3 ? CONSTANTS.LIGHTNING_COLOR_START : 
                     t < 0.7 ? CONSTANTS.LIGHTNING_COLOR_END : '#ffffff';
       
+      const baseWidth = t < 0.5 ? 12 : 24 * (1 - t);
+      
+      // Draw black border first
+      this.ctx.strokeStyle = '#000000';
+      this.ctx.lineWidth = baseWidth + 4;
+      this.ctx.lineJoin = 'round';
+      this.ctx.lineCap = 'round';
+      this.ctx.stroke();
+
+      // Draw neon color on top
       this.ctx.strokeStyle = color;
-      this.ctx.lineWidth = t < 0.5 ? 8 : 16 * (1 - t); // Further increased thickness (was 4 and 8)
+      this.ctx.lineWidth = baseWidth;
       this.ctx.shadowBlur = 15;
       this.ctx.shadowColor = CONSTANTS.LIGHTNING_GLOW;
       this.ctx.stroke();
