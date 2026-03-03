@@ -218,12 +218,19 @@ export class ParticleSystem {
       
       ctx.save();
       ctx.globalAlpha = opacity;
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 20; // Increased blur
       ctx.font = `bold ${Math.floor(fontSize)}px Orbitron`;
       ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle'; // Ensure centered on spawn point
+      ctx.textBaseline = 'middle';
+      
+      // Draw black border/stroke first
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3;
+      ctx.strokeText(p.text, p.x, p.y);
+      
+      // Draw neon color on top
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 20;
       ctx.fillText(p.text, p.x, p.y);
       ctx.restore();
     }
