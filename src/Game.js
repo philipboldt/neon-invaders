@@ -406,6 +406,7 @@ export class Game {
           const checkRange = blastRadius + Math.max(inv.w, inv.h) / 2;
           
           if (distSqToInv <= checkRange * checkRange) {
+            this.particles.spawnDamageText(invCx, invCy, this.playerDamage);
             if (!inv.isBoss) {
               inv.hp -= this.playerDamage;
             }
@@ -472,6 +473,7 @@ export class Game {
       for (let i = 0; i < this.invaders.length; i++) {
         const inv = this.invaders[i];
         if (b.x + 4 > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + 12 > inv.y) {
+          this.particles.spawnDamageText(inv.x + inv.w / 2, inv.y + inv.h / 2, this.playerDamage);
           inv.hp -= this.playerDamage;
           if (inv.isBoss) this.shake = Math.min(this.shake + 1, 5);
             if (inv.hp <= 0) {

@@ -48,6 +48,28 @@ export class ParticleSystem {
     this.activeIndices.push(idx);
   }
 
+  spawnDamageText(x, y, amount) {
+    if (this.freeIndices.length === 0) return;
+
+    const idx = this.freeIndices.pop();
+    const p = this.pool[idx];
+
+    p.active = true;
+    p.x = x + (Math.random() - 0.5) * 20; // Slight random horizontal offset
+    p.y = y;
+    p.vx = (Math.random() - 0.5) * 1; // Slight random horizontal drift
+    p.vy = -2.5; // Upward float
+    p.size = 12;  // Smaller start font size
+    p.maxSize = 24; // Smaller end font size
+    p.life = 0;
+    p.maxLife = 30; // Shorter life (~0.5s)
+    p.color = '#ff0844'; // Neon red
+    p.text = `-${amount}`;
+    p.isText = true;
+
+    this.activeIndices.push(idx);
+  }
+
   spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
     const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
     for (let n = 0; n < particleCount; n++) {
