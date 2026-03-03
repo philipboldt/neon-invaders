@@ -657,8 +657,12 @@ export class Game {
           this.ctx.font = 'bold 10px Orbitron';
           this.ctx.textAlign = 'center';
           this.ctx.textBaseline = 'middle';
+          
+          const amount = u.level * 100;
+          const displayValue = amount >= 1000 ? (amount / 1000).toFixed(1) + 'k' : amount;
+          
           // Center text in the 24x24 upgrade circle
-          this.ctx.fillText(u.level * 100, u.x + u.w / 2, u.y + u.h / 2 + 1);
+          this.ctx.fillText(displayValue, u.x + u.w / 2, u.y + u.h / 2 + 1);
         }
       }
     });
