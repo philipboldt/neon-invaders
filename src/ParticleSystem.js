@@ -58,12 +58,12 @@ export class ParticleSystem {
     p.x = x + (Math.random() - 0.5) * 20; // Slight random horizontal offset
     p.y = y;
     p.vx = (Math.random() - 0.5) * 1; // Slight random horizontal drift
-    p.vy = -2.5; // Upward float
-    p.size = 12;  // Smaller start font size
-    p.maxSize = 24; // Smaller end font size
+    p.vy = -3.5; // Upward float
+    p.size = 16;  // Start font size
+    p.maxSize = 32; // End font size
     p.life = 0;
-    p.maxLife = 30; // Shorter life (~0.5s)
-    p.color = '#ff0844'; // Neon red
+    p.maxLife = 45; // ~0.75s
+    p.color = '#ff0844'; // Neon red (distinct from yellow score)
     p.text = `-${amount}`;
     p.isText = true;
 

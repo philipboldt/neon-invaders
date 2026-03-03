@@ -407,9 +407,7 @@ export class Game {
           
           if (distSqToInv <= checkRange * checkRange) {
             this.particles.spawnDamageText(invCx, invCy, this.playerDamage);
-            if (!inv.isBoss) {
-              inv.hp -= this.playerDamage;
-            }
+            inv.hp -= this.playerDamage;
             if (inv.hp <= 0) {
               const gain = Math.floor(inv.scoreValue * 1.5);
               this.score += gain;
