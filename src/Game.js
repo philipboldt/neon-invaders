@@ -722,7 +722,7 @@ export class Game {
                     t < 0.7 ? CONSTANTS.LIGHTNING_COLOR_END : '#ffffff';
       
       this.ctx.strokeStyle = color;
-      this.ctx.lineWidth = t < 0.5 ? 4 : 8 * (1 - t); // Doubled thickness (was 2 and 4)
+      this.ctx.lineWidth = t < 0.5 ? 8 : 16 * (1 - t); // Further increased thickness (was 4 and 8)
       this.ctx.shadowBlur = 15;
       this.ctx.shadowColor = CONSTANTS.LIGHTNING_GLOW;
       this.ctx.stroke();
