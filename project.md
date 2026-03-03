@@ -16,7 +16,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - `Shield`: Grants a temporary shield that absorbs one hit.
   - `Double`: Increases shot count (up to 4) or damage (up to 5). Stops dropping when maxed.
   - `Rocket`: Fires homing missiles. Upgrade increases blast radius (Level 1-5). Deals 2x player damage.
-  - `Pierce`: Shots pass through one enemy if the hit is fatal.
+  - `Pierce`: Neon purple. Shots pass through one enemy if the hit is fatal.
   - `Heal`: Restores 1 life (max 5 lives).
   - `Points`: Neon yellow. Awards `Level x 100` bonus points. Always available to drop. **[NEW]**
 
@@ -52,6 +52,11 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Pierce Color Update:** Changed the Pierce upgrade color to neon purple for better visual distinction. **[NEW]**
+- **Points Upgrade:** Introduced a new neon yellow upgrade that grants `Level x 100` bonus points upon collection. Unlike other power-ups, this can always spawn. **[NEW]**
+- **Floating Score Text:** Added a neon yellow particle effect that displays earned points floating above the player. **[NEW]**
+- **Floating Score Physics:** Increased the vertical speed of floating score particles for a more dynamic feel. **[NEW]**
+- **Initialization Robustness:** Improved game initialization and added protocol checks for better compatibility. **[NEW]**
 - **Zero-Build Architecture:** Migrated `index.html` to load source files directly via `<script type="module">`. This eliminates the need for manual bundling (`npm run build`) before pushing changes to GitHub Pages. The source code *is* the game. **[NEW]**
 - **Mobile Interaction Fix:** Improved mobile and keyboard start logic. Fixed an issue where the game couldn't be started on some mobile devices by tapping or pressing Space.
 - **Overlay Refactor:** Changed overlays (`start-screen`, `game-over`, `help-screen`) to `position: fixed` with a higher `z-index`, ensuring they cover the entire viewport and capture all user interactions regardless of the game area's size or centering.
