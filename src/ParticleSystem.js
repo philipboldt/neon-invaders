@@ -59,8 +59,8 @@ export class ParticleSystem {
     p.y = y;
     p.vx = 0;
     p.vy = 0; // Static position for better visibility
-    p.size = 14;  // Start font size
-    p.maxSize = 48; // Grow to be very large
+    p.size = 20;  // Larger start font size
+    p.maxSize = 64; // Grow even bigger
     p.life = 0;
     p.maxLife = 40; // ~0.66s
     p.color = '#ff0844'; // Neon red

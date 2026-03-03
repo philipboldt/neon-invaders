@@ -667,6 +667,8 @@ export class Game {
       }
     });
 
+    this.player.draw(this.ctx, this.shieldHits);
+    
     // Draw HUD
     this.ui.drawHUD(this.ctx, this);
 
