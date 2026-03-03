@@ -381,11 +381,14 @@ export class Game {
         // Generate zigzag points
         const px = this.player.x + this.player.w / 2;
         const py = this.player.y;
-        const segments = CONSTANTS.LIGHTNING_ZIGZAG_SEGMENTS;
-        const points = [];
         const targetX = target.x + target.w / 2;
         const targetY = target.y + target.h / 2;
-
+        
+        // Dynamic segments based on distance
+        const dist = Math.sqrt((targetX - px) ** 2 + (targetY - py) ** 2);
+        const segments = Math.max(4, Math.floor(dist / 30)); 
+        
+        const points = [];
         for (let i = 0; i <= segments; i++) {
           const t = i / segments;
           const x = px + (targetX - px) * t;
