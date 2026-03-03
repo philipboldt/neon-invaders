@@ -18,7 +18,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - `Rocket`: Fires homing missiles. Upgrade increases blast radius (Level 1-5). Deals 2x player damage.
   - `Pierce`: Neon purple. Shots pass through one enemy if the hit is fatal.
   - `Heal`: Restores 1 life (max 5 lives).
-  - `Points`: Neon yellow. Awards `Level x 100` bonus points. Always available to drop. **[NEW]**
+  - `Points`: Neon yellow. Displays awarded value (Level x 100) in black text inside the circle. Always available to drop. **[ENHANCED]**
 
 - **Parallax Starfield:** Multi-layered scrolling background with stars of different sizes and speeds to create depth and a dynamic feel, even on the start screen. **[NEW]**
 - **UI/HUD:**
@@ -52,6 +52,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Points Upgrade Visuals:** The awarded point value is now displayed in bold black text inside the neon yellow upgrade circle. **[NEW]**
 - **Pierce Color Update:** Changed the Pierce upgrade color to neon purple for better visual distinction. **[NEW]**
 - **Points Upgrade:** Introduced a new neon yellow upgrade that grants `Level x 100` bonus points upon collection. Unlike other power-ups, this can always spawn. **[NEW]**
 - **Floating Score Text:** Added a neon yellow particle effect that displays earned points floating above the player. **[NEW]**
@@ -65,5 +66,4 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Architecture Refactoring:** Rewrote the main game into modular ES6 classes for better maintainability and cleaner structure.
 - **Balance Update (HP):** Reduced Boss and Mini-Boss HP by a factor of 2 while increasing regular enemy HP growth.
 - **Enhanced Boss Explosions:** Significantly increased particle size and speed for boss destructions.
-- **Points Upgrade:** Introduced a new neon yellow upgrade that grants `Level x 100` bonus points upon collection. Unlike other power-ups, this can always spawn. **[NEW]**
 - **Layout Fix (True Best Fit):** Implemented a robust responsive strategy that respects both width and height constraints.
