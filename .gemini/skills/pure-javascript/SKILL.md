@@ -9,29 +9,33 @@ Modern JS patterns for ES2020+ with async code, safe property access, and modula
 
 ## Critical Patterns
 
-### ✅ REQUIRED: ES Module Imports
-Always use `import`/`export`. Ensure `package.json` has `"type": "module"` or use `.mjs` extension.
+### ✅ REQUIRED: Zero-Build Architecture (Native ESM)
+Always use native ES modules (`import`/`export`) that run directly in the browser without a build step (No Webpack, Rollup, or Vite).
+- **Explicit Extensions:** Always include the `.js` extension in import paths (required by browsers).
+- **Direct Loading:** Source files are loaded via `<script type="module">` in `index.html`.
+- **No Bundling:** Never introduce a compilation or bundling step. The source code is the distribution.
+
 ```javascript
-// CORRECT: Named imports (explicit, tree-shakeable)
-import { readFileSync, existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+// CORRECT: Native ESM with explicit extension
+import { Game } from "./Game.js";
+import { Player } from "./Player.js";
 
-// CORRECT: Default import for modules with single export
-import express from "express";
+// WRONG: Missing extension (works in Node/Bundlers, fails in Browser)
+import { Game } from "./Game";
 
-// WRONG: require() in ES modules
-const fs = require("fs");
+// WRONG: CommonJS (fails in Browser)
+const Game = require("./Game.js");
 ```
 
 ### ✅ REQUIRED: No Dead Code
 Remove all unused variables, imports, and functions.
 ```javascript
 // WRONG: Unused variables and imports
-import { something } from "./lib"; // never used
+import { something } from "./lib.js"; // never used
 const unused = 42;
 
 // CORRECT: Every import, variable, and function is used
-import { needed } from "./lib";
+import { needed } from "./lib.js";
 const count = needed();
 ```
 
@@ -94,7 +98,8 @@ const [users, posts] = await Promise.all([
 
 ## Decision Tree
 
-- **Importing a module?** -> Named imports: `import { x } from "mod"`. No `require()`.
+- **Importing a module?** -> Native ESM: `import { x } from "./mod.js"`. Always include `.js`.
+- **Architecture?** -> Zero-build. No `npm run build`. Source = Game.
 - **Unused import/variable?** -> Delete it. No dead code.
 - **Async operation?** -> `async/await` with `try/catch`.
 - **String concatenation?** -> Template literals: ``Hello ${name}``.
@@ -107,7 +112,8 @@ const [users, posts] = await Promise.all([
 
 ## Checklist
 
-- [ ] ES module imports (`import`/`export`), no `require()`
+- [ ] Native ESM imports (`import`/`export`) with `.js` extension
+- [ ] Zero-build architecture (no bundling or compilation)
 - [ ] No unused imports, variables, or functions
 - [ ] `const`/`let` only (no `var`)
 - [ ] `async/await` with `try/catch` for async code
