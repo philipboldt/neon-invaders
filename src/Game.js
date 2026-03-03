@@ -367,6 +367,7 @@ export class Game {
         
         // Damage target
         this.particles.spawnDamageText(target.x + target.w / 2, target.y + target.h / 2, this.playerDamage);
+        this.particles.spawnLightningHit(target.x + target.w / 2, target.y + target.h / 2);
         target.hp -= this.playerDamage;
         if (target.hp <= 0) {
           this.score += target.scoreValue;

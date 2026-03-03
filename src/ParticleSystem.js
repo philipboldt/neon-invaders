@@ -12,7 +12,7 @@ export class ParticleSystem {
         active: false,
         x: 0, y: 0, vx: 0, vy: 0,
         size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff',
-        text: null, isText: false
+        text: null, isText: false, isLightning: false
       });
       this.freeIndices.push(i);
     }
@@ -44,6 +44,7 @@ export class ParticleSystem {
     p.color = '#ffff00'; // Neon yellow
     p.text = `+${amount}`;
     p.isText = true;
+    p.isLightning = false;
 
     this.activeIndices.push(idx);
   }
@@ -66,6 +67,7 @@ export class ParticleSystem {
     p.color = '#ff0844'; // Neon red
     p.text = `-${amount}`;
     p.isText = true;
+    p.isLightning = false;
 
     this.activeIndices.push(idx);
   }
@@ -94,6 +96,7 @@ export class ParticleSystem {
       p.color = color;
       p.isText = false;
       p.text = null;
+      p.isLightning = false;
       
       this.activeIndices.push(idx);
     }
@@ -127,6 +130,7 @@ export class ParticleSystem {
         p.color = layer.color;
         p.isText = false;
         p.text = null;
+        p.isLightning = false;
         
         this.activeIndices.push(idx);
       }
@@ -154,8 +158,38 @@ export class ParticleSystem {
     p.color = COLORS.rocket;
     p.isText = false;
     p.text = null;
+    p.isLightning = false;
     
     this.activeIndices.push(idx);
+  }
+
+  spawnLightningHit(x, y) {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      if (this.freeIndices.length === 0) break;
+
+      const idx = this.freeIndices.pop();
+      const p = this.pool[idx];
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 4;
+
+      p.active = true;
+      p.x = x;
+      p.y = y;
+      p.vx = Math.cos(angle) * speed;
+      p.vy = Math.sin(angle) * speed;
+      p.size = 3 + Math.random() * 3;
+      p.maxSize = p.size;
+      p.life = 0;
+      p.maxLife = 20 + Math.random() * 15;
+      p.color = '#555555';
+      p.isText = false;
+      p.text = null;
+      p.isLightning = true; // Special flag for color transition
+
+      this.activeIndices.push(idx);
+    }
   }
 
   update() {
@@ -166,6 +200,11 @@ export class ParticleSystem {
       p.x += p.vx;
       p.y += p.vy;
       p.life++;
+      
+      if (p.isLightning) {
+        const t = p.life / p.maxLife;
+        p.color = t < 0.3 ? '#555555' : t < 0.7 ? '#00f5ff' : '#ffffff';
+      }
       
       if (p.life >= p.maxLife) {
         p.active = false;
