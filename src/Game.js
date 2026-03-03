@@ -667,11 +667,11 @@ export class Game {
       }
     });
 
-    this.particles.draw(this.ctx);
-    this.player.draw(this.ctx, this.shieldHits);
-    
-    // Draw HUD on top of everything
+    // Draw HUD
     this.ui.drawHUD(this.ctx, this);
+
+    // Draw particles on top of everything (highest priority)
+    this.particles.draw(this.ctx);
 
     if (this.debugMode) {
       this.ctx.font = 'bold 56px Orbitron'; this.ctx.fillStyle = '#ff0844'; this.ctx.shadowColor = '#ff0844'; this.ctx.shadowBlur = 20;

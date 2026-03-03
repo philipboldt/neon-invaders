@@ -55,15 +55,15 @@ export class ParticleSystem {
     const p = this.pool[idx];
 
     p.active = true;
-    p.x = x + (Math.random() - 0.5) * 20; // Slight random horizontal offset
+    p.x = x;
     p.y = y;
-    p.vx = (Math.random() - 0.5) * 1; // Slight random horizontal drift
-    p.vy = -3.5; // Upward float
-    p.size = 16;  // Start font size
-    p.maxSize = 32; // End font size
+    p.vx = 0;
+    p.vy = 0; // Static position for better visibility
+    p.size = 14;  // Start font size
+    p.maxSize = 48; // Grow to be very large
     p.life = 0;
-    p.maxLife = 45; // ~0.75s
-    p.color = '#ff0844'; // Neon red (distinct from yellow score)
+    p.maxLife = 40; // ~0.66s
+    p.color = '#ff0844'; // Neon red
     p.text = `-${amount}`;
     p.isText = true;
 
@@ -220,9 +220,10 @@ export class ParticleSystem {
       ctx.globalAlpha = opacity;
       ctx.fillStyle = p.color;
       ctx.shadowColor = p.color;
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = 20; // Increased blur
       ctx.font = `bold ${Math.floor(fontSize)}px Orbitron`;
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle'; // Ensure centered on spawn point
       ctx.fillText(p.text, p.x, p.y);
       ctx.restore();
     }
