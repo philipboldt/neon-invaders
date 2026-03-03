@@ -781,7 +781,7 @@ export class Game {
                     t < 0.7 ? CONSTANTS.LIGHTNING_COLOR_END : '#ffffff';
       
       this.ctx.strokeStyle = color;
-      this.ctx.lineWidth = t < 0.5 ? 2 : 4 * (1 - t);
+      this.ctx.lineWidth = t < 0.5 ? 4 : 8 * (1 - t); // Doubled thickness (was 2 and 4)
       this.ctx.shadowBlur = 15;
       this.ctx.shadowColor = CONSTANTS.LIGHTNING_GLOW;
       this.ctx.stroke();
@@ -823,7 +823,9 @@ export class Game {
     if (!this.gameRunning) return;
     if (this.isPaused) return;
 
-    if (this.invaders.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0) {
+    if (this.invaders.length === 0 && !this.particles.hasActiveParticles && 
+        this.rockets.length === 0 && this.bossMissiles.length === 0 && 
+        this.upgrades.length === 0 && this.activeLightning === null) {
       this.level++;
       this.ui.updateStats(this);
       this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.upgrades = []; this.rockets = [];
