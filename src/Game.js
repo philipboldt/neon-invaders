@@ -406,7 +406,8 @@ export class Game {
 
         this.activeLightning = {
           startTime: now,
-          points
+          points,
+          target: closest // Keep reference to target to adjust end point too if needed
         };
       }
     }
@@ -746,12 +747,34 @@ export class Game {
       const age = now - this.activeLightning.startTime;
       const t = age / CONSTANTS.LIGHTNING_DURATION_MS;
       
+      const px = this.player.x + this.player.w / 2;
+      const py = this.player.y;
+      
+      // Target might be moving or destroyed, fallback to last known if destroyed
+      const tx = this.activeLightning.target.hp > 0 ? this.activeLightning.target.x + this.activeLightning.target.w / 2 : this.activeLightning.points[this.activeLightning.points.length-1].x;
+      const ty = this.activeLightning.target.hp > 0 ? this.activeLightning.target.y + this.activeLightning.target.h / 2 : this.activeLightning.points[this.activeLightning.points.length-1].y;
+
       this.ctx.save();
       this.ctx.beginPath();
-      this.ctx.moveTo(this.activeLightning.points[0].x, this.activeLightning.points[0].y);
-      for (let i = 1; i < this.activeLightning.points.length; i++) {
-        this.ctx.lineTo(this.activeLightning.points[i].x, this.activeLightning.points[i].y);
+      this.ctx.moveTo(px, py); // Start at current player position
+      
+      // Recalculate zigzag offsets relative to current line
+      for (let i = 1; i < this.activeLightning.points.length - 1; i++) {
+        const segT = i / (this.activeLightning.points.length - 1);
+        const curX = px + (tx - px) * segT;
+        const curY = py + (ty - py) * segT;
+        
+        // We reuse the original relative offsets to keep the "shape" consistent
+        const origT = i / (this.activeLightning.points.length - 1);
+        const origBaseX = this.activeLightning.points[0].x + (this.activeLightning.points[this.activeLightning.points.length-1].x - this.activeLightning.points[0].x) * origT;
+        const origBaseY = this.activeLightning.points[0].y + (this.activeLightning.points[this.activeLightning.points.length-1].y - this.activeLightning.points[0].y) * origT;
+        const offX = this.activeLightning.points[i].x - origBaseX;
+        const offY = this.activeLightning.points[i].y - origBaseY;
+        
+        this.ctx.lineTo(curX + offX, curY + offY);
       }
+      
+      this.ctx.lineTo(tx, ty); // End at current target position
       
       // Color transition: grey -> neon blue -> white
       const color = t < 0.3 ? CONSTANTS.LIGHTNING_COLOR_START : 
