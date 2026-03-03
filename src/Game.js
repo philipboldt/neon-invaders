@@ -65,6 +65,7 @@ export class Game {
     this.hasShieldSystem = false;
     this.lastShieldLostTime = -1;
     this.rocketLevel = 0;
+    this.lightningLevel = 1; // Start with Level 1 for testing
     this.hasPierce = false;
     this.spacePressed = false;
     this.shake = 0;
@@ -75,11 +76,13 @@ export class Game {
     this.bossMissiles = [];
     this.upgrades = [];
     this.rockets = [];
+    this.activeLightning = null; // Store current lightning effect
     
     this.lastPlayerShot = 0;
     this.lastInvaderShoot = 0;
     this.lastBossShoot = 0;
     this.lastRocketTime = 0;
+    this.lastLightningTime = 0;
     this.invaderDir = 1;
     
     this.ui.updateStats(this);
@@ -342,6 +345,76 @@ export class Game {
     }
     
     this.updateRockets(now);
+    this.updateLightning(now);
+  }
+
+  updateLightning(now) {
+    if (this.lightningLevel <= 0 || this.invaders.length === 0) return;
+
+    // Check interval
+    if (now - this.lastLightningTime >= CONSTANTS.LIGHTNING_INTERVAL_MS) {
+      // Find closest enemy
+      let closest = null;
+      let minDist = Infinity;
+      const px = this.player.x + this.player.w / 2;
+      const py = this.player.y;
+
+      for (const inv of this.invaders) {
+        const dx = (inv.x + inv.w / 2) - px;
+        const dy = (inv.y + inv.h / 2) - py;
+        const distSq = dx * dx + dy * dy;
+        if (distSq < minDist) {
+          minDist = distSq;
+          closest = inv;
+        }
+      }
+
+      if (closest) {
+        this.lastLightningTime = now;
+        
+        // Damage closest enemy
+        this.particles.spawnDamageText(closest.x + closest.w / 2, closest.y + closest.h / 2, this.playerDamage);
+        closest.hp -= this.playerDamage;
+        if (closest.hp <= 0) {
+          this.score += closest.scoreValue;
+          this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, closest.scoreValue);
+          this.particles.spawnExplosion(closest.x + closest.w / 2, closest.y + closest.h / 2, closest.color);
+          this.spawnUpgrade(closest.x, closest.y);
+          this.invaders = this.invaders.filter(i => i !== closest);
+          this.ui.updateStats(this);
+        }
+
+        // Generate zigzag points
+        const segments = CONSTANTS.LIGHTNING_ZIGZAG_SEGMENTS;
+        const points = [];
+        const targetX = closest.x + closest.w / 2;
+        const targetY = closest.y + closest.h / 2;
+
+        for (let i = 0; i <= segments; i++) {
+          const t = i / segments;
+          const x = px + (targetX - px) * t;
+          const y = py + (targetY - py) * t;
+          
+          // Add random offset except for start and end
+          let offX = 0, offY = 0;
+          if (i > 0 && i < segments) {
+            offX = (Math.random() - 0.5) * CONSTANTS.LIGHTNING_OFFSET * 2;
+            offY = (Math.random() - 0.5) * CONSTANTS.LIGHTNING_OFFSET * 2;
+          }
+          points.push({ x: x + offX, y: y + offY });
+        }
+
+        this.activeLightning = {
+          startTime: now,
+          points
+        };
+      }
+    }
+
+    // Clear old lightning
+    if (this.activeLightning && now - this.activeLightning.startTime > CONSTANTS.LIGHTNING_DURATION_MS) {
+      this.activeLightning = null;
+    }
   }
 
   getLowestRowInvaders() {
@@ -666,6 +739,31 @@ export class Game {
         }
       }
     });
+
+    // Draw Lightning
+    if (this.activeLightning) {
+      const now = performance.now();
+      const age = now - this.activeLightning.startTime;
+      const t = age / CONSTANTS.LIGHTNING_DURATION_MS;
+      
+      this.ctx.save();
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.activeLightning.points[0].x, this.activeLightning.points[0].y);
+      for (let i = 1; i < this.activeLightning.points.length; i++) {
+        this.ctx.lineTo(this.activeLightning.points[i].x, this.activeLightning.points[i].y);
+      }
+      
+      // Color transition: grey -> neon blue -> white
+      const color = t < 0.3 ? CONSTANTS.LIGHTNING_COLOR_START : 
+                    t < 0.7 ? CONSTANTS.LIGHTNING_COLOR_END : '#ffffff';
+      
+      this.ctx.strokeStyle = color;
+      this.ctx.lineWidth = t < 0.5 ? 2 : 4 * (1 - t);
+      this.ctx.shadowBlur = 15;
+      this.ctx.shadowColor = CONSTANTS.LIGHTNING_GLOW;
+      this.ctx.stroke();
+      this.ctx.restore();
+    }
 
     this.player.draw(this.ctx, this.shieldHits);
     
