@@ -24,6 +24,11 @@ export class CollisionManager {
               this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
               this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
 
+              // Boss reward: increase player potential
+              this.game.maxLives += 2;
+              this.game.maxDamage += 2;
+              this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
+
               if (this.game.level === 5) {
                 this.game.player.pods.left.active = true;
                 this.game.player.pods.left.hp = 3;
@@ -173,10 +178,13 @@ export class CollisionManager {
         this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS[u.type], Math.PI, Math.PI);
         if (!this.game.debugMode) {
           if (u.type === 'shield') { this.game.shieldHits = 1; this.game.hasShieldSystem = true; this.game.lastShieldLostTime = -1; }
-          if (u.type === 'double') { if (this.game.shotCount < 4) this.game.shotCount++; else if (this.game.playerDamage < 5) this.game.playerDamage++; }
+          if (u.type === 'double') { 
+            if (this.game.shotCount < 4) this.game.shotCount++; 
+            else if (this.game.playerDamage < this.game.maxDamage) this.game.playerDamage++; 
+          }
           if (u.type === 'rocket' && this.game.rocketLevel < 5) this.game.rocketLevel++;
           if (u.type === 'pierce') this.game.hasPierce = true;
-          if (u.type === 'heal' && this.game.lives < 5) this.game.lives++;
+          if (u.type === 'heal' && this.game.lives < this.game.maxLives) this.game.lives++;
           if (u.type === 'points') {
             const amount = this.game.level * 100;
             this.game.score += amount;

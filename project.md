@@ -31,8 +31,9 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - **Highscore List**: Persistent top 3 scores saved in `localStorage`, displayed on Start and Game Over screens.
 
 - **Mechanics:**
-  - **Lives:** Player starts with 3 lives. Max lives capped at 5.
-  - **Health Drops:** 'Heal' power-ups only drop if player has fewer than 5 lives.
+  - **Lives:** Player starts with 3 lives. Max lives scale with boss kills (+2 per boss, starts at 5).
+  - **Damage Scaling:** Maximum player damage scales with boss kills (+2 per boss, starts at 5). **[NEW]**
+  - **Health Drops:** 'Heal' power-ups only drop if player has fewer than current max lives.
   - **Scoring:** Points awarded for destroying enemies.
 - **Performance Optimizations:**
   - **Sprite Pre-rendering:** Invaders are pre-rendered to offscreen canvases to minimize expensive real-time shadow and glow calculations.
@@ -70,6 +71,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Player Potential Scaling:** Defeating a boss now increases the maximum possible lives and damage level by 2. Players must still collect upgrades to reach these new limits. **[NEW]**
 - **Complete Architectural Refactoring:** Finished decomposing `Game.js` into specialized managers (`EntityManager`, `CollisionManager`, `Renderer`). The main game class now acts as a lightweight orchestrator. **[NEW]**
 - **Architectural Refactoring:** Extracted input handling and special weapon systems from `Game.js` into dedicated `InputManager.js` and `WeaponManager.js` classes. This improves modularity and maintainability. **[NEW]**
 - **Pod Restoration:** Defeating a boss (from level 5 onwards) now fully heals or respawns any unlocked sidepods. **[NEW]**

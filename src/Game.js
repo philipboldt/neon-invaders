@@ -58,7 +58,13 @@ export class Game {
 
   resetState() {
     this.gameRunning = false; this.isPaused = false; this.debugMode = false;
-    this.score = 0; this.lives = 3; this.level = 1; this.shotCount = 1; this.playerDamage = 1;
+    this.score = 0;
+    this.lives = 3;
+    this.maxLives = 5;
+    this.level = 1;
+    this.shotCount = 1;
+    this.playerDamage = 1;
+    this.maxDamage = 5;
     this.shieldHits = 0; this.hasShieldSystem = false; this.lastShieldLostTime = -1;
     this.rocketLevel = 0; this.lightningLevel = 1; this.hasPierce = false; this.spacePressed = false; this.shake = 0;
     
@@ -90,10 +96,10 @@ export class Game {
     if (Math.random() >= CONSTANTS.DROP_CHANCE) return;
     const availableTypes = CONSTANTS.UPGRADE_TYPES.filter(type => {
       if (type === 'shield' && this.hasShieldSystem) return false;
-      if (type === 'double' && this.shotCount >= 4 && this.playerDamage >= 5) return false;
+      if (type === 'double' && this.shotCount >= 4 && this.playerDamage >= this.maxDamage) return false;
       if (type === 'rocket' && this.rocketLevel >= 5) return false;
       if (type === 'pierce' && this.hasPierce) return false;
-      if (type === 'heal' && this.lives >= 5) return false;
+      if (type === 'heal' && this.lives >= this.maxLives) return false;
       return true;
     });
     if (availableTypes.length === 0) return;
