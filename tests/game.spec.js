@@ -81,6 +81,33 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         await expect(firstEntry).toContainText('05000');
     });
 
+    test('Boss Clear: Should show summary screen after Boss Level 5', async ({ page }) => {
+        await page.goto('/');
+        await page.keyboard.press('Space');
+
+        // Force Boss defeat at level 5
+        await page.evaluate(() => {
+            window.game.level = 5;
+            window.game.invaders = []; 
+        });
+
+        // Wait for boss clear screen
+        await expect(page.locator('#boss-clear-screen')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('#boss-level-text')).toHaveText('LEVEL 5 COMPLETE');
+        
+        // Verify rewards listed (PDC unlock)
+        const rewards = page.locator('#reward-list li');
+        await expect(rewards.last()).toContainText('Left Pod Unlocked: PDC');
+
+        // Dismiss with Space
+        await page.keyboard.press('Space');
+        await expect(page.locator('#boss-clear-screen')).toBeHidden();
+        
+        // Game should have advanced to level 6
+        const level = await page.evaluate(() => window.game.level);
+        expect(level).toBe(6);
+    });
+
     test('Boss Clear: Should show summary screen after Boss Level 10', async ({ page }) => {
         await page.goto('/');
         await page.keyboard.press('Space');
