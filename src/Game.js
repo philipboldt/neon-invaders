@@ -183,16 +183,7 @@ export class Game {
       }
     }
     
-    // Sidepod bullets
-    const podY = this.player.y + (this.player.h - this.player.podH) / 2;
-    if (this.player.pods.left.active && this.bullets.length < maxBullets) {
-      const lx = this.player.x - this.player.podGap - this.player.podW / 2 - 2;
-      this.bullets.push({ x: lx, y: podY, w: 4, h: 12 });
-    }
-    if (this.player.pods.right.active && this.bullets.length < maxBullets) {
-      const rx = this.player.x + this.player.w + this.player.podGap + this.player.podW / 2 - 2;
-      this.bullets.push({ x: rx, y: podY, w: 4, h: 12 });
-    }
+    // Sidepod bullets removed - to be replaced with other weapon
   }
 
   invaderShoot(now) {
