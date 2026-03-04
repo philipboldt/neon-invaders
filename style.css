@@ -331,9 +331,36 @@ body::before {
 
 .arcade-input {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.char-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.touch-arrow {
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  color: #00f5ff;
+  width: 3rem;
+  height: 2.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.1s;
+}
+
+.touch-arrow:active {
+  background: rgba(0, 245, 255, 0.3);
+  transform: scale(0.9);
 }
 
 .char {
@@ -346,6 +373,12 @@ body::before {
   border-bottom: 4px solid rgba(0, 245, 255, 0.3);
   color: rgba(0, 245, 255, 0.5);
   transition: all 0.1s;
+}
+
+#save-name {
+  margin-bottom: 1.5rem;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
 }
 
 .char.active {

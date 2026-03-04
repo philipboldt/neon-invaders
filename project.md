@@ -30,7 +30,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
   - Responsive Mobile Touch Controls (Left, Shoot, Right, Pause).
   - Mobile Shoot Button acts as an Auto-Fire Toggle.
   - **Highscore List**: Persistent top 3 scores saved in `localStorage`, displayed on Start and Game Over screens.
-  - **Arcade Name Input**: When a highscore is achieved, players can enter a 3-character name using a retro arcade-style input (Arrows to change, ENTER to save). **[NEW]**
+  - **Arcade Name Input**: When a highscore is achieved, players can enter a 3-character name using a retro arcade-style input (Arrows to change, ENTER to save). Includes touch arrows and a "Save" button for mobile users. **[ENHANCED]**
   - **Boss Clear Info Screen**: A dedicated summary window that appears after defeating a boss, detailing the player's rewards (Max HP/Damage increases, Pod unlocks). Pauses the game until dismissed with SPACE or Tap. **[NEW]**
 
 - **Mechanics:**

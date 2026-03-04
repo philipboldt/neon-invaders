@@ -43,10 +43,23 @@
         <div id="name-input-container" class="hidden">
           <h3>NEW HIGH SCORE!</h3>
           <div class="arcade-input">
-            <span class="char active" data-index="0">A</span>
-            <span class="char" data-index="1">A</span>
-            <span class="char" data-index="2">A</span>
+            <div class="char-col">
+              <button class="touch-arrow up" data-dir="up" data-index="0">▲</button>
+              <span class="char active" data-index="0">A</span>
+              <button class="touch-arrow down" data-dir="down" data-index="0">▼</button>
+            </div>
+            <div class="char-col">
+              <button class="touch-arrow up" data-dir="up" data-index="1">▲</button>
+              <span class="char" data-index="1">A</span>
+              <button class="touch-arrow down" data-dir="down" data-index="1">▼</button>
+            </div>
+            <div class="char-col">
+              <button class="touch-arrow up" data-dir="up" data-index="2">▲</button>
+              <span class="char" data-index="2">A</span>
+              <button class="touch-arrow down" data-dir="down" data-index="2">▼</button>
+            </div>
           </div>
+          <button id="save-name" class="touch-btn shoot">SAVE NAME</button>
           <p class="small">ARROWS to change · ENTER to save</p>
         </div>
         <div class="highscore-container">

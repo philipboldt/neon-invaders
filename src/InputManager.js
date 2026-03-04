@@ -160,6 +160,7 @@ export class InputManager {
     });
 
     this.game.ui.els.overlay.addEventListener('pointerdown', (e) => {
+      if (this.game.ui.nameInputActive) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       if (!this.game.ui.els.overlay.classList.contains('hidden')) {
         if (e.target.id !== 'restart') {

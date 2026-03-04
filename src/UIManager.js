@@ -10,7 +10,9 @@ export class UIManager {
       overlay: document.getElementById('overlay'),
       overlayText: document.getElementById('overlay-text'),
       nameInputContainer: document.getElementById('name-input-container'),
+      saveNameBtn: document.getElementById('save-name'),
       charEls: document.querySelectorAll('.arcade-input .char'),
+      touchArrows: document.querySelectorAll('.touch-arrow'),
       startScreen: document.getElementById('start-screen'),
       helpScreen: document.getElementById('help-screen'),
       bossClearScreen: document.getElementById('boss-clear-screen'),
@@ -29,6 +31,46 @@ export class UIManager {
     this.chars = ['A', 'A', 'A'];
     this.pendingScore = 0;
     this.updateHighScores();
+    this.bindNameInputTouch();
+  }
+
+  bindNameInputTouch() {
+    this.els.touchArrows.forEach(arrow => {
+      arrow.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const index = parseInt(arrow.dataset.index);
+        const dir = arrow.dataset.dir;
+        this.currentCharIndex = index;
+        this.changeChar(index, dir === 'up' ? 1 : -1);
+      });
+    });
+
+    if (this.els.saveNameBtn) {
+      this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.saveHighscore();
+      });
+    }
+
+    // Allow clicking/tapping the characters themselves to select them
+    this.els.charEls.forEach((charEl, index) => {
+      charEl.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.currentCharIndex = index;
+        this.updateCharDisplay();
+      });
+    });
+  }
+
+  changeChar(index, delta) {
+    let charCode = this.chars[index].charCodeAt(0);
+    // A-Z is 65-90
+    charCode = ((charCode - 65 + delta + 26) % 26) + 65;
+    this.chars[index] = String.fromCharCode(charCode);
+    this.updateCharDisplay();
   }
 
   updateStats(gameState) {
@@ -152,13 +194,9 @@ export class UIManager {
     } else if (e.code === 'ArrowRight') {
       this.currentCharIndex = (this.currentCharIndex + 1) % 3;
     } else if (e.code === 'ArrowUp') {
-      let charCode = this.chars[this.currentCharIndex].charCodeAt(0);
-      charCode = ((charCode - 65 + 1) % 26) + 65;
-      this.chars[this.currentCharIndex] = String.fromCharCode(charCode);
+      this.changeChar(this.currentCharIndex, 1);
     } else if (e.code === 'ArrowDown') {
-      let charCode = this.chars[this.currentCharIndex].charCodeAt(0);
-      charCode = ((charCode - 65 - 1 + 26) % 26) + 65;
-      this.chars[this.currentCharIndex] = String.fromCharCode(charCode);
+      this.changeChar(this.currentCharIndex, -1);
     } else if (e.code === 'Enter' || e.code === 'Space') {
       this.saveHighscore();
       return;
