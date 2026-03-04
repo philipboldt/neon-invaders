@@ -85,6 +85,7 @@ export class Game {
     this.lastLightningTime = 0;
     this.lastPDCTime = 0;
     this.activePDCTracer = null;
+    this.pdcTarget = null; // Track current PDC target
     this.invaderDir = 1;
     
     this.ui.updateStats(this);
@@ -384,52 +385,68 @@ export class Game {
       this.activePDCTracer = null;
     }
 
-    if (!this.player.pods.left.active) return;
+    if (!this.player.pods.left.active) {
+      this.pdcTarget = null;
+      return;
+    }
 
-    if (now - this.lastPDCTime >= CONSTANTS.PDC_INTERVAL_MS) {
-      // Find targets (bullets or boss missiles)
+    const podX = this.player.x - this.player.podGap - this.player.podW / 2;
+    const podY = this.player.y + this.player.h / 2;
+
+    // Validate current target
+    if (this.pdcTarget) {
       const targets = [...this.invaderBullets, ...this.bossMissiles];
-      const podX = this.player.x - this.player.podGap - this.player.podW / 2;
-      const podY = this.player.y + this.player.h / 2;
+      const stillExists = targets.includes(this.pdcTarget);
+      const isAbovePlayer = this.pdcTarget.y < this.player.y;
+      
+      if (!stillExists || !isAbovePlayer) {
+        this.pdcTarget = null;
+      }
+    }
 
-      // Filter by range and find closest
+    // Find new target if needed
+    if (!this.pdcTarget) {
+      const targets = [...this.invaderBullets, ...this.bossMissiles];
       let bestTarget = null;
       let minDist = CONSTANTS.PDC_RANGE;
 
       targets.forEach(t => {
-        const dx = (t.x + t.w / 2) - podX;
-        const dy = (t.y + t.h / 2) - podY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < minDist) {
-          minDist = dist;
-          bestTarget = t;
+        if (t.y < this.player.y) {
+          const dx = (t.x + t.w / 2) - podX;
+          const dy = (t.y + t.h / 2) - podY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < minDist) {
+            minDist = dist;
+            bestTarget = t;
+          }
         }
       });
+      this.pdcTarget = bestTarget;
+    }
 
-      if (bestTarget) {
-        this.lastPDCTime = now;
-        
-        // Firing visual (tracer)
-        this.activePDCTracer = {
-          startTime: now,
-          startX: podX,
-          startY: podY,
-          endX: bestTarget.x + bestTarget.w / 2,
-          endY: bestTarget.y + bestTarget.h / 2
-        };
+    if (this.pdcTarget && now - this.lastPDCTime >= CONSTANTS.PDC_INTERVAL_MS) {
+      this.lastPDCTime = now;
+      
+      // Firing visual (tracer)
+      this.activePDCTracer = {
+        startTime: now,
+        startX: podX,
+        startY: podY,
+        endX: this.pdcTarget.x + this.pdcTarget.w / 2,
+        endY: this.pdcTarget.y + this.pdcTarget.h / 2
+      };
 
-        // 10% chance to destroy
-        if (Math.random() < CONSTANTS.PDC_CHANCE) {
-          // Find which list the target belongs to and remove it
-          const bIdx = this.invaderBullets.indexOf(bestTarget);
-          if (bIdx > -1) {
-            this.invaderBullets.splice(bIdx, 1);
-          } else {
-            const mIdx = this.bossMissiles.indexOf(bestTarget);
-            if (mIdx > -1) this.bossMissiles.splice(mIdx, 1);
-          }
-          this.particles.spawnExplosion(bestTarget.x + bestTarget.w / 2, bestTarget.y + bestTarget.h / 2, '#ffffff', 0, Math.PI * 2, 5);
+      // 10% chance to destroy
+      if (Math.random() < CONSTANTS.PDC_CHANCE) {
+        const bIdx = this.invaderBullets.indexOf(this.pdcTarget);
+        if (bIdx > -1) {
+          this.invaderBullets.splice(bIdx, 1);
+        } else {
+          const mIdx = this.bossMissiles.indexOf(this.pdcTarget);
+          if (mIdx > -1) this.bossMissiles.splice(mIdx, 1);
         }
+        this.particles.spawnExplosion(this.pdcTarget.x + this.pdcTarget.w / 2, this.pdcTarget.y + this.pdcTarget.h / 2, '#ffffff', 0, Math.PI * 2, 5);
+        this.pdcTarget = null; // Clear target after destruction
       }
     }
   }
