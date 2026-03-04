@@ -83,6 +83,8 @@ export class Game {
     this.lastBossShoot = 0;
     this.lastRocketTime = 0;
     this.lastLightningTime = 0;
+    this.lastPDCTime = 0;
+    this.activePDCTracer = null;
     this.invaderDir = 1;
     
     this.ui.updateStats(this);
@@ -373,6 +375,63 @@ export class Game {
     
     this.updateRockets(now);
     this.updateLightning(now);
+    this.updatePDC(now);
+  }
+
+  updatePDC(now) {
+    // Clear old tracer
+    if (this.activePDCTracer && now - this.activePDCTracer.startTime > 40) {
+      this.activePDCTracer = null;
+    }
+
+    if (!this.player.pods.left.active) return;
+
+    if (now - this.lastPDCTime >= CONSTANTS.PDC_INTERVAL_MS) {
+      // Find targets (bullets or boss missiles)
+      const targets = [...this.invaderBullets, ...this.bossMissiles];
+      const podX = this.player.x - this.player.podGap - this.player.podW / 2;
+      const podY = this.player.y + this.player.h / 2;
+
+      // Filter by range and find closest
+      let bestTarget = null;
+      let minDist = CONSTANTS.PDC_RANGE;
+
+      targets.forEach(t => {
+        const dx = (t.x + t.w / 2) - podX;
+        const dy = (t.y + t.h / 2) - podY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < minDist) {
+          minDist = dist;
+          bestTarget = t;
+        }
+      });
+
+      if (bestTarget) {
+        this.lastPDCTime = now;
+        
+        // Firing visual (tracer)
+        this.activePDCTracer = {
+          startTime: now,
+          startX: podX,
+          startY: podY,
+          endX: bestTarget.x + bestTarget.w / 2,
+          endY: bestTarget.y + bestTarget.h / 2
+        };
+
+        // 10% chance to destroy
+        if (Math.random() < CONSTANTS.PDC_CHANCE) {
+          // Find which list the target belongs to and remove it
+          const bIdx = this.invaderBullets.indexOf(bestTarget);
+          if (bIdx > -1) {
+            this.invaderBullets.splice(bIdx, 1);
+          } else {
+            const mIdx = this.bossMissiles.indexOf(bestTarget);
+            if (mIdx > -1) this.bossMissiles.splice(mIdx, 1);
+          }
+          this.particles.spawnExplosion(bestTarget.x + bestTarget.w / 2, bestTarget.y + bestTarget.h / 2, '#ffffff', 0, Math.PI * 2, 5);
+        }
+      }
+    }
   }
 
   updateLightning(now) {
@@ -891,6 +950,20 @@ export class Game {
       this.ctx.lineWidth = baseWidth;
       this.ctx.shadowBlur = 15;
       this.ctx.shadowColor = CONSTANTS.LIGHTNING_GLOW;
+      this.ctx.stroke();
+      this.ctx.restore();
+    }
+
+    // Draw PDC Tracers
+    if (this.activePDCTracer) {
+      this.ctx.save();
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.activePDCTracer.startX, this.activePDCTracer.startY);
+      this.ctx.lineTo(this.activePDCTracer.endX, this.activePDCTracer.endY);
+      this.ctx.strokeStyle = '#ffffff';
+      this.ctx.lineWidth = 2;
+      this.ctx.shadowBlur = 10;
+      this.ctx.shadowColor = '#ffffff';
       this.ctx.stroke();
       this.ctx.restore();
     }
