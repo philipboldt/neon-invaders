@@ -6,9 +6,9 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 ## Current Features
 - **Core Gameplay:**
   - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
-  - **Sidepods:** Two mini-ships (Left/Right) attached to the player. Each has 3 HP and cannot be healed. Movement constraints dynamically adjust based on active pods.
-    - **Left Pod:** Equipped with a **Point Defense Cannon (PDC)**. Rapidly targets enemy bullets and boss missiles within 400px, with a 10% chance to destroy them per shot. Features a white tracer effect that dynamically tracks targets in real-time. **[ENHANCED]**
-    - **Right Pod:** Awaiting specialized weapon. **[NEW]**
+  - **Sidepods:** Two mini-ships (Left/Right) attached to the player. Each has 3 HP and cannot be healed. Start as inactive and are unlocked as boss rewards. Movement constraints dynamically adjust based on active pods. **[ENHANCED]**
+    - **Left Pod:** Equipped with a **Point Defense Cannon (PDC)**. Unlocked by defeating the Level 5 boss. Rapidly targets enemy projectiles with a 10% interception chance. **[NEW]**
+    - **Right Pod:** Equipped with the **Lightning Attack**. Unlocked by defeating the Level 10 boss. Automatically targets random enemies every 1.0s. **[NEW]**
 - **Wave-based invader spawning:** Increasing difficulty, with special Boss encounters.
   - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 125x health and 4x size. Immune to rockets. **[BALANCED]**
   - **Bosses:** Spawn at levels ending in 0 (e.g., 10, 20), featuring 250x health, 6x size, unique color, and massive point drops. Immune to rockets. **[BALANCED]**
@@ -63,6 +63,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Pod Progression System:** Sidepods now start inactive and are rewarded for defeating bosses (Left Pod/PDC at Level 5, Right Pod/Lightning at Level 10). **[NEW]**
+- **Weapon Refactor:** Tied the Lightning Attack to the right sidepod. It now fires from the pod's position rather than the main ship. **[NEW]**
 - **Point Defense Cannon (PDC):** Equipped the left sidepod with a rapid-fire defensive weapon that targets enemy projectiles. It has a 10% chance to intercept and destroy bullets and boss missiles. **[NEW]**
 - **Sidepod System:** Added two independent mini-ships on either side of the player. They have limited HP and no healing. Movement boundaries adjust to their presence. **[NEW]**
 - **Points Upgrade Visuals:** The awarded point value is now displayed in bold black text inside the neon yellow upgrade circle. **[NEW]**

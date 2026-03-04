@@ -17,8 +17,8 @@ export class Player {
     this.podH = 12;
     this.podGap = 10;
     this.pods = {
-      left: { active: true, hp: 3, maxHp: 3 },
-      right: { active: true, hp: 3, maxHp: 3 }
+      left: { active: false, hp: 3, maxHp: 3 },
+      right: { active: false, hp: 3, maxHp: 3 }
     };
   }
 
@@ -26,8 +26,8 @@ export class Player {
     this.x = this.W / 2 - this.w / 2;
     this.y = this.H - 60;
     this.dir = 0;
-    this.pods.left = { active: true, hp: 3, maxHp: 3 };
-    this.pods.right = { active: true, hp: 3, maxHp: 3 };
+    this.pods.left = { active: false, hp: 3, maxHp: 3 };
+    this.pods.right = { active: false, hp: 3, maxHp: 3 };
   }
 
   update() {

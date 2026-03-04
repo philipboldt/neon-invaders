@@ -65,7 +65,7 @@ export class Game {
     this.hasShieldSystem = false;
     this.lastShieldLostTime = -1;
     this.rocketLevel = 0;
-    this.lightningLevel = 1; // Start with Level 1 for testing
+    this.lightningLevel = 1; 
     this.hasPierce = false;
     this.spacePressed = false;
     this.shake = 0;
@@ -456,7 +456,7 @@ export class Game {
       this.activeLightning = null;
     }
 
-    if (this.lightningLevel <= 0 || this.invaders.length === 0) return;
+    if (this.lightningLevel <= 0 || !this.player.pods.right.active || this.invaders.length === 0) return;
 
     // Check interval
     if (now - this.lastLightningTime >= CONSTANTS.LIGHTNING_INTERVAL_MS) {
@@ -480,21 +480,21 @@ export class Game {
           this.ui.updateStats(this);
         }
 
-        // Generate zigzag points
-        const px = this.player.x + this.player.w / 2;
-        const py = this.player.y;
+        // Generate zigzag points (Starting from right pod)
+        const rx = this.player.x + this.player.w + this.player.podGap + this.player.podW / 2;
+        const ry = this.player.y + this.player.h / 2;
         const targetX = target.x + target.w / 2;
         const targetY = target.y + target.h / 2;
         
         // Dynamic segments based on distance
-        const dist = Math.sqrt((targetX - px) ** 2 + (targetY - py) ** 2);
+        const dist = Math.sqrt((targetX - rx) ** 2 + (targetY - ry) ** 2);
         const segments = Math.max(4, Math.floor(dist / 30)); 
         
         const points = [];
         for (let i = 0; i <= segments; i++) {
           const t = i / segments;
-          const x = px + (targetX - px) * t;
-          const y = py + (targetY - py) * t;
+          const x = rx + (targetX - rx) * t;
+          const y = ry + (targetY - ry) * t;
           
           // Add random offset except for start and end
           let offX = 0, offY = 0;
@@ -508,7 +508,8 @@ export class Game {
         this.activeLightning = {
           startTime: now,
           points,
-          target: target // Keep reference to target to adjust end point too if needed
+          target: target,
+          isPodLightning: true // Flag to distinguish from player lightning if needed
         };
       }
     }
@@ -654,6 +655,18 @@ export class Game {
                 this.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                 this.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
+
+                // Reward pods
+                if (this.level === 5) {
+                  this.player.pods.left.active = true;
+                  this.player.pods.left.hp = 3;
+                  this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 40, "LEFT POD UNLOCKED!");
+                }
+                if (this.level === 10) {
+                  this.player.pods.right.active = true;
+                  this.player.pods.right.hp = 3;
+                  this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 40, "RIGHT POD UNLOCKED!");
+                }
               } else {
                 this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
                 this.spawnUpgrade(inv.x, inv.y);
