@@ -255,11 +255,15 @@ export class UIManager {
         const li = document.createElement('li');
         const rankSpan = document.createElement('span');
         rankSpan.className = 'rank';
-        rankSpan.textContent = `${i + 1}. ${entry.name}`;
+        rankSpan.textContent = `${i + 1}.`;
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'name';
+        nameSpan.textContent = entry.name;
         const scoreSpan = document.createElement('span');
         scoreSpan.className = 'score-val';
         scoreSpan.textContent = entry.score.toString().padStart(5, '0');
         li.appendChild(rankSpan);
+        li.appendChild(nameSpan);
         li.appendChild(scoreSpan);
         listEl.appendChild(li);
       });
