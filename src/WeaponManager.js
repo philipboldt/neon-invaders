@@ -108,14 +108,21 @@ export class WeaponManager {
         this.game.particles.spawnDamageText(target.x + target.w / 2, target.y + target.h / 2, this.game.playerDamage);
         this.game.particles.spawnLightningHit(target.x + target.w / 2, target.y + target.h / 2);
         target.hp -= this.game.playerDamage;
-        if (target.hp <= 0) {
-          this.game.score += target.scoreValue;
-          this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 20, target.scoreValue);
-          this.game.particles.spawnExplosion(target.x + target.w / 2, target.y + target.h / 2, target.color);
-          this.game.spawnUpgrade(target.x, target.y);
+          if (target.isBoss) {
+            this.game.shake = 30;
+            this.game.particles.spawnStunningExplosion(target.x + target.w / 2, target.y + target.h / 2, target.color);
+            this.game.spawnUpgrade(target.x + target.w / 4, target.y + target.h / 2);
+            this.game.spawnUpgrade(target.x + target.w * 0.75, target.y + target.h / 2);
+            this.game.spawnUpgrade(target.x + target.w / 2, target.y + target.h / 2);
+            
+            // Boss reward: increase player potential
+            this.game.maxLives += 2;
+            this.game.maxDamage += 2;
+            this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
+          } else {
+            this.game.spawnUpgrade(target.x, target.y);
+          }
           this.game.invaders.splice(randomIdx, 1);
-          this.game.ui.updateStats(this.game);
-        }
 
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap + this.game.player.podW / 2;
         const ry = this.game.player.y + this.game.player.h / 2;
@@ -218,6 +225,11 @@ export class WeaponManager {
                 this.game.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
+
+                // Boss reward: increase player potential
+                this.game.maxLives += 2;
+                this.game.maxDamage += 2;
+                this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
               } else {
                 this.game.spawnUpgrade(inv.x, inv.y);
               }

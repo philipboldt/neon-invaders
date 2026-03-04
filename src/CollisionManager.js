@@ -1,4 +1,4 @@
-import { COLORS } from './constants.js';
+import { COLORS, CONSTANTS } from './constants.js';
 
 export class CollisionManager {
   constructor(game) {
@@ -9,42 +9,47 @@ export class CollisionManager {
     this.game.bullets = this.game.bullets.filter(b => {
       for (let i = 0; i < this.game.invaders.length; i++) {
         const inv = this.game.invaders[i];
-        if (b.x + 4 > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + 12 > inv.y) {
+        if (b.x + CONSTANTS.BULLET_W > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + CONSTANTS.BULLET_H > inv.y) {
           this.game.particles.spawnDamageText(inv.x + inv.w / 2, inv.y + inv.h / 2, this.game.playerDamage);
           inv.hp -= this.game.playerDamage;
-          if (inv.isBoss) this.game.shake = Math.min(this.game.shake + 1, 5);
+          if (inv.isBoss) this.game.shake = Math.min(this.game.shake + CONSTANTS.SHAKE_BOSS_HIT, CONSTANTS.SHAKE_MAX_BOSS_ACCUMULATION);
           if (inv.hp <= 0) {
             this.game.score += inv.scoreValue;
             this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 20, inv.scoreValue);
             
             if (inv.isBoss) {
-              this.game.shake = 30;
+              this.game.shake = CONSTANTS.SHAKE_BOSS_DEATH;
               this.game.particles.spawnStunningExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color);
               this.game.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
               this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
               this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
 
               // Boss reward: increase player potential
-              this.game.maxLives += 2;
-              this.game.maxDamage += 2;
+              this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
+              this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
               this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
 
-              if (this.game.level === 5) {
+              if (this.game.level === CONSTANTS.BOSS_UNLOCK_LEFT) {
                 this.game.player.pods.left.active = true;
-                this.game.player.pods.left.hp = 3;
+                this.game.player.pods.left.hp = CONSTANTS.POD_MAX_HP;
                 this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, "LEFT POD UNLOCKED!");
-              } else if (this.game.level === 10) {
+              } else if (this.game.level === CONSTANTS.BOSS_UNLOCK_RIGHT) {
                 this.game.player.pods.right.active = true;
-                this.game.player.pods.right.hp = 3;
+                this.game.player.pods.right.hp = CONSTANTS.POD_MAX_HP;
                 this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, "RIGHT POD UNLOCKED!");
-              } else if (this.game.level > 10) {
+              } else if (this.game.level > CONSTANTS.BOSS_UNLOCK_RIGHT) {
                 let restored = false;
-                if (!this.game.player.pods.left.active || this.game.player.pods.left.hp < 3) { this.game.player.pods.left.active = true; this.game.player.pods.left.hp = 3; restored = true; }
-                if (!this.game.player.pods.right.active || this.game.player.pods.right.hp < 3) { this.game.player.pods.right.active = true; this.game.player.pods.right.hp = 3; restored = true; }
+                if (!this.game.player.pods.left.active || this.game.player.pods.left.hp < CONSTANTS.POD_MAX_HP) { 
+                  this.game.player.pods.left.active = true; this.game.player.pods.left.hp = CONSTANTS.POD_MAX_HP; restored = true; 
+                }
+                if (!this.game.player.pods.right.active || this.game.player.pods.right.hp < CONSTANTS.POD_MAX_HP) { 
+                  this.game.player.pods.right.active = true; this.game.player.pods.right.hp = CONSTANTS.POD_MAX_HP; restored = true; 
+                }
                 if (restored) this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, "PODS RESTORED!");
-              } else if (this.game.level > 5 && this.game.level < 10) {
-                if (!this.game.player.pods.left.active || this.game.player.pods.left.hp < 3) {
-                  this.game.player.pods.left.active = true; this.game.player.pods.left.hp = 3;
+              } else if (this.game.level > CONSTANTS.BOSS_UNLOCK_LEFT && this.game.level < CONSTANTS.BOSS_UNLOCK_RIGHT) {
+                if (!this.game.player.pods.left.active || this.game.player.pods.left.hp < CONSTANTS.POD_MAX_HP) {
+                  this.game.player.pods.left.active = true;
+                  this.game.player.pods.left.hp = CONSTANTS.POD_MAX_HP;
                   this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, "LEFT POD RESTORED!");
                 }
               }
@@ -68,9 +73,9 @@ export class CollisionManager {
     });
 
     this.game.invaderBullets = this.game.invaderBullets.filter(b => {
-      if (b.x + 6 > this.game.player.x && b.x < this.game.player.x + this.game.player.w && b.y + 10 > this.game.player.y && b.y < this.game.player.y + this.game.player.h) {
+      if (b.x + CONSTANTS.INVADER_BULLET_W > this.game.player.x && b.x < this.game.player.x + this.game.player.w && b.y + CONSTANTS.INVADER_BULLET_H > this.game.player.y && b.y < this.game.player.y + this.game.player.h) {
         if (!this.game.debugMode) {
-          this.game.shake = 15;
+          this.game.shake = CONSTANTS.SHAKE_PLAYER_HIT;
           this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, Math.PI, Math.PI);
           if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else { this.game.lives--; }
           this.game.ui.updateStats(this.game);
@@ -80,9 +85,9 @@ export class CollisionManager {
       const podY = this.game.player.y + (this.game.player.h - this.game.player.podH) / 2;
       if (this.game.player.pods.left.active) {
         const lx = this.game.player.x - this.game.player.podGap - this.game.player.podW;
-        if (b.x + 6 > lx && b.x < lx + this.game.player.podW && b.y + 10 > podY && b.y < podY + this.game.player.podH) {
+        if (b.x + CONSTANTS.INVADER_BULLET_W > lx && b.x < lx + this.game.player.podW && b.y + CONSTANTS.INVADER_BULLET_H > podY && b.y < podY + this.game.player.podH) {
           if (!this.game.debugMode) {
-            this.game.shake = 10;
+            this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(lx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
             if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else {
               this.game.player.pods.left.hp--;
@@ -94,9 +99,9 @@ export class CollisionManager {
       }
       if (this.game.player.pods.right.active) {
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap;
-        if (b.x + 6 > rx && b.x < rx + this.game.player.podW && b.y + 10 > podY && b.y < podY + this.game.player.podH) {
+        if (b.x + CONSTANTS.INVADER_BULLET_W > rx && b.x < rx + this.game.player.podW && b.y + CONSTANTS.INVADER_BULLET_H > podY && b.y < podY + this.game.player.podH) {
           if (!this.game.debugMode) {
-            this.game.shake = 10;
+            this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(rx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
             if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else {
               this.game.player.pods.right.hp--;
@@ -112,7 +117,7 @@ export class CollisionManager {
     this.game.bossMissiles = this.game.bossMissiles.filter(m => {
       if (m.x + m.w > this.game.player.x && m.x < this.game.player.x + this.game.player.w && m.y + m.h > this.game.player.y && m.y < this.game.player.y + this.game.player.h) {
         if (!this.game.debugMode) {
-          this.game.shake = 15;
+          this.game.shake = CONSTANTS.SHAKE_PLAYER_HIT;
           this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, Math.PI, Math.PI);
           if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else { this.game.lives--; }
           this.game.ui.updateStats(this.game);
@@ -124,7 +129,7 @@ export class CollisionManager {
         const lx = this.game.player.x - this.game.player.podGap - this.game.player.podW;
         if (m.x + m.w > lx && m.x < lx + this.game.player.podW && m.y + m.h > podY && m.y < podY + this.game.player.podH) {
           if (!this.game.debugMode) {
-            this.game.shake = 10;
+            this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(lx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
             if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else {
               this.game.player.pods.left.hp--;
@@ -138,7 +143,7 @@ export class CollisionManager {
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap;
         if (m.x + m.w > rx && m.x < rx + this.game.player.podW && m.y + m.h > podY && m.y < podY + this.game.player.podH) {
           if (!this.game.debugMode) {
-            this.game.shake = 10;
+            this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(rx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
             if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else {
               this.game.player.pods.right.hp--;
@@ -154,7 +159,7 @@ export class CollisionManager {
 
   updateUpgrades(now) {
     this.game.upgrades = this.game.upgrades.filter(u => {
-      u.y += 2; // UPGRADE_FALL_SPEED from constants
+      u.y += CONSTANTS.UPGRADE_FALL_SPEED;
       if (u.y > this.game.H) return false;
       
       let collected = false;
@@ -179,14 +184,14 @@ export class CollisionManager {
         if (!this.game.debugMode) {
           if (u.type === 'shield') { this.game.shieldHits = 1; this.game.hasShieldSystem = true; this.game.lastShieldLostTime = -1; }
           if (u.type === 'double') { 
-            if (this.game.shotCount < 4) this.game.shotCount++; 
+            if (this.game.shotCount < CONSTANTS.PLAYER_MAX_SHOT_COUNT) this.game.shotCount++; 
             else if (this.game.playerDamage < this.game.maxDamage) this.game.playerDamage++; 
           }
-          if (u.type === 'rocket' && this.game.rocketLevel < 5) this.game.rocketLevel++;
+          if (u.type === 'rocket' && this.game.rocketLevel < CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) this.game.rocketLevel++;
           if (u.type === 'pierce') this.game.hasPierce = true;
           if (u.type === 'heal' && this.game.lives < this.game.maxLives) this.game.lives++;
           if (u.type === 'points') {
-            const amount = this.game.level * 100;
+            const amount = this.game.level * CONSTANTS.POINTS_MULTIPLIER;
             this.game.score += amount;
             this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 20, amount);
           }
