@@ -34,13 +34,80 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         await page.goto('/');
         await page.evaluate(() => document.fonts.ready);
         await page.evaluate(() => {
-            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([9999, 1234, 10]));
+            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([
+                { name: 'NEO', score: 9999 },
+                { name: 'TRN', score: 1234 },
+                { name: 'FLY', score: 10 }
+            ]));
         });
         await page.reload();
         await page.evaluate(() => document.fonts.ready);
         await page.addStyleTag({ content: '.blink { animation: none !important; opacity: 1 !important; }' });
 
         await expect(page.locator('.canvas-container')).toHaveScreenshot('start-screen-mcp.png');
+    });
+
+    test('Highscore: Should trigger Arcade Name Input on new highscore', async ({ page }) => {
+        await page.goto('/');
+        await page.evaluate(() => {
+            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([
+                { name: 'LOW', score: 10 }
+            ]));
+        });
+        await page.reload();
+        await page.keyboard.press('Space');
+        
+        // Force Game Over with high score
+        await page.evaluate(() => {
+            window.game.score = 5000;
+            window.game.endGame(false);
+        });
+
+        // Name input should be visible
+        await expect(page.locator('#name-input-container')).toBeVisible();
+        await expect(page.locator('#overlay-text')).toHaveText('NEW HIGH SCORE!');
+
+        // Change characters (AAB)
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.press('ArrowUp');
+        
+        // Save (AAB)
+        await page.keyboard.press('Enter');
+
+        // Verify highscore list updated
+        const firstEntry = await page.locator('.highscore-list li').first();
+        await expect(firstEntry).toContainText('AAB');
+        await expect(firstEntry).toContainText('05000');
+    });
+
+    test('Boss Clear: Should show summary screen after Boss Level 10', async ({ page }) => {
+        await page.goto('/');
+        await page.keyboard.press('Space');
+
+        // Force Boss defeat at level 10
+        await page.evaluate(() => {
+            window.game.level = 10;
+            window.game.invaders = []; // Clear all to trigger level end
+            // gameLoop will check this and trigger showBossClear
+        });
+
+        // Wait for boss clear screen
+        await expect(page.locator('#boss-clear-screen')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('#boss-level-text')).toHaveText('LEVEL 10 COMPLETE');
+        
+        // Verify rewards listed
+        const rewards = page.locator('#reward-list li');
+        await expect(rewards).toHaveCount(3);
+        await expect(rewards.nth(2)).toContainText('Right Pod Unlocked: Lightning');
+
+        // Dismiss with Space
+        await page.keyboard.press('Space');
+        await expect(page.locator('#boss-clear-screen')).toBeHidden();
+        
+        // Game should have advanced to level 11
+        const level = await page.evaluate(() => window.game.level);
+        expect(level).toBe(11);
     });
 
     test('Gameplay: Starting the game should populate invaders', async ({ page }) => {
@@ -62,7 +129,7 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         // Force level 10 (Boss Level) and kill boss instantly
         await page.evaluate(() => {
             window.game.level = 10;
-            window.game.initInvaders();
+            window.game.entities.initInvaders();
             // Clear all regular invaders to avoid bullet interference
             window.game.invaders = window.game.invaders.filter(inv => inv.isBoss);
             const boss = window.game.invaders.find(inv => inv.isBoss);
@@ -95,7 +162,7 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         // Find an invader with > 1 HP (Level 1 invaders usually have 1 HP, so let's force Level 5)
         await page.evaluate(() => {
             window.game.level = 5;
-            window.game.initInvaders();
+            window.game.entities.initInvaders();
             const inv = window.game.invaders[0];
             inv.maxHp = 10;
             inv.hp = 10;
