@@ -310,10 +310,32 @@ export class Game {
     this.upgrades = this.upgrades.filter(u => {
       u.y += CONSTANTS.UPGRADE_FALL_SPEED;
       if (u.y > this.H) return false;
-      if (
-        u.x + u.w > this.player.x && u.x < this.player.x + this.player.w &&
-        u.y + u.h > this.player.y && u.y < this.player.y + this.player.h
-      ) {
+      
+      let collected = false;
+      
+      // Check main player
+      if (u.x + u.w > this.player.x && u.x < this.player.x + this.player.w && u.y + u.h > this.player.y && u.y < this.player.y + this.player.h) {
+        collected = true;
+      }
+      
+      // Check sidepods
+      if (!collected) {
+        const podY = this.player.y + (this.player.h - this.player.podH) / 2;
+        if (this.player.pods.left.active) {
+          const lx = this.player.x - this.player.podGap - this.player.podW;
+          if (u.x + u.w > lx && u.x < lx + this.player.podW && u.y + u.h > podY && u.y < podY + this.player.podH) {
+            collected = true;
+          }
+        }
+        if (!collected && this.player.pods.right.active) {
+          const rx = this.player.x + this.player.w + this.player.podGap;
+          if (u.x + u.w > rx && u.x < rx + this.player.podW && u.y + u.h > podY && u.y < podY + this.player.podH) {
+            collected = true;
+          }
+        }
+      }
+
+      if (collected) {
         this.particles.spawnExplosion(this.player.x + this.player.w / 2, this.player.y + this.player.h / 2, COLORS[u.type], Math.PI, Math.PI);
         if (!this.debugMode) {
           if (u.type === 'shield') {
@@ -333,7 +355,8 @@ export class Game {
             this.score += amount;
             this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 20, amount);
           }
-          this.ui.updateStats(this);        }
+          this.ui.updateStats(this);        
+        }
         return false;
       }
       return true;
