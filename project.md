@@ -37,7 +37,14 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Performance Optimizations:**
   - **Sprite Pre-rendering:** Invaders are pre-rendered to offscreen canvases to minimize expensive real-time shadow and glow calculations.
   - **Object Pooling:** Particle system utilizes a pre-allocated pool (1024 particles) to eliminate Garbage Collection spikes.
-  - **Modular Architecture:** Extracted core logic into specialized managers (`InputManager`, `WeaponManager`, `UIManager`, `SpriteManager`) to maintain a clean and scalable codebase. **[NEW]**
+  - **Modular Architecture:** Extracted core logic into specialized managers to maintain a clean and scalable codebase:
+    - `EntityManager`: Lifecycle and behavior of invaders, bosses, and projectiles.
+    - `CollisionManager`: Centralized detection for all game entities and power-ups.
+    - `Renderer`: Isolated canvas drawing operations.
+    - `InputManager`: Keyboard and pointer event handling.
+    - `WeaponManager`: Specialized weapon systems (PDC, Lightning, Rockets).
+    - `UIManager`: HUD and menu interface logic.
+    - `SpriteManager`: Asset pre-rendering and caching. **[ENHANCED]**
 
 - **Lightning Attack:**
   - Automatically targets a random enemy every 1.0s.
@@ -63,6 +70,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Complete Architectural Refactoring:** Finished decomposing `Game.js` into specialized managers (`EntityManager`, `CollisionManager`, `Renderer`). The main game class now acts as a lightweight orchestrator. **[NEW]**
 - **Architectural Refactoring:** Extracted input handling and special weapon systems from `Game.js` into dedicated `InputManager.js` and `WeaponManager.js` classes. This improves modularity and maintainability. **[NEW]**
 - **Pod Restoration:** Defeating a boss (from level 5 onwards) now fully heals or respawns any unlocked sidepods. **[NEW]**
 - **Pod Progression System:** Sidepods now start inactive and are rewarded for defeating bosses (Left Pod/PDC at Level 5, Right Pod/Lightning at Level 10). **[NEW]**
