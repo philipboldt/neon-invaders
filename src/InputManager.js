@@ -5,6 +5,7 @@ export class InputManager {
 
   bindInputs() {
     const handleStart = (e) => {
+      if (this.game.ui.nameInputActive) return;
       if (this.game.gameRunning && !this.game.isPaused) return;
       if (!this.game.ui.els.startScreen.classList.contains('hidden')) {
         if (e && e.type.startsWith('pointer') && e.pointerType === 'mouse' && e.button !== 0) return;
@@ -28,6 +29,10 @@ export class InputManager {
     }, { capture: true });
 
     document.addEventListener('keydown', (e) => {
+      if (this.game.ui.nameInputActive) {
+        this.game.ui.handleNameInputKey(e);
+        return;
+      }
       if (e.code === 'KeyH' && this.game.gameRunning && this.game.ui.els.overlay.classList.contains('hidden')) {
         this.game.isPaused = !this.game.isPaused;
         this.game.ui.toggleHelp(this.game.isPaused);

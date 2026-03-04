@@ -9,6 +9,8 @@ export class UIManager {
       damage: document.getElementById('damage'),
       overlay: document.getElementById('overlay'),
       overlayText: document.getElementById('overlay-text'),
+      nameInputContainer: document.getElementById('name-input-container'),
+      charEls: document.querySelectorAll('.arcade-input .char'),
       startScreen: document.getElementById('start-screen'),
       helpScreen: document.getElementById('help-screen'),
       btnShoot: document.getElementById('btn-shoot'),
@@ -18,6 +20,10 @@ export class UIManager {
       restartBtn: document.getElementById('restart'),
       rocket: document.getElementById('rocket')
     };
+    this.nameInputActive = false;
+    this.currentCharIndex = 0;
+    this.chars = ['A', 'A', 'A'];
+    this.pendingScore = 0;
     this.updateHighScores();
   }
 
@@ -88,24 +94,89 @@ export class UIManager {
     this.els.overlay.classList.remove('hidden');
     this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     this.els.overlayText.classList.toggle('win', won);
+    
+    // Hide name input if it was active
+    this.nameInputActive = false;
+    this.els.nameInputContainer.classList.add('hidden');
+  }
+
+  showNameInput(score) {
+    this.pendingScore = score;
+    this.nameInputActive = true;
+    this.currentCharIndex = 0;
+    this.chars = ['A', 'A', 'A'];
+    this.updateCharDisplay();
+    this.els.nameInputContainer.classList.remove('hidden');
+    this.els.overlay.classList.remove('hidden');
+    this.els.overlayText.textContent = 'NEW HIGH SCORE!';
+  }
+
+  updateCharDisplay() {
+    this.els.charEls.forEach((el, i) => {
+      el.textContent = this.chars[i];
+      el.classList.toggle('active', i === this.currentCharIndex);
+    });
+  }
+
+  handleNameInputKey(e) {
+    if (!this.nameInputActive) return;
+
+    if (e.code === 'ArrowLeft') {
+      this.currentCharIndex = (this.currentCharIndex - 1 + 3) % 3;
+    } else if (e.code === 'ArrowRight') {
+      this.currentCharIndex = (this.currentCharIndex + 1) % 3;
+    } else if (e.code === 'ArrowUp') {
+      let charCode = this.chars[this.currentCharIndex].charCodeAt(0);
+      charCode = ((charCode - 65 + 1) % 26) + 65;
+      this.chars[this.currentCharIndex] = String.fromCharCode(charCode);
+    } else if (e.code === 'ArrowDown') {
+      let charCode = this.chars[this.currentCharIndex].charCodeAt(0);
+      charCode = ((charCode - 65 - 1 + 26) % 26) + 65;
+      this.chars[this.currentCharIndex] = String.fromCharCode(charCode);
+    } else if (e.code === 'Enter' || e.code === 'Space') {
+      this.saveHighscore();
+      return;
+    }
+    this.updateCharDisplay();
+    e.preventDefault();
+  }
+
+  saveHighscore() {
+    const name = this.chars.join('');
+    this.updateHighScores({ name, score: this.pendingScore });
+    this.nameInputActive = false;
+    this.els.nameInputContainer.classList.add('hidden');
+    this.els.overlayText.textContent = 'SCORE SAVED!';
   }
 
   toggleHelp(isVisible) {
     this.els.helpScreen.classList.toggle('hidden', !isVisible);
   }
 
-  updateHighScores(newScore) {
-    let scores = [0, 0, 0];
+  updateHighScores(newEntry) {
+    let scores = [];
     try {
       const saved = localStorage.getItem('neonInvadersHighScores');
-      if (saved) scores = JSON.parse(saved);
+      if (saved) {
+        scores = JSON.parse(saved);
+        // Migration: convert old number-only scores to objects
+        if (scores.length > 0 && typeof scores[0] === 'number') {
+          scores = scores.map(s => ({ name: '???' , score: s }));
+        }
+      } else {
+        scores = [
+          { name: 'NEO', score: 1000 },
+          { name: 'TRN', score: 500 },
+          { name: 'FLY', score: 250 }
+        ];
+      }
     } catch (e) {
       console.warn('LocalStorage not available', e);
     }
 
-    if (newScore !== undefined) {
-      scores.push(newScore);
-      scores.sort((a, b) => b - a);
+    if (newEntry !== undefined) {
+      scores.push(newEntry);
+      scores.sort((a, b) => b.score - a.score);
       scores = scores.slice(0, 3);
       try {
         localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
@@ -116,18 +187,36 @@ export class UIManager {
     const listEls = document.querySelectorAll('.highscore-list');
     listEls.forEach(listEl => {
       listEl.innerHTML = '';
-      scores.forEach((s, i) => {
+      scores.forEach((entry, i) => {
         const li = document.createElement('li');
         const rankSpan = document.createElement('span');
         rankSpan.className = 'rank';
-        rankSpan.textContent = `${i + 1}.`;
+        rankSpan.textContent = `${i + 1}. ${entry.name}`;
         const scoreSpan = document.createElement('span');
         scoreSpan.className = 'score-val';
-        scoreSpan.textContent = s.toString().padStart(5, '0');
+        scoreSpan.textContent = entry.score.toString().padStart(5, '0');
         li.appendChild(rankSpan);
         li.appendChild(scoreSpan);
         listEl.appendChild(li);
       });
     });
+  }
+
+  isHighscore(score) {
+    let scores = [];
+    try {
+      const saved = localStorage.getItem('neonInvadersHighScores');
+      if (saved) {
+        scores = JSON.parse(saved);
+        if (scores.length > 0 && typeof scores[0] === 'number') {
+          scores = scores.map(s => ({ name: '???' , score: s }));
+        }
+      } else {
+        scores = [{ score: 1000 }, { score: 500 }, { score: 250 }];
+      }
+    } catch (e) {
+      return false;
+    }
+    return scores.length < 3 || score > scores[scores.length - 1].score;
   }
 }
