@@ -6,6 +6,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 ## Current Features
 - **Core Gameplay:**
   - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
+  - **Sidepods:** Two mini-ships (Left/Right) that fire additional bullets. Each has 3 HP and cannot be healed. Movement constraints dynamically adjust based on active pods. **[NEW]**
 - **Wave-based invader spawning:** Increasing difficulty, with special Boss encounters.
   - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 125x health and 4x size. Immune to rockets. **[BALANCED]**
   - **Bosses:** Spawn at levels ending in 0 (e.g., 10, 20), featuring 250x health, 6x size, unique color, and massive point drops. Immune to rockets. **[BALANCED]**
@@ -60,6 +61,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Sidepod System:** Added two independent mini-ships on either side of the player. They provide extra firepower but have limited HP and no healing. Movement boundaries adjust to their presence. **[NEW]**
 - **Points Upgrade Visuals:** The awarded point value is now displayed in bold black text inside the neon yellow upgrade circle. **[NEW]**
 - **Pierce Color Update:** Changed the Pierce upgrade color to neon purple for better visual distinction. **[NEW]**
 - **Points Upgrade:** Introduced a new neon yellow upgrade that grants `Level x 100` bonus points upon collection. Unlike other power-ups, this can always spawn. **[NEW]**

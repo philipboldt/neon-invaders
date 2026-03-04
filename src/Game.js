@@ -172,13 +172,26 @@ export class Game {
   playerShoot(now) {
     if (!this.spacePressed || now - this.lastPlayerShot < CONSTANTS.PLAYER_SHOOT_COOLDOWN) return;
     this.lastPlayerShot = now;
-    const maxBullets = 5 + this.shotCount * 2;
+    const maxBullets = 15; // Increased cap for sidepods
+    
+    // Main ship bullets
     if (this.bullets.length < maxBullets) {
       const spread = 14;
       const startX = this.player.x + this.player.w / 2 - 2 - (this.shotCount - 1) * (spread / 2);
       for (let i = 0; i < this.shotCount; i++) {
         this.bullets.push({ x: startX + i * spread, y: this.player.y, w: 4, h: 12 });
       }
+    }
+    
+    // Sidepod bullets
+    const podY = this.player.y + (this.player.h - this.player.podH) / 2;
+    if (this.player.pods.left.active && this.bullets.length < maxBullets) {
+      const lx = this.player.x - this.player.podGap - this.player.podW / 2 - 2;
+      this.bullets.push({ x: lx, y: podY, w: 4, h: 12 });
+    }
+    if (this.player.pods.right.active && this.bullets.length < maxBullets) {
+      const rx = this.player.x + this.player.w + this.player.podGap + this.player.podW / 2 - 2;
+      this.bullets.push({ x: rx, y: podY, w: 4, h: 12 });
     }
   }
 
@@ -572,6 +585,7 @@ export class Game {
     });
 
     this.invaderBullets = this.invaderBullets.filter(b => {
+      // Check collision with main player
       if (b.x + 6 > this.player.x && b.x < this.player.x + this.player.w && b.y + 10 > this.player.y && b.y < this.player.y + this.player.h) {
         if (!this.debugMode) {
           this.shake = 15;
@@ -586,10 +600,47 @@ export class Game {
         }
         return false;
       }
+      // Check collision with sidepods
+      const podY = this.player.y + (this.player.h - this.player.podH) / 2;
+      if (this.player.pods.left.active) {
+        const lx = this.player.x - this.player.podGap - this.player.podW;
+        if (b.x + 6 > lx && b.x < lx + this.player.podW && b.y + 10 > podY && b.y < podY + this.player.podH) {
+          if (!this.debugMode) {
+            this.shake = 10;
+            this.particles.spawnExplosion(lx + this.player.podW / 2, podY + this.player.podH / 2, COLORS.player, Math.PI, Math.PI);
+            if (this.shieldHits > 0) {
+              this.shieldHits = 0;
+              this.lastShieldLostTime = now;
+            } else {
+              this.player.pods.left.hp--;
+              if (this.player.pods.left.hp <= 0) this.player.pods.left.active = false;
+            }
+          }
+          return false;
+        }
+      }
+      if (this.player.pods.right.active) {
+        const rx = this.player.x + this.player.w + this.player.podGap;
+        if (b.x + 6 > rx && b.x < rx + this.player.podW && b.y + 10 > podY && b.y < podY + this.player.podH) {
+          if (!this.debugMode) {
+            this.shake = 10;
+            this.particles.spawnExplosion(rx + this.player.podW / 2, podY + this.player.podH / 2, COLORS.player, Math.PI, Math.PI);
+            if (this.shieldHits > 0) {
+              this.shieldHits = 0;
+              this.lastShieldLostTime = now;
+            } else {
+              this.player.pods.right.hp--;
+              if (this.player.pods.right.hp <= 0) this.player.pods.right.active = false;
+            }
+          }
+          return false;
+        }
+      }
       return true;
     });
 
     this.bossMissiles = this.bossMissiles.filter(m => {
+      // Check collision with main player
       if (m.x + m.w > this.player.x && m.x < this.player.x + this.player.w && m.y + m.h > this.player.y && m.y < this.player.y + this.player.h) {
         if (!this.debugMode) {
           this.shake = 15;
@@ -603,6 +654,42 @@ export class Game {
           this.ui.updateStats(this);
         }
         return false;
+      }
+      // Check collision with sidepods
+      const podY = this.player.y + (this.player.h - this.player.podH) / 2;
+      if (this.player.pods.left.active) {
+        const lx = this.player.x - this.player.podGap - this.player.podW;
+        if (m.x + m.w > lx && m.x < lx + this.player.podW && m.y + m.h > podY && m.y < podY + this.player.podH) {
+          if (!this.debugMode) {
+            this.shake = 10;
+            this.particles.spawnExplosion(lx + this.player.podW / 2, podY + this.player.podH / 2, COLORS.player, Math.PI, Math.PI);
+            if (this.shieldHits > 0) {
+              this.shieldHits = 0;
+              this.lastShieldLostTime = now;
+            } else {
+              this.player.pods.left.hp--;
+              if (this.player.pods.left.hp <= 0) this.player.pods.left.active = false;
+            }
+          }
+          return false;
+        }
+      }
+      if (this.player.pods.right.active) {
+        const rx = this.player.x + this.player.w + this.player.podGap;
+        if (m.x + m.w > rx && m.x < rx + this.player.podW && m.y + m.h > podY && m.y < podY + this.player.podH) {
+          if (!this.debugMode) {
+            this.shake = 10;
+            this.particles.spawnExplosion(rx + this.player.podW / 2, podY + this.player.podH / 2, COLORS.player, Math.PI, Math.PI);
+            if (this.shieldHits > 0) {
+              this.shieldHits = 0;
+              this.lastShieldLostTime = now;
+            } else {
+              this.player.pods.right.hp--;
+              if (this.player.pods.right.hp <= 0) this.player.pods.right.active = false;
+            }
+          }
+          return false;
+        }
       }
       return true;
     });
