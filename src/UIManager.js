@@ -13,6 +13,9 @@ export class UIManager {
       charEls: document.querySelectorAll('.arcade-input .char'),
       startScreen: document.getElementById('start-screen'),
       helpScreen: document.getElementById('help-screen'),
+      bossClearScreen: document.getElementById('boss-clear-screen'),
+      bossLevelText: document.getElementById('boss-level-text'),
+      rewardList: document.getElementById('reward-list'),
       btnShoot: document.getElementById('btn-shoot'),
       btnLeft: document.getElementById('btn-left'),
       btnRight: document.getElementById('btn-right'),
@@ -21,6 +24,7 @@ export class UIManager {
       rocket: document.getElementById('rocket')
     };
     this.nameInputActive = false;
+    this.bossClearActive = false;
     this.currentCharIndex = 0;
     this.chars = ['A', 'A', 'A'];
     this.pendingScore = 0;
@@ -82,12 +86,15 @@ export class UIManager {
     this.els.startScreen.classList.remove('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
+    this.els.bossClearScreen.classList.add('hidden');
   }
 
   hideScreens() {
     this.els.startScreen.classList.add('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
+    this.els.bossClearScreen.classList.add('hidden');
+    this.bossClearActive = false;
   }
 
   showGameOver(won) {
@@ -95,9 +102,28 @@ export class UIManager {
     this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     this.els.overlayText.classList.toggle('win', won);
     
-    // Hide name input if it was active
+    // Hide other inputs
     this.nameInputActive = false;
+    this.bossClearActive = false;
     this.els.nameInputContainer.classList.add('hidden');
+    this.els.bossClearScreen.classList.add('hidden');
+  }
+
+  showBossClear(level, rewards) {
+    this.bossClearActive = true;
+    this.els.bossLevelText.textContent = `LEVEL ${level} COMPLETE`;
+    this.els.rewardList.innerHTML = '';
+    rewards.forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      this.els.rewardList.appendChild(li);
+    });
+    this.els.bossClearScreen.classList.remove('hidden');
+  }
+
+  hideBossClear() {
+    this.bossClearActive = false;
+    this.els.bossClearScreen.classList.add('hidden');
   }
 
   showNameInput(score) {

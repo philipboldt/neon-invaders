@@ -157,6 +157,17 @@ export class Game {
     this.renderer.draw();
     if (!this.gameRunning || this.isPaused) return;
     if (this.invaders.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0 && this.upgrades.length === 0 && this.activeLightning === null) {
+      const isBossLevel = this.level % 10 === 0;
+      const rewards = ['+2 Max Health', '+2 Max Damage'];
+      if (this.level === 5) rewards.push('Left Pod Unlocked: PDC');
+      if (this.level === 10) rewards.push('Right Pod Unlocked: Lightning');
+      if (this.level > 10 && this.level % 10 === 0) rewards.push('Sidepods Fully Restored');
+
+      if (isBossLevel) {
+        this.ui.showBossClear(this.level, rewards);
+        this.isPaused = true;
+      }
+
       this.level++; this.ui.updateStats(this);
       this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.upgrades = []; this.rockets = [];
       this.entities.initInvaders(); this.lastInvaderShoot = now; this.lastBossShoot = now;

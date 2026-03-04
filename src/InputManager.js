@@ -33,6 +33,13 @@ export class InputManager {
         this.game.ui.handleNameInputKey(e);
         return;
       }
+      if (this.game.ui.bossClearActive) {
+        if (e.code === 'Space' || e.code === 'Enter') {
+          this.game.ui.hideBossClear();
+          this.game.isPaused = false;
+        }
+        return;
+      }
       if (e.code === 'KeyH' && this.game.gameRunning && this.game.ui.els.overlay.classList.contains('hidden')) {
         this.game.isPaused = !this.game.isPaused;
         this.game.ui.toggleHelp(this.game.isPaused);
@@ -114,6 +121,11 @@ export class InputManager {
     handlePointerUp(this.game.ui.els.btnRight, (active) => { if (!active && this.game.player.dir === 1) this.game.player.dir = 0; });
 
     handlePointerDown(this.game.ui.els.btnShoot, (e) => {
+      if (this.game.ui.bossClearActive) {
+        this.game.ui.hideBossClear();
+        this.game.isPaused = false;
+        return;
+      }
       if (!this.game.gameRunning || this.game.isPaused) {
         if (!this.game.ui.els.startScreen.classList.contains('hidden')) {
           handleStart(e);

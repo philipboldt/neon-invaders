@@ -367,6 +367,43 @@ body::before {
   color: #ff6600;
 }
 
+#boss-clear-screen h2.win {
+  color: #39ff14;
+  text-shadow: 0 0 20px #39ff14;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+}
+
+.reward-container {
+  margin: 1.5rem 0;
+  text-align: center;
+  background: rgba(57, 255, 20, 0.05);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  padding: 1.5rem 3rem;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+}
+
+#boss-level-text {
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: #00f5ff;
+  margin-bottom: 1rem;
+}
+
+#reward-list {
+  list-style-type: none;
+  font-size: 1.1rem;
+  line-height: 2;
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+#reward-list li::before {
+  content: '▶ ';
+  font-size: 0.8rem;
+}
+
 @keyframes pulse {
 
   0%,
