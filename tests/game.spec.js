@@ -137,6 +137,33 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         expect(level).toBe(11);
     });
 
+    test('Boss Clear: Should show summary screen after Boss Level 15', async ({ page }) => {
+        await page.goto('/');
+        await page.keyboard.press('Space');
+
+        // Force Boss defeat at level 15
+        await page.evaluate(() => {
+            window.game.level = 15;
+            window.game.invaders = []; 
+        });
+
+        // Wait for boss clear screen
+        await expect(page.locator('#boss-clear-screen')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('#boss-level-text')).toHaveText('LEVEL 15 COMPLETE');
+        
+        // Verify rewards listed (Partially Repaired)
+        const rewards = page.locator('#reward-list li');
+        await expect(rewards.last()).toContainText('Sidepods Partially Repaired');
+
+        // Dismiss with Space
+        await page.keyboard.press('Space');
+        await expect(page.locator('#boss-clear-screen')).toBeHidden();
+        
+        // Game should have advanced to level 16
+        const level = await page.evaluate(() => window.game.level);
+        expect(level).toBe(16);
+    });
+
     test('Gameplay: Starting the game should populate invaders', async ({ page }) => {
         await page.goto('/');
         await page.keyboard.press('Space');

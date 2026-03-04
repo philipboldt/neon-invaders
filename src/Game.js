@@ -157,13 +157,15 @@ export class Game {
     this.renderer.draw();
     if (!this.gameRunning || this.isPaused) return;
     if (this.invaders.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0 && this.upgrades.length === 0 && this.activeLightning === null) {
-      const isBossClear = this.level === 5 || this.level % 10 === 0;
+      const isBossOrMiniBoss = this.level % 5 === 0;
       const rewards = ['+2 Max Health', '+2 Max Damage'];
+      
       if (this.level === 5) rewards.push('Left Pod Unlocked: PDC');
-      if (this.level === 10) rewards.push('Right Pod Unlocked: Lightning');
-      if (this.level > 10 && this.level % 10 === 0) rewards.push('Sidepods Fully Restored');
+      else if (this.level === 10) rewards.push('Right Pod Unlocked: Lightning');
+      else if (this.level % 10 === 0) rewards.push('Sidepods Fully Restored');
+      else if (this.level % 5 === 0) rewards.push('Sidepods Partially Repaired');
 
-      if (isBossClear) {
+      if (isBossOrMiniBoss) {
         this.ui.showBossClear(this.level, rewards);
         this.isPaused = true;
       }
