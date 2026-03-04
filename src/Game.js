@@ -432,8 +432,7 @@ export class Game {
         startTime: now,
         startX: podX,
         startY: podY,
-        endX: this.pdcTarget.x + this.pdcTarget.w / 2,
-        endY: this.pdcTarget.y + this.pdcTarget.h / 2
+        target: this.pdcTarget // Store reference to track current position
       };
 
       // 10% chance to destroy
@@ -976,7 +975,14 @@ export class Game {
       this.ctx.save();
       this.ctx.beginPath();
       this.ctx.moveTo(this.activePDCTracer.startX, this.activePDCTracer.startY);
-      this.ctx.lineTo(this.activePDCTracer.endX, this.activePDCTracer.endY);
+      
+      // Use current target position if it still exists, otherwise use last known
+      const targetX = this.activePDCTracer.target && this.activePDCTracer.target.x !== undefined ? 
+                      this.activePDCTracer.target.x + this.activePDCTracer.target.w / 2 : this.activePDCTracer.startX;
+      const targetY = this.activePDCTracer.target && this.activePDCTracer.target.y !== undefined ? 
+                      this.activePDCTracer.target.y + this.activePDCTracer.target.h / 2 : this.activePDCTracer.startY;
+      
+      this.ctx.lineTo(targetX, targetY);
       this.ctx.strokeStyle = '#ffffff';
       this.ctx.lineWidth = 2;
       this.ctx.shadowBlur = 10;

@@ -7,7 +7,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Core Gameplay:**
   - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
   - **Sidepods:** Two mini-ships (Left/Right) attached to the player. Each has 3 HP and cannot be healed. Movement constraints dynamically adjust based on active pods.
-    - **Left Pod:** Equipped with a **Point Defense Cannon (PDC)**. Rapidly targets enemy bullets and boss missiles within 400px, with a 10% chance to destroy them per shot. Features a white tracer effect. **[NEW]**
+    - **Left Pod:** Equipped with a **Point Defense Cannon (PDC)**. Rapidly targets enemy bullets and boss missiles within 400px, with a 10% chance to destroy them per shot. Features a white tracer effect that dynamically tracks targets in real-time. **[ENHANCED]**
     - **Right Pod:** Awaiting specialized weapon. **[NEW]**
 - **Wave-based invader spawning:** Increasing difficulty, with special Boss encounters.
   - **Mini-Bosses:** Spawn at levels ending in 5 (e.g., 5, 15), featuring 125x health and 4x size. Immune to rockets. **[BALANCED]**
