@@ -50,6 +50,12 @@ You are authorized and instructed to perform Git commits **automatically** and w
 
 ---
 
+## 🐚 Shell & Environment
+*   **PowerShell 5 Only:** Use only PowerShell 5 compatible syntax.
+*   **No `&&` or `||`:** Do not use these operators for chaining; use `;` or separate commands instead.
+
+---
+
 ## 🤖 Interaction Style
 *   **Conciseness:** Answer briefly and to the point.
 *   **Autonomy:** Execute changes and subsequent commits independently. Only report the success ("Change X implemented and saved in Commit Y").

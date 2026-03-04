@@ -65,6 +65,8 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Points Upgrade:** Introduced a new neon yellow upgrade that grants `Level x 100` bonus points upon collection. Unlike other power-ups, this can always spawn. **[NEW]**
 - **Floating Score Text:** Added a neon yellow particle effect that displays earned points floating above the player. **[NEW]**
 - **Floating Score Physics:** Increased the vertical speed of floating score particles for a more dynamic feel. **[NEW]**
+- **PowerShell 5 Compatibility:** Enforced PowerShell 5 syntax constraints in `Gemini.md` to prevent command failures. **[NEW]**
+- **GitHub Sync:** Pulled latest changes including Particle System optimizations and Game logic updates. **[NEW]**
 - **Initialization Robustness:** Improved game initialization and added protocol checks for better compatibility. **[NEW]**
 - **Zero-Build Architecture:** Migrated `index.html` to load source files directly via `<script type="module">`. This eliminates the need for manual bundling (`npm run build`) before pushing changes to GitHub Pages. The source code *is* the game. **[NEW]**
 - **Mobile Interaction Fix:** Improved mobile and keyboard start logic. Fixed an issue where the game couldn't be started on some mobile devices by tapping or pressing Space.
