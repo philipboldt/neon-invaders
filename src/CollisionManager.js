@@ -182,19 +182,51 @@ export class CollisionManager {
       if (collected) {
         this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS[u.type], Math.PI, Math.PI);
         if (!this.game.debugMode) {
-          if (u.type === 'shield') { this.game.shieldHits = 1; this.game.hasShieldSystem = true; this.game.lastShieldLostTime = -1; }
-          if (u.type === 'double') { 
-            if (this.game.shotCount < CONSTANTS.PLAYER_MAX_SHOT_COUNT) this.game.shotCount++; 
-            else if (this.game.playerDamage < this.game.maxDamage) this.game.playerDamage++; 
+          const type = u.type;
+          let limitReached = false;
+
+          if (type === 'shield') { 
+            this.game.shieldHits = 1; this.game.hasShieldSystem = true; this.game.lastShieldLostTime = -1; 
+            limitReached = true; // Shield is a one-time pick usually
           }
-          if (u.type === 'rocket' && this.game.rocketLevel < CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) this.game.rocketLevel++;
-          if (u.type === 'pierce') this.game.hasPierce = true;
-          if (u.type === 'heal' && this.game.lives < this.game.maxLives) this.game.lives++;
-          if (u.type === 'points') {
+          if (type === 'double') { 
+            if (this.game.shotCount < CONSTANTS.PLAYER_MAX_SHOT_COUNT) {
+              this.game.shotCount++;
+              if (this.game.shotCount === CONSTANTS.PLAYER_MAX_SHOT_COUNT && this.game.playerDamage >= this.game.maxDamage) limitReached = true;
+            } else if (this.game.playerDamage < this.game.maxDamage) {
+              this.game.playerDamage++;
+              if (this.game.playerDamage === this.game.maxDamage) limitReached = true;
+            }
+          }
+          if (type === 'rocket') {
+            if (this.game.rocketLevel < CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) {
+              this.game.rocketLevel++;
+              if (this.game.rocketLevel === CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) limitReached = true;
+            }
+          }
+          if (type === 'pierce') {
+            this.game.hasPierce = true;
+            limitReached = true;
+          }
+          if (type === 'heal') {
+            if (this.game.lives < this.game.maxLives) {
+              this.game.lives++;
+              if (this.game.lives === this.game.maxLives) limitReached = true;
+            }
+          }
+          if (type === 'points') {
             const amount = this.game.level * CONSTANTS.POINTS_MULTIPLIER;
             this.game.score += amount;
             this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 20, amount);
           }
+
+          // If limit reached, convert all existing upgrades of this type to points
+          if (limitReached && type !== 'points') {
+            this.game.upgrades.forEach(otherU => {
+              if (otherU.type === type) otherU.type = 'points';
+            });
+          }
+
           this.game.ui.updateStats(this.game);        
         }
         return false;

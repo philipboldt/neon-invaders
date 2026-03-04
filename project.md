@@ -17,11 +17,12 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 - **Power-up System:**
   - `Shield`: Grants a temporary shield that absorbs one hit.
-  - `Double`: Increases shot count (up to 4) or damage (up to 5). Stops dropping when maxed.
-  - `Rocket`: Fires homing missiles. Upgrade increases blast radius (Level 1-5). Deals 2x player damage.
+  - `Double`: Increases shot count (up to 4) or damage (up to dynamic max).
+  - `Rocket`: Fires homing missiles. Upgrade increases blast radius (Level 1-5).
   - `Pierce`: Neon purple. Shots pass through one enemy if the hit is fatal.
-  - `Heal`: Restores 1 life (max 5 lives).
-  - `Points`: Neon yellow. Displays awarded value (Level x 100) in black text inside the circle. Always available to drop. **[ENHANCED]**
+  - `Heal`: Restores 1 life (up to dynamic max).
+  - `Points`: Neon yellow. Always available.
+  - **Dynamic Conversion:** When a player reaches the maximum limit for an upgrade type (e.g., max HP), all other upgrades of that type on the screen automatically transform into 'Points' upgrades. **[NEW]**
 
 - **Parallax Starfield:** Multi-layered scrolling background with stars of different sizes and speeds to create depth and a dynamic feel, even on the start screen. **[NEW]**
 - **UI/HUD:**
@@ -71,6 +72,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Dynamic Upgrade Conversion:** When a player reaches the maximum limit for an upgrade category (Health, Damage, Rockets, etc.), all other upgrades of that same type currently on the screen instantly transform into 'Points' upgrades. **[NEW]**
 - **Configuration Centralization:** Migrated all remaining hard-coded numbers from `CollisionManager.js` and other weapon systems into `constants.js`. This allows for centralized game balancing. **[NEW]**
 - **Boss Kill Fix:** Ensured that player potential scaling (max health/damage) is correctly applied regardless of whether the boss was killed by bullets, lightning, or rockets. **[FIX]**
 - **Player Potential Scaling:** Defeating a boss now increases the maximum possible lives and damage level by 2. Players must still collect upgrades to reach these new limits. **[NEW]**
