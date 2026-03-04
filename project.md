@@ -6,7 +6,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 ## Current Features
 - **Core Gameplay:**
   - Player movement (Left/Right arrows/touch buttons) and shooting (Spacebar/touch button).
-  - **Sidepods:** Two mini-ships (Left/Right) attached to the player. Each has 3 HP and cannot be healed. Start as inactive and are unlocked as boss rewards. Movement constraints dynamically adjust based on active pods. **[ENHANCED]**
+  - **Sidepods:** Two mini-ships (Left/Right) attached to the player. Each has 3 HP and cannot be healed. Start as inactive and are unlocked as boss rewards. Defeating a boss (from level 5 onwards) will fully heal or respawn any unlocked pods. Movement constraints dynamically adjust based on active pods. **[ENHANCED]**
     - **Left Pod:** Equipped with a **Point Defense Cannon (PDC)**. Unlocked by defeating the Level 5 boss. Rapidly targets enemy projectiles with a 10% interception chance. **[NEW]**
     - **Right Pod:** Equipped with the **Lightning Attack**. Unlocked by defeating the Level 10 boss. Automatically targets random enemies every 1.0s. **[NEW]**
 - **Wave-based invader spawning:** Increasing difficulty, with special Boss encounters.
@@ -63,6 +63,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Pod Restoration:** Defeating a boss (from level 5 onwards) now fully heals or respawns any unlocked sidepods. **[NEW]**
 - **Pod Progression System:** Sidepods now start inactive and are rewarded for defeating bosses (Left Pod/PDC at Level 5, Right Pod/Lightning at Level 10). **[NEW]**
 - **Weapon Refactor:** Tied the Lightning Attack to the right sidepod. It now fires from the pod's position rather than the main ship. **[NEW]**
 - **Point Defense Cannon (PDC):** Equipped the left sidepod with a rapid-fire defensive weapon that targets enemy projectiles. It has a 10% chance to intercept and destroy bullets and boss missiles. **[NEW]**

@@ -661,11 +661,33 @@ export class Game {
                   this.player.pods.left.active = true;
                   this.player.pods.left.hp = 3;
                   this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 40, "LEFT POD UNLOCKED!");
-                }
-                if (this.level === 10) {
+                } else if (this.level === 10) {
                   this.player.pods.right.active = true;
                   this.player.pods.right.hp = 3;
                   this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 40, "RIGHT POD UNLOCKED!");
+                } else if (this.level > 10) {
+                  // Post-level 10: Heal/Respawn both
+                  let restored = false;
+                  if (!this.player.pods.left.active || this.player.pods.left.hp < 3) {
+                    this.player.pods.left.active = true;
+                    this.player.pods.left.hp = 3;
+                    restored = true;
+                  }
+                  if (!this.player.pods.right.active || this.player.pods.right.hp < 3) {
+                    this.player.pods.right.active = true;
+                    this.player.pods.right.hp = 3;
+                    restored = true;
+                  }
+                  if (restored) {
+                    this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 40, "PODS RESTORED!");
+                  }
+                } else if (this.level > 5 && this.level < 10) {
+                  // Between 5 and 10: Heal/Respawn Left pod only
+                  if (!this.player.pods.left.active || this.player.pods.left.hp < 3) {
+                    this.player.pods.left.active = true;
+                    this.player.pods.left.hp = 3;
+                    this.particles.spawnScoreText(this.player.x + this.player.w / 2, this.player.y - 40, "LEFT POD RESTORED!");
+                  }
                 }
               } else {
                 this.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2);
