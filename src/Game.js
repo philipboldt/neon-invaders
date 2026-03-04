@@ -770,9 +770,11 @@ export class Game {
       
       this.ctx.lineTo(tx, ty); // End at current target position
       
-      // Color transition: grey -> neon blue -> white
-      const color = t < 0.3 ? CONSTANTS.LIGHTNING_COLOR_START : 
-                    t < 0.7 ? CONSTANTS.LIGHTNING_COLOR_END : '#ffffff';
+      // Color transition: grey -> neon blue -> white -> neon blue -> grey
+      const color = t < 0.25 ? CONSTANTS.LIGHTNING_COLOR_START :
+                    t < 0.50 ? CONSTANTS.LIGHTNING_COLOR_END :
+                    t < 0.75 ? '#ffffff' :
+                    t < 0.90 ? CONSTANTS.LIGHTNING_COLOR_END : CONSTANTS.LIGHTNING_COLOR_START;
       
       const baseWidth = t < 0.5 ? 12 : 24 * (1 - t);
       

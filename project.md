@@ -38,7 +38,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 
 - **Lightning Attack:**
   - Automatically targets a random enemy every 1.0s.
-  - Visual: Thick zigzag bolt with black border and color transition (Grey -> Neon Blue -> White).
+  - Visual: Thick zigzag bolt with black border and color transition (Grey -> Neon Blue -> White -> Neon Blue -> Grey).
   - **Dynamic Zigzag:** Segment count scales with distance to target for a cleaner look on short hits.
   - Deals player damage and triggers matching hit particle effects. **[ENHANCED]**
 

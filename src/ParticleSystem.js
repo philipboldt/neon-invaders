@@ -203,7 +203,10 @@ export class ParticleSystem {
       
       if (p.isLightning) {
         const t = p.life / p.maxLife;
-        p.color = t < 0.3 ? '#555555' : t < 0.7 ? '#00f5ff' : '#ffffff';
+        p.color = t < 0.25 ? '#555555' : 
+                  t < 0.50 ? '#00f5ff' : 
+                  t < 0.75 ? '#ffffff' : 
+                  t < 0.90 ? '#00f5ff' : '#555555';
       }
       
       if (p.life >= p.maxLife) {
