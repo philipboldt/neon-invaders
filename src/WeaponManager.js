@@ -20,6 +20,9 @@ export class WeaponManager {
 
     this.pdcGraphics = new PIXI.Graphics();
     this.game.effectLayer.addChild(this.pdcGraphics);
+
+    this.markerGraphics = new PIXI.Graphics();
+    this.game.effectLayer.addChild(this.markerGraphics);
   }
 
   updateProjectilesRender() {
@@ -52,10 +55,14 @@ export class WeaponManager {
       this.bossMissileGraphics.endFill();
     });
 
-    // Rockets
+    // Rockets & Target Markers
     this.rocketGraphics.clear();
+    this.markerGraphics.clear();
+    const rocketColor = this.parseColor(COLORS.rocket);
+    
     this.game.rockets.forEach(r => {
-      this.rocketGraphics.beginFill(this.parseColor(COLORS.rocket));
+      // Draw Rocket
+      this.rocketGraphics.beginFill(rocketColor);
       const matrix = new PIXI.Matrix();
       matrix.translate(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
       matrix.rotate(Math.atan2(r.vy, r.vx));
@@ -63,6 +70,15 @@ export class WeaponManager {
       this.rocketGraphics.drawRect(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
       this.rocketGraphics.setMatrix(new PIXI.Matrix());
       this.rocketGraphics.endFill();
+
+      // Draw Target Marker
+      this.markerGraphics.lineStyle(2, rocketColor, 0.6);
+      const size = 15;
+      this.markerGraphics.drawCircle(r.targetX, r.targetY, size);
+      this.markerGraphics.moveTo(r.targetX - size, r.targetY);
+      this.markerGraphics.lineTo(r.targetX + size, r.targetY);
+      this.markerGraphics.moveTo(r.targetX, r.targetY - size);
+      this.markerGraphics.lineTo(r.targetX, r.targetY + size);
     });
   }
 
