@@ -55,6 +55,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **Mobile Portrait Tests:** Added `tests/mobile-portrait.spec.js` to verify dynamic logical dimensions, responsive grid layouts, and player positioning in portrait mode. **[TEST]**
 - **Portrait Mobile Optimization:** Implemented dynamic logical height (600-1400) and fixed logical width (800). Added Time-to-Impact scaling for projectiles and faster invader descent to maintain game balance on taller screens. Updated CSS for a responsive, full-screen layout and added a resize listener to handle aspect ratio changes. **[NEW]**
 - **Mobile Optimization Plan:** Created `mobile.md` outlining the strategy for a "Portraitish" mobile version, including Time-to-Impact scaling and dynamic grid layouts. **[PLAN]**
 - **Point Upgrade Values:** Fixed a regression from the PixiJS migration where point upgrades were missing their numeric values. They now dynamically display their point amount using `PIXI.Text`. **[FIX]**
