@@ -33,9 +33,25 @@ body::before {
   align-items: center;
   width: 100%;
   max-width: 800px;
-  margin: 0 auto;
   height: 100vh;
+  margin: 0 auto;
   z-index: 1;
+}
+
+@media (orientation: landscape) {
+  .game-wrap {
+    /* Restore best-fit logic for landscape to prevent "Portrait Pillar" on desktop */
+    width: min(100%, calc((100vh - 120px) * 4 / 3));
+    height: auto;
+    max-height: 100vh;
+    padding: 10px 0;
+  }
+
+  .canvas-container {
+    aspect-ratio: 4 / 3;
+    flex-grow: 0;
+    width: 100%;
+  }
 }
 
 .title {

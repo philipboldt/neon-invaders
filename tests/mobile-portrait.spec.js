@@ -68,8 +68,7 @@ test.describe('Neon Invaders Mobile Portrait Optimization', () => {
 
         expect(dims.W).toBe(800);
         // 720 / 1280 = 0.56. 800 * 0.56 = 450. Clamped to 600 minimum.
-        // Actually 658 in test env due to UI elements taking height
-        expect(dims.H).toBe(658);
+        expect(dims.H).toBe(600);
     });
 
     test('should adjust player position on resize', async ({ page }) => {
