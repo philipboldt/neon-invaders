@@ -285,7 +285,7 @@ export class ParticleSystem {
       if (p.isText) {
         p.pixiText.position.set(p.x, p.y);
         p.pixiText.alpha = 1 - t;
-        const fontSize = p.size + (p.maxSize - p.size) * t;
+        const fontSize = p.size + (Math.max(0, p.maxSize - p.size)) * t;
         p.pixiText.style.fontSize = Math.floor(fontSize);
       } else {
         p.pixiObj.position.set(p.x, p.y);

@@ -1,4 +1,4 @@
-import { COLORS } from './constants.js';
+import { COLORS, CONSTANTS } from './constants.js';
 import { drawRect } from './utils.js';
 
 export class Player {
@@ -136,3 +136,4 @@ export class Player {
   draw(ctx, shieldHits) {
     // Legacy draw for progressive migration, will be removed later
   }
+}

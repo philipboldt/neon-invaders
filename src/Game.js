@@ -50,7 +50,7 @@ export class Game {
     this.stage.addChild(this.bgLayer, this.entityLayer, this.projectileLayer, this.effectLayer, this.uiLayer);
 
     this.ui = new UIManager();
-    this.particles = new ParticleSystem();
+    this.particles = new ParticleSystem(this);
     this.player = new Player(this.W, this.H, this);
     this.sprites = new SpriteManager(this.app); // Pass app for texture generation
     this.starfield = new Starfield(this.W, this.H, this);
@@ -71,7 +71,7 @@ export class Game {
   }
 
   initSprites() {
-    [COLORS.invader1, COLORS.invader2, COLORS.invader3, '#ff0844'].forEach(color => {
+    [COLORS.invader1, COLORS.invader2, COLORS.invader3, COLORS.boss].forEach(color => {
       this.sprites.preRender(`inv_${color}`, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, (ctx) => {
         drawRect(ctx, 0, 0, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);
       });
@@ -91,12 +91,12 @@ export class Game {
   resetState() {
     this.gameRunning = false; this.isPaused = false; this.debugMode = false;
     this.score = 0;
-    this.lives = 3;
-    this.maxLives = 5;
+    this.lives = CONSTANTS.PLAYER_INITIAL_LIVES;
+    this.maxLives = CONSTANTS.PLAYER_INITIAL_MAX_LIVES;
     this.level = 1;
     this.shotCount = 1;
     this.playerDamage = 1;
-    this.maxDamage = 5;
+    this.maxDamage = CONSTANTS.PLAYER_INITIAL_MAX_DAMAGE;
     this.shieldHits = 0; this.hasShieldSystem = false; this.lastShieldLostTime = -1;
     this.rocketLevel = 0; this.lightningLevel = 1; this.hasPierce = false; this.spacePressed = false; this.shake = 0;
     
@@ -132,8 +132,8 @@ export class Game {
     if (Math.random() >= CONSTANTS.DROP_CHANCE) return;
     const availableTypes = CONSTANTS.UPGRADE_TYPES.filter(type => {
       if (type === 'shield' && this.hasShieldSystem) return false;
-      if (type === 'double' && this.shotCount >= 4 && this.playerDamage >= this.maxDamage) return false;
-      if (type === 'rocket' && this.rocketLevel >= 5) return false;
+      if (type === 'double' && this.shotCount >= CONSTANTS.PLAYER_MAX_SHOT_COUNT && this.playerDamage >= this.maxDamage) return false;
+      if (type === 'rocket' && this.rocketLevel >= CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) return false;
       if (type === 'pierce' && this.hasPierce) return false;
       if (type === 'heal' && this.lives >= this.maxLives) return false;
       return true;
@@ -200,8 +200,8 @@ export class Game {
       const isBossOrMiniBoss = this.level % 5 === 0;
       const rewards = ['+2 Max Health', '+2 Max Damage'];
       
-      if (this.level === 5) rewards.push('Left Pod Unlocked: PDC');
-      else if (this.level === 10) rewards.push('Right Pod Unlocked: Lightning');
+      if (this.level === CONSTANTS.BOSS_UNLOCK_LEFT) rewards.push('Left Pod Unlocked: PDC');
+      else if (this.level === CONSTANTS.BOSS_UNLOCK_RIGHT) rewards.push('Right Pod Unlocked: Lightning');
       else if (this.level % 10 === 0) rewards.push('Sidepods Fully Restored');
       else if (this.level % 5 === 0) rewards.push('Sidepods Partially Repaired');
 

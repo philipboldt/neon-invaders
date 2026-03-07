@@ -1,3 +1,5 @@
+import { COLORS, CONSTANTS } from './constants.js';
+
 export class UIManager {
   constructor() {
     this.els = {
