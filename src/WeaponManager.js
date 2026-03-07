@@ -269,11 +269,13 @@ export class WeaponManager {
     if (this.game.rocketLevel > 0 && currentLowest.length > 0 && now - this.game.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
       this.game.lastRocketTime = now;
       const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
+      const logicalPlayerY = this.game.player.y / this.game.heightFactor;
       this.game.rockets.push({
         x: this.game.player.x + this.game.player.w / 2 - CONSTANTS.ROCKET_W / 2,
         y: this.game.player.y,
+        ry: logicalPlayerY,
         targetX: targetInv.x + targetInv.w / 2,
-        targetY: targetInv.y + targetInv.h / 2,
+        targetRY: (targetInv.y + targetInv.h / 2) / this.game.heightFactor,
         vx: 0, vy: -CONSTANTS.ROCKET_INITIAL_SPEED,
         distanceTraveled: 0,
       });
@@ -284,7 +286,8 @@ export class WeaponManager {
         let bestInv = null;
         let bestD = Infinity;
         for (const inv of currentLowest) {
-          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (inv.y + inv.h / 2 - r.targetY) ** 2;
+          const invRY = (inv.y + inv.h / 2) / this.game.heightFactor;
+          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (invRY - r.targetRY) ** 2;
           if (d < bestD) {
             bestD = d;
             bestInv = inv;
@@ -292,29 +295,30 @@ export class WeaponManager {
         }
         if (bestInv) {
           r.targetX = bestInv.x + bestInv.w / 2;
-          r.targetY = bestInv.y + bestInv.h / 2;
+          r.targetRY = (bestInv.y + bestInv.h / 2) / this.game.heightFactor;
         }
       }
 
       const cx = r.x + CONSTANTS.ROCKET_W / 2;
-      const cy = r.y + CONSTANTS.ROCKET_H / 2;
+      const cry = r.ry + (CONSTANTS.ROCKET_H / 2) / this.game.heightFactor;
       const dx = r.targetX - cx;
-      const dy = r.targetY - cy;
-      const distSq = dx * dx + dy * dy;
-      const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
+      const dry = r.targetRY - cry;
+      const distSq = dx * dx + dry * dry;
+      const hitRadiusSq = (CONSTANTS.ROCKET_HIT_RADIUS / this.game.heightFactor) ** 2;
 
       if (distSq < hitRadiusSq) {
         const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W;
         this.game.shake = 10;
         
-        this.game.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
-        this.game.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
+        const screenCY = r.ry * this.game.heightFactor + (CONSTANTS.ROCKET_H / 2);
+        this.game.particles.spawnExplosion(cx, screenCY, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
+        this.game.particles.spawnExplosion(cx, screenCY, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
 
         for (let i = this.game.invaders.length - 1; i >= 0; i--) {
           const inv = this.game.invaders[i];
           const invCx = inv.x + inv.w / 2;
           const invCy = inv.y + inv.h / 2;
-          const distSqToInv = (invCx - cx) ** 2 + (invCy - cy) ** 2;
+          const distSqToInv = (invCx - cx) ** 2 + (invCy - screenCY) ** 2;
           const checkRange = blastRadius + Math.max(inv.w, inv.h) / 2;
           
           if (distSqToInv <= checkRange * checkRange) {
@@ -342,7 +346,7 @@ export class WeaponManager {
               }
               
               if (inv.sprite) {
-                this.game.entityLayer.removeChild(inv.sprite);
+                this.game.entityLayer.removeChild(target.sprite);
                 inv.sprite.destroy();
               }
               this.game.invaders.splice(i, 1);
@@ -356,19 +360,19 @@ export class WeaponManager {
       const dist = Math.sqrt(distSq);
       if (dist > 0 && r.distanceTraveled >= CONSTANTS.ROCKET_VERTICAL_PHASE) {
         const desiredDx = dx / dist;
-        const desiredDy = dy / dist;
+        const desiredDry = dry / dist;
         const steerX = desiredDx * CONSTANTS.ROCKET_MAX_SPEED - r.vx;
-        const steerY = desiredDy * CONSTANTS.ROCKET_MAX_SPEED - r.vy;
+        const steerRY = desiredDry * CONSTANTS.ROCKET_MAX_SPEED - r.vy;
         r.vx += steerX * CONSTANTS.ROCKET_STEER_STRENGTH;
-        r.vy += steerY * CONSTANTS.ROCKET_STEER_STRENGTH;
+        r.vy += steerRY * CONSTANTS.ROCKET_STEER_STRENGTH;
       }
 
       const speed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       if (speed > 0) {
         const thrustX = (r.vx / speed) * CONSTANTS.ROCKET_THRUST;
-        const thrustY = (r.vy / speed) * CONSTANTS.ROCKET_THRUST;
+        const thrustRY = (r.vy / speed) * CONSTANTS.ROCKET_THRUST;
         r.vx += thrustX;
-        r.vy += thrustY;
+        r.vy += thrustRY;
         const newSpeed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
         if (newSpeed > CONSTANTS.ROCKET_MAX_SPEED) {
           r.vx = (r.vx / newSpeed) * CONSTANTS.ROCKET_MAX_SPEED;
@@ -376,7 +380,9 @@ export class WeaponManager {
         }
       }
       r.x += r.vx;
-      r.y += r.vy * this.game.heightFactor;
+      r.ry += r.vy;
+      r.y = r.ry * this.game.heightFactor;
+
       this.game.particles.spawnRocketTrail(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2, r.vx, r.vy);
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       
