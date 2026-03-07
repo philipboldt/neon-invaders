@@ -168,6 +168,8 @@ export class Game {
     this.activePDCTracer = null; this.pdcTarget = null; this.invaderDir = 1;
     this.fps = 60; this.lastFpsUpdate = 0; this.frameCount = 0;
     
+    if (this.particles) this.particles.reset();
+
     this.ui.updateStats(this);
     this.ui.setShootActive(false);
     this.player.reset();

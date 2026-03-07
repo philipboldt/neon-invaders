@@ -277,6 +277,16 @@ export class CollisionManager {
         }
         return false;
       }
+      
+      // Cleanup if upgrade falls off the screen
+      if (u.y > this.game.H + 50) {
+        if (u.sprite) {
+          this.game.entityLayer.removeChild(u.sprite);
+          u.sprite.destroy();
+        }
+        return false;
+      }
+      
       return true;
     });
   }

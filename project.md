@@ -55,6 +55,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **Comprehensive Artifact Fix:** Implemented a full cleanup routine for the `ParticleSystem` and `Renderer` during game resets. Active particles (like explosions or damage numbers), transient effects (lightning, PDC tracers), and out-of-bounds upgrades are now explicitly cleared from the screen, preventing graphical artifacts from persisting in the background after a Game Over. **[FIX]**
 - **Rocket Target Marker:** Restored the auto-targeting indicator for player rockets. A dynamic crosshair and circle now appear over the current target, improving visual feedback for the homing missile system. **[NEW]**
 - **Rocket Physics & Targeting Fix:** Refactored player rockets to use physical screen coordinates for all targeting and movement math. Resolved a `ReferenceError` (invalid variable `dry`) and a syntax error that caused crashes. Rockets now accurately track the closest enemy to their current position and rotate correctly on all aspect ratios. **[FIX]**
 - **Game Start Fix:** Refactored `InputManager.js` to prioritize the "Space to Start" logic at the top of the `keydown` listener. **[FIX]**

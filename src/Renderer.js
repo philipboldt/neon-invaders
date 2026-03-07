@@ -14,11 +14,16 @@ export class Renderer {
       this.game.stage.position.set(0, 0);
     }
 
-    // Sync entities that don't update themselves in the loop
-    // Actually, most entities now update their pixi objects in their update/sync methods
-    
     // Final HUD/Projectiles sync that might happen every frame
     this.game.weapons.updateProjectilesRender();
     this.game.ui.updateStats(this.game);
+    
+    // Explicitly clear transient effects if they were reset
+    if (!this.game.activeLightning && this.game.weapons.lightningGraphics) {
+      this.game.weapons.lightningGraphics.clear();
+    }
+    if (!this.game.activePDCTracer && this.game.weapons.pdcGraphics) {
+      this.game.weapons.pdcGraphics.clear();
+    }
   }
 }

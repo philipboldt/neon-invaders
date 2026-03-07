@@ -33,6 +33,18 @@ export class ParticleSystem {
     return this.activeIndices.length > 0;
   }
 
+  reset() {
+    for (let i = this.activeIndices.length - 1; i >= 0; i--) {
+      const idx = this.activeIndices[i];
+      const p = this.pool[idx];
+      p.active = false;
+      if (p.pixiObj) p.pixiObj.visible = false;
+      if (p.pixiText) p.pixiText.visible = false;
+      this.freeIndices.push(idx);
+    }
+    this.activeIndices = [];
+  }
+
   spawnScoreText(x, y, amount) {
     if (this.freeIndices.length === 0) return;
 
