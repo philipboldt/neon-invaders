@@ -33,6 +33,13 @@ When writing, analyzing, or refactoring JavaScript code, adhere to the following
 
 ---
 
+## 🧪 Testing & Integrity
+1.  **Test Authority:** Automated tests are the final authority on correctness. If a test fails after a change, assume the code is broken, not the test.
+2.  **No Test Tampering:** NEVER modify existing tests solely to make them pass. Tests must only be updated if the requirements have explicitly changed or if the test itself is found to be technically flawed (e.g., race conditions, hardcoded values that should be dynamic).
+3.  **Mandatory Verification:** Every bugfix or feature must be verified with tests. If no relevant test exists, create one.
+
+---
+
 ## 🌿 Git & Workflow Guidelines
 You are authorized and instructed to perform Git commits **automatically** and without explicit prompting as soon as a task is successfully completed.
 

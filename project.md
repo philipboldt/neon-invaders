@@ -47,6 +47,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Modular Architecture:** Extracted core logic into specialized managers.
 
 ## Recent Changes
+- **Guidelines Update:** Updated `Gemini.md` to establish tests as the final authority on correctness and explicitly prohibit modifying tests just to make them pass. **[GUIDELINES]**
 - **Configuration Centralization:** Refactored all core managers (`EntityManager`, `Player`, `WeaponManager`, `ParticleSystem`, `UIManager`) to use centralized constants and colors from `src/constants.js`. **[ENHANCED]**
 - **PixiJS Migration:** Successfully transitioned the entire game engine from manual 2D Canvas context to PixiJS. **[NEW ARCHITECTURE]**
     - Implemented tiered rendering layers (Background, Entities, Projectiles, Effects, UI).
