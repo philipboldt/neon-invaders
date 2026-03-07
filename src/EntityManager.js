@@ -7,15 +7,6 @@ export class EntityManager {
   }
 
   initInvaders() {
-    // Cleanup existing sprites if any
-    if (this.game.invaders) {
-      this.game.invaders.forEach(inv => {
-        if (inv.sprite) {
-          this.game.entityLayer.removeChild(inv.sprite);
-          inv.sprite.destroy();
-        }
-      });
-    }
     this.game.invaders = [];
     const gap = 8;
     

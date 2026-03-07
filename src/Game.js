@@ -133,6 +133,24 @@ export class Game {
   }
 
   resetState() {
+    // Explicit PixiJS Cleanup to prevent 'ghost' objects
+    if (this.invaders) {
+      this.invaders.forEach(inv => {
+        if (inv.sprite) {
+          this.entityLayer.removeChild(inv.sprite);
+          inv.sprite.destroy({ children: true });
+        }
+      });
+    }
+    if (this.upgrades) {
+      this.upgrades.forEach(u => {
+        if (u.sprite) {
+          this.entityLayer.removeChild(u.sprite);
+          u.sprite.destroy({ children: true });
+        }
+      });
+    }
+
     this.gameRunning = false; this.isPaused = false; this.debugMode = false;
     this.score = 0;
     this.lives = CONSTANTS.PLAYER_INITIAL_LIVES;
