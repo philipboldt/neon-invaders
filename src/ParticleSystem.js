@@ -278,7 +278,8 @@ export class ParticleSystem {
       const p = this.pool[idx];
       
       p.x += p.vx;
-      p.y += p.vy;
+      // Scale vertical movement by height factor
+      p.y += p.vy * this.game.heightFactor;
       p.life++;
       const t = p.life / p.maxLife;
       
