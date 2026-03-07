@@ -14,14 +14,35 @@ import { drawRect } from './utils.js';
 export class Game {
   constructor(canvas, ctx) {
     this.canvas = canvas;
-    this.ctx = ctx;
+    this.ctx = ctx; // Legacy context support for progressive migration
     this.W = canvas.width;
     this.H = canvas.height;
+
+    // Initialize PixiJS
+    this.app = new PIXI.Application({
+      view: canvas,
+      width: this.W,
+      height: this.H,
+      backgroundColor: 0x0d0d14,
+      antialias: true,
+      resolution: window.devicePixelRatio || 1,
+      autoDensity: true
+    });
+
+    // Create Layers (Containers)
+    this.stage = this.app.stage;
+    this.bgLayer = new PIXI.Container();
+    this.entityLayer = new PIXI.Container();
+    this.projectileLayer = new PIXI.Container();
+    this.effectLayer = new PIXI.Container();
+    this.uiLayer = new PIXI.Container();
+
+    this.stage.addChild(this.bgLayer, this.entityLayer, this.projectileLayer, this.effectLayer, this.uiLayer);
 
     this.ui = new UIManager();
     this.particles = new ParticleSystem();
     this.player = new Player(this.W, this.H);
-    this.sprites = new SpriteManager();
+    this.sprites = new SpriteManager(this.app); // Pass app for texture generation
     this.starfield = new Starfield(this.W, this.H);
     this.inputs = new InputManager(this);
     this.weapons = new WeaponManager(this);
@@ -33,7 +54,7 @@ export class Game {
     this.resetState();
     this.inputs.bindInputs();
     
-    console.log('Neon Invaders Initialized');
+    console.log('Neon Invaders Initialized with PixiJS');
     this.gameLoop = this.gameLoop.bind(this);
     requestAnimationFrame(this.gameLoop);
   }

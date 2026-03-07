@@ -55,3 +55,51 @@ Client-side games are inherently vulnerable to score manipulation. We will imple
 *   **Rate Limiting:** Prevent multiple submissions from the same IP within a short timeframe.
 *   **Manual Moderation:** Use the BaaS dashboard to delete obviously fake or offensive names/scores.
 *   **Obfuscation:** Minify the submission logic to deter casual tampering.
+
+---
+
+# Plan: PixiJS Integration
+
+This document outlines the strategy for transitioning the manual HTML5 Canvas 2D rendering to **PixiJS** to improve performance, simplify effect management, and scale the game's visuals.
+
+## 1. Goal
+Replace the current `Renderer.js` and manual 2D context drawing with a PixiJS-based engine while maintaining the existing zero-build (ESM) architecture and neon aesthetic.
+
+## 2. Setup & Initialization
+- **CDN Integration:** Add PixiJS to `index.html` via a `<script type="module">` compatible CDN (e.g., [esm.run](https://esm.run/pixi.js) or [cdnjs](https://cdnjs.com/libraries/pixi.js)).
+- **Application Setup:** Modify `Game.js` to initialize a `PIXI.Application`. The `app.view` will replace or be attached to the existing `.canvas-container`.
+- **Layering:** Use `PIXI.Container` to organize the scene into layers:
+    - `backgroundContainer` (Starfield)
+    - `entityContainer` (Invaders, Player, Pods)
+    - `projectileContainer` (Bullets, Missiles, Rockets)
+    - `effectContainer` (Explosions, Lightning, PDC Tracers)
+    - `uiContainer` (HUD, Debug Info)
+
+## 3. Sprite & Texture Migration
+- **Procedural Textures:** Refactor `SpriteManager.js` to use `PIXI.Graphics` for drawing the neon shapes, then use `app.renderer.generateTexture(graphics)` to create reusable `PIXI.Texture` objects.
+- **Tinting & Effects:** Leverage PixiJS's `tint` property to handle the "darken on damage" effect, replacing manual `darkenColor` calculations.
+
+## 4. Component Refactoring
+- **`Player.js`, `EntityManager.js`:** 
+    - Entities will now own a `PIXI.Sprite` or `PIXI.AnimatedSprite`.
+    - Implement a `syncRender()` method for each entity to update its PixiJS object's `position`, `rotation`, `alpha`, and `visible` state based on game logic.
+- **`Renderer.js`:** 
+    - Transition from a manual `draw()` loop to managing the PixiJS Stage.
+    - Handle screen shake using `stage.position` offsets.
+- **`ParticleSystem.js`:** 
+    - Use `PIXI.ParticleContainer` or a pool of `PIXI.Sprite` objects for high-performance explosions and effects.
+- **`Starfield.js`:** 
+    - Migrate to a pool of simple `PIXI.Graphics` (circles) or small textures.
+
+## 5. UI & Interaction
+- **HUD:** Re-implement `UIManager.drawHUD` using `PIXI.Text` objects within the `uiContainer`.
+- **Overlays:** Retain the current HTML/CSS overlays (Start Screen, Boss Clear, Game Over) as they are already effective and decoupled from the game's rendering performance.
+
+## 6. Implementation Workflow
+1.  **Phase 1 (Setup):** Add PixiJS to `index.html` and initialize the `PIXI.Application` in `Game.js`.
+2.  **Phase 2 (Sprites):** Update `SpriteManager.js` to generate PixiJS textures.
+3.  **Phase 3 (Core Entities):** Migrate the Player and Invaders to use PixiJS Sprites.
+4.  **Phase 4 (Projectiles & Effects):** Migrate Bullets, Rockets, and the Particle System.
+5.  **Phase 5 (HUD & Cleanup):** Migrate the HUD and remove legacy `ctx` drawing code.
+6.  **Phase 6 (Verification):** Run Playwright E2E tests and verify visual parity.
+
