@@ -191,6 +191,7 @@ export class EntityManager {
       const b = this.game.bullets[i];
       b.y += CONSTANTS.BULLET_SPEED * this.game.heightFactor;
       if (b.y <= -20) {
+        if (b.sprite) this.game.weapons.returnSprite('bullet', b.sprite);
         this.game.bullets.splice(i, 1);
       }
     }
@@ -199,6 +200,7 @@ export class EntityManager {
       const b = this.game.invaderBullets[i];
       b.y += CONSTANTS.INVADER_BULLET_SPEED * this.game.heightFactor;
       if (b.y >= this.game.H + 20) {
+        if (b.sprite) this.game.weapons.returnSprite('invaderBullet', b.sprite);
         this.game.invaderBullets.splice(i, 1);
       }
     }
@@ -208,6 +210,7 @@ export class EntityManager {
       m.x += m.vx;
       m.y += m.vy;
       if (m.y >= this.game.H + 50 || m.x <= -50 || m.x >= this.game.W + 50) {
+        if (m.sprite) this.game.weapons.returnSprite('bossMissile', m.sprite);
         this.game.bossMissiles.splice(i, 1);
       }
     }

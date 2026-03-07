@@ -74,6 +74,7 @@ export class CollisionManager {
           }
           
           if (!this.game.hasPierce || (this.game.hasPierce && !b.pierced)) {
+            if (b.sprite) this.game.weapons.returnSprite('bullet', b.sprite);
             this.game.bullets.splice(j, 1);
             bulletRemoved = true;
             break;
@@ -99,6 +100,7 @@ export class CollisionManager {
           if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else { this.game.lives--; }
           this.game.ui.updateStats(this.game);
         }
+        if (b.sprite) this.game.weapons.returnSprite('invaderBullet', b.sprite);
         this.game.invaderBullets.splice(i, 1);
         continue;
       }
@@ -118,6 +120,7 @@ export class CollisionManager {
               if (this.game.player.pods.left.hp <= 0) this.game.player.pods.left.active = false;
             }
           }
+          if (b.sprite) this.game.weapons.returnSprite('invaderBullet', b.sprite);
           this.game.invaderBullets.splice(i, 1);
           continue;
         }
@@ -137,6 +140,7 @@ export class CollisionManager {
               if (this.game.player.pods.right.hp <= 0) this.game.player.pods.right.active = false;
             }
           }
+          if (b.sprite) this.game.weapons.returnSprite('invaderBullet', b.sprite);
           this.game.invaderBullets.splice(i, 1);
           continue;
         }
@@ -158,6 +162,7 @@ export class CollisionManager {
           if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else { this.game.lives--; }
           this.game.ui.updateStats(this.game);
         }
+        if (m.sprite) this.game.weapons.returnSprite('bossMissile', m.sprite);
         this.game.bossMissiles.splice(i, 1);
         continue;
       }
@@ -177,6 +182,7 @@ export class CollisionManager {
               if (this.game.player.pods.left.hp <= 0) this.game.player.pods.left.active = false;
             }
           }
+          if (m.sprite) this.game.weapons.returnSprite('bossMissile', m.sprite);
           this.game.bossMissiles.splice(i, 1);
           continue;
         }
@@ -196,6 +202,7 @@ export class CollisionManager {
               if (this.game.player.pods.right.hp <= 0) this.game.player.pods.right.active = false;
             }
           }
+          if (m.sprite) this.game.weapons.returnSprite('bossMissile', m.sprite);
           this.game.bossMissiles.splice(i, 1);
           continue;
         }
