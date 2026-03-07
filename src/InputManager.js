@@ -89,6 +89,11 @@ export class InputManager {
       this.game.ui.els.restartBtn.addEventListener('click', () => {
         this.game.startGame();
       });
+      this.game.ui.els.restartBtn.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        e.preventDefault();
+        this.game.startGame();
+      });
     }
 
     const handlePointerDown = (btn, action) => {
