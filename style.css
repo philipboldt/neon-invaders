@@ -34,31 +34,27 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  max-width: 800px;
   height: 100vh;
-  margin: 0 auto;
+  margin: 0;
   z-index: 1;
 }
 
 @media (orientation: landscape) {
-  .game-wrap {
-    /* Limit width by available height in landscape to fit standard screen */
-    width: min(100%, calc((100vh - 120px) * 4 / 3));
-    height: auto;
-    max-height: 100vh;
-    padding: 10px 0;
-  }
-
   .canvas-container {
+    /* Best Fit: Fill height, derive width from 4:3 ratio */
+    width: auto;
+    height: auto;
+    max-height: calc(100vh - 100px); /* Leave room for title/controls */
     aspect-ratio: 4 / 3;
     flex-grow: 0;
-    width: 100%;
+    max-width: 95vw;
   }
 }
 
 .title {
-  font-size: min(1.5rem, 5vw);
+  font-size: min(1.8rem, 5vw);
   font-weight: 900;
   letter-spacing: 0.3em;
   margin-bottom: 0.5rem;
@@ -73,6 +69,8 @@ body::before {
 .canvas-container {
   position: relative;
   width: 100%;
+  /* Default for portrait: fill width, grow to fill available height */
+  flex-grow: 1;
   margin: 0 auto;
   border: 2px solid #00f5ff;
   box-shadow:
@@ -82,9 +80,9 @@ body::before {
   image-rendering: crisp-edges;
   background: #0d0d14;
   line-height: 0;
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
+  max-width: 1000px; /* Keep portrait from getting absurdly wide on desktop monitors */
 }
 
 #game {
