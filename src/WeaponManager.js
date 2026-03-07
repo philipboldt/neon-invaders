@@ -58,8 +58,7 @@ export class WeaponManager {
       this.rocketGraphics.beginFill(this.parseColor(COLORS.rocket));
       const matrix = new PIXI.Matrix();
       matrix.translate(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
-      // Use physical velocity components for angle
-      matrix.rotate(Math.atan2(r.vy * this.game.heightFactor, r.vx));
+      matrix.rotate(Math.atan2(r.vy, r.vx));
       this.rocketGraphics.setMatrix(matrix);
       this.rocketGraphics.drawRect(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
       this.rocketGraphics.setMatrix(new PIXI.Matrix());
@@ -276,20 +275,22 @@ export class WeaponManager {
         targetX: targetInv.x + targetInv.w / 2,
         targetY: targetInv.y + targetInv.h / 2,
         vx: 0, 
-        // Initial vertical speed scaled by heightFactor
         vy: -CONSTANTS.ROCKET_INITIAL_SPEED * this.game.heightFactor,
         distanceTraveled: 0,
       });
     }
 
     this.game.rockets = this.game.rockets.filter((r) => {
+      const cx = r.x + CONSTANTS.ROCKET_W / 2;
+      const cy = r.y + CONSTANTS.ROCKET_H / 2;
+
       if (currentLowest.length > 0) {
         let bestInv = null;
         let bestD = Infinity;
         for (const inv of currentLowest) {
           const invCx = inv.x + inv.w / 2;
           const invCy = inv.y + inv.h / 2;
-          const d = (invCx - r.targetX) ** 2 + (invCy - r.targetY) ** 2;
+          const d = (invCx - cx) ** 2 + (invCy - cy) ** 2;
           if (d < bestD) {
             bestD = d;
             bestInv = inv;
@@ -301,13 +302,9 @@ export class WeaponManager {
         }
       }
 
-      const cx = r.x + CONSTANTS.ROCKET_W / 2;
-      const cy = r.y + CONSTANTS.ROCKET_H / 2;
       const dx = r.targetX - cx;
       const dy = r.targetY - cy;
       const distSq = dx * dx + dy * dy;
-      
-      // Hit radius doesn't need scaling because it's compared against physical distance
       const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
 
       if (distSq < hitRadiusSq) {
@@ -361,7 +358,6 @@ export class WeaponManager {
       }
 
       const dist = Math.sqrt(distSq);
-      // Scale dynamic limits by heightFactor
       const maxSpeed = CONSTANTS.ROCKET_MAX_SPEED * this.game.heightFactor;
       const thrust = CONSTANTS.ROCKET_THRUST * this.game.heightFactor;
       const verticalPhaseLimit = CONSTANTS.ROCKET_VERTICAL_PHASE * this.game.heightFactor;
