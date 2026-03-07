@@ -9,7 +9,10 @@
 body {
   min-height: 100vh;
   background: #0a0a0f;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   font-family: 'Orbitron', sans-serif;
   color: #00f5ff;
   overflow: hidden;
@@ -40,7 +43,7 @@ body::before {
 
 @media (orientation: landscape) {
   .game-wrap {
-    /* Restore best-fit logic for landscape to prevent "Portrait Pillar" on desktop */
+    /* Limit width by available height in landscape to fit standard screen */
     width: min(100%, calc((100vh - 120px) * 4 / 3));
     height: auto;
     max-height: 100vh;
