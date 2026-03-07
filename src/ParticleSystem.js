@@ -3,7 +3,7 @@ import { COLORS, CONSTANTS } from './constants.js';
 export class ParticleSystem {
   constructor(game) {
     this.game = game;
-    this.maxParticles = 1024;
+    this.maxParticles = CONSTANTS.MAX_PARTICLES;
     this.pool = [];
     this.activeIndices = []; 
     this.freeIndices = [];   
@@ -43,12 +43,12 @@ export class ParticleSystem {
     p.x = x;
     p.y = y;
     p.vx = 0;
-    p.vy = -3.5;
+    p.vy = CONSTANTS.SCORE_TEXT_SPEED;
     p.size = 16;
     p.maxSize = 32;
     p.life = 0;
-    p.maxLife = 45;
-    p.color = '#ffff00';
+    p.maxLife = CONSTANTS.SCORE_TEXT_LIFE;
+    p.color = COLORS.textYellow;
     p.text = `+${amount}`;
     p.isText = true;
     p.isLightning = false;
@@ -58,7 +58,7 @@ export class ParticleSystem {
         fontFamily: 'Orbitron',
         fontSize: 20,
         fontWeight: 'bold',
-        fill: 0xffff00,
+        fill: COLORS.textYellow,
         align: 'center',
         stroke: 0x000000,
         strokeThickness: 3
@@ -67,7 +67,7 @@ export class ParticleSystem {
       this.game.effectLayer.addChild(p.pixiText);
     }
     p.pixiText.text = p.text;
-    p.pixiText.style.fill = 0xffff00;
+    p.pixiText.style.fill = COLORS.textYellow;
     p.pixiText.visible = true;
     p.pixiObj.visible = false;
 
@@ -88,8 +88,8 @@ export class ParticleSystem {
     p.size = 20;
     p.maxSize = 64;
     p.life = 0;
-    p.maxLife = 40;
-    p.color = '#ff0844';
+    p.maxLife = CONSTANTS.DAMAGE_TEXT_LIFE;
+    p.color = COLORS.textRed;
     p.text = `-${amount}`;
     p.isText = true;
     p.isLightning = false;
@@ -99,7 +99,7 @@ export class ParticleSystem {
         fontFamily: 'Orbitron',
         fontSize: 20,
         fontWeight: 'bold',
-        fill: 0xff0844,
+        fill: COLORS.textRed,
         align: 'center',
         stroke: 0x000000,
         strokeThickness: 3
@@ -108,7 +108,7 @@ export class ParticleSystem {
       this.game.effectLayer.addChild(p.pixiText);
     }
     p.pixiText.text = p.text;
-    p.pixiText.style.fill = 0xff0844;
+    p.pixiText.style.fill = COLORS.textRed;
     p.pixiText.visible = true;
     p.pixiObj.visible = false;
 

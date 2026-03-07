@@ -42,7 +42,7 @@ export class WeaponManager {
     // Boss Missiles
     this.bossMissileGraphics.clear();
     this.game.bossMissiles.forEach(m => {
-      this.bossMissileGraphics.beginFill(0xff0844);
+      this.bossMissileGraphics.beginFill(this.parseColor(COLORS.boss));
       const matrix = new PIXI.Matrix();
       matrix.translate(m.x + m.w / 2, m.y + m.h / 2);
       matrix.rotate(m.angle - Math.PI / 2);
@@ -77,15 +77,15 @@ export class WeaponManager {
     
     if (this.game.bullets.length < maxBullets) {
       const spread = 14;
-      const startX = this.game.player.x + this.game.player.w / 2 - 2 - (this.game.shotCount - 1) * (spread / 2);
+      const startX = this.game.player.x + this.game.player.w / 2 - CONSTANTS.BULLET_W / 2 - (this.game.shotCount - 1) * (spread / 2);
       for (let i = 0; i < this.game.shotCount; i++) {
-        this.game.bullets.push({ x: startX + i * spread, y: this.game.player.y, w: 4, h: 12 });
+        this.game.bullets.push({ x: startX + i * spread, y: this.game.player.y, w: CONSTANTS.BULLET_W, h: CONSTANTS.BULLET_H });
       }
     }
   }
 
   updatePDC(now) {
-    if (this.game.activePDCTracer && now - this.game.activePDCTracer.startTime > 40) {
+    if (this.game.activePDCTracer && now - this.game.activePDCTracer.startTime > CONSTANTS.PDC_TRACER_LIFE) {
       this.game.activePDCTracer = null;
       this.pdcGraphics.clear();
     }
@@ -176,14 +176,14 @@ export class WeaponManager {
         this.game.particles.spawnLightningHit(target.x + target.w / 2, target.y + target.h / 2);
         target.hp -= this.game.playerDamage;
           if (target.isBoss) {
-            this.game.shake = 30;
+            this.game.shake = CONSTANTS.SHAKE_BOSS_DEATH;
             this.game.particles.spawnStunningExplosion(target.x + target.w / 2, target.y + target.h / 2, target.color);
             this.game.spawnUpgrade(target.x + target.w / 4, target.y + target.h / 2);
             this.game.spawnUpgrade(target.x + target.w * 0.75, target.y + target.h / 2);
             this.game.spawnUpgrade(target.x + target.w / 2, target.y + target.h / 2);
             
-            this.game.maxLives += 2;
-            this.game.maxDamage += 2;
+            this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
+            this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
             this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
           } else {
             this.game.spawnUpgrade(target.x, target.y);
@@ -201,7 +201,7 @@ export class WeaponManager {
         const targetY = target.y + target.h / 2;
         
         const dist = Math.sqrt((targetX - rx) ** 2 + (targetY - ry) ** 2);
-        const segments = Math.max(4, Math.floor(dist / 30)); 
+        const segments = Math.max(4, Math.floor(dist / CONSTANTS.LIGHTNING_SEGMENT_DIST)); 
         
         const points = [];
         for (let i = 0; i <= segments; i++) {
@@ -327,15 +327,15 @@ export class WeaponManager {
               this.game.particles.spawnExplosion(invCx, invCy, inv.color, 0, Math.PI * 2, 0);
               
               if (inv.isBoss) {
-                this.game.shake = 40;
+                this.game.shake = CONSTANTS.SHAKE_BIG_EXPLOSION;
                 this.game.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, 20);
                 this.game.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, 20);
                 this.game.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
 
-                this.game.maxLives += 2;
-                this.game.maxDamage += 2;
+                this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
+                this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
                 this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
               } else {
                 this.game.spawnUpgrade(inv.x, inv.y);

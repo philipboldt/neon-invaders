@@ -6,20 +6,20 @@ export class Player {
     this.W = W;
     this.H = H;
     this.game = game;
-    this.w = 40;
-    this.h = 24;
+    this.w = CONSTANTS.PLAYER_W;
+    this.h = CONSTANTS.PLAYER_H;
     this.x = W / 2 - this.w / 2;
     this.y = H - 60;
-    this.speed = 6;
+    this.speed = CONSTANTS.PLAYER_SPEED;
     this.dir = 0;
     
     // Sidepods
-    this.podW = 20;
-    this.podH = 12;
-    this.podGap = 10;
+    this.podW = CONSTANTS.POD_W;
+    this.podH = CONSTANTS.POD_H;
+    this.podGap = CONSTANTS.POD_GAP;
     this.pods = {
-      left: { active: false, hp: 3, maxHp: 3 },
-      right: { active: false, hp: 3, maxHp: 3 }
+      left: { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP },
+      right: { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP }
     };
 
     // PixiJS Sprites
@@ -76,8 +76,8 @@ export class Player {
     this.x = this.W / 2 - this.w / 2;
     this.y = this.H - 60;
     this.dir = 0;
-    this.pods.left = { active: false, hp: 3, maxHp: 3 };
-    this.pods.right = { active: false, hp: 3, maxHp: 3 };
+    this.pods.left = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };
+    this.pods.right = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };
     this.syncRender();
   }
 

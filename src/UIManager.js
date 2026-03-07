@@ -42,29 +42,33 @@ export class UIManager {
     const y = 15;
     const colWidth = (this.game.W - padding * 2) / 4;
 
-    this.hudTexts.score = this.createHudText('Score: 0', padding, y, 0x39ff14);
-    this.hudTexts.level = this.createHudText('Level: 1', padding + colWidth, y, 0xff6600);
-    this.hudTexts.lives = this.createHudText('Lives: 3', padding + colWidth * 2, y, 0xff3366);
-    this.hudTexts.shield = this.createHudText('Shield: NONE', padding + colWidth * 3, y, 0x00f5ff);
+    this.hudTexts.score = this.createHudText('Score: 0', padding, y, this.parseHexColor(COLORS.invader2));
+    this.hudTexts.level = this.createHudText('Level: 1', padding + colWidth, y, this.parseHexColor(COLORS.invader3));
+    this.hudTexts.lives = this.createHudText('Lives: 3', padding + colWidth * 2, y, this.parseHexColor(COLORS.heal));
+    this.hudTexts.shield = this.createHudText('Shield: NONE', padding + colWidth * 3, y, this.parseHexColor(COLORS.shield));
 
     const y2 = y + 25;
-    this.hudTexts.pierce = this.createHudText('Pierce: NONE', padding, y2, 0xbc13fe);
-    this.hudTexts.damage = this.createHudText('Damage: 1', padding + colWidth, y2, 0x39ff14);
-    this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, 0xff6600);
+    this.hudTexts.pierce = this.createHudText('Pierce: NONE', padding, y2, this.parseHexColor(COLORS.pierce));
+    this.hudTexts.damage = this.createHudText('Damage: 1', padding + colWidth, y2, this.parseHexColor(COLORS.invader2));
+    this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, this.parseHexColor(COLORS.rocket));
 
     this.debugText = new PIXI.Text('DEBUG MODE', {
       fontFamily: 'Orbitron',
       fontSize: 56,
       fontWeight: 'bold',
-      fill: 0xff0844,
+      fill: this.parseHexColor(COLORS.boss),
       dropShadow: true,
-      dropShadowColor: 0xff0844,
+      dropShadowColor: this.parseHexColor(COLORS.boss),
       dropShadowBlur: 20
     });
     this.debugText.anchor.set(0.5);
     this.debugText.position.set(this.game.W / 2, 72);
     this.debugText.visible = false;
     this.game.uiLayer.addChild(this.debugText);
+  }
+
+  parseHexColor(hex) {
+    return parseInt(hex.replace('#', '0x'));
   }
 
   createHudText(text, x, y, valueColor) {
@@ -78,7 +82,7 @@ export class UIManager {
       fontFamily: 'Orbitron',
       fontSize: 16,
       fontWeight: 'bold',
-      fill: 0x00f5ff
+      fill: this.parseHexColor(COLORS.text)
     });
     
     const value = new PIXI.Text(valStr, {
@@ -112,6 +116,7 @@ export class UIManager {
 
     if (this.els.saveNameBtn) {
       this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
+        if (!this.nameInputActive) return;
         e.preventDefault();
         e.stopPropagation();
         this.saveHighscore();
@@ -242,6 +247,7 @@ export class UIManager {
   }
 
   saveHighscore() {
+    if (!this.nameInputActive) return;
     const name = this.chars.join('');
     this.updateHighScores({ name, score: this.pendingScore });
     this.nameInputActive = false;

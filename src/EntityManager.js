@@ -15,11 +15,11 @@ export class EntityManager {
     const isBossLevel = this.game.level % 10 === 0;
     const isMiniBossLevel = this.game.level % 10 === 5;
     
-    const bossW = isBossLevel ? CONSTANTS.INVADER_W * 6 : (isMiniBossLevel ? CONSTANTS.INVADER_W * 4 : 0);
-    const bossH = isBossLevel ? CONSTANTS.INVADER_H * 6 : (isMiniBossLevel ? CONSTANTS.INVADER_H * 4 : 0);
+    const bossW = isBossLevel ? CONSTANTS.INVADER_W * CONSTANTS.BOSS_W_MULT : (isMiniBossLevel ? CONSTANTS.INVADER_W * CONSTANTS.BOSS_W_MULT_MINI : 0);
+    const bossH = isBossLevel ? CONSTANTS.INVADER_H * CONSTANTS.BOSS_H_MULT : (isMiniBossLevel ? CONSTANTS.INVADER_H * CONSTANTS.BOSS_H_MULT_MINI : 0);
 
-    const rows = Math.min(CONSTANTS.INVADER_ROWS + Math.floor(this.game.level / 2), 7);
-    const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.game.level / 3), 14);
+    const rows = Math.min(CONSTANTS.INVADER_ROWS + Math.floor(this.game.level / 2), CONSTANTS.INVADER_MAX_ROWS);
+    const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.game.level / 3), CONSTANTS.INVADER_MAX_COLS);
     const block = Math.floor((this.game.level - 1) / 4);
     const p = (this.game.level - 1) % 4;
     const baseHp = 1 + block * 2;
@@ -52,8 +52,8 @@ export class EntityManager {
     this.game.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
     
     if (isBossLevel || isMiniBossLevel) {
-      const bossMaxHp = isBossLevel ? actualMaxHp * 150 : actualMaxHp * 100;
-      const bossColor = isBossLevel ? '#ff0844' : COLORS.invader3; 
+      const bossMaxHp = isBossLevel ? actualMaxHp * CONSTANTS.BOSS_HP_MULT : actualMaxHp * CONSTANTS.BOSS_HP_MULT_MINI;
+      const bossColor = isBossLevel ? COLORS.boss : COLORS.invader3; 
       const bX = startX + this.game.gridW / 2 - bossW / 2;
       const bY = startY - bossH - gap * 2;
       this.game.invaders.push({
@@ -65,7 +65,7 @@ export class EntityManager {
         maxHp: bossMaxHp,
         hp: bossMaxHp,
         isBoss: true,
-        scoreValue: isBossLevel ? 500 : 250
+        scoreValue: isBossLevel ? CONSTANTS.BOSS_SCORE : CONSTANTS.BOSS_SCORE_MINI
       });
     }
 
@@ -90,9 +90,9 @@ export class EntityManager {
 
   updateInvaders() {
     if (this.game.invaders.length > 0) {
-      const speed = (40 + this.game.level * 5) / 60;
+      const speed = (CONSTANTS.INVADER_SPEED_BASE + this.game.level * CONSTANTS.INVADER_SPEED_INC) / 60;
       let moveDown = false;
-      const margin = 40;
+      const margin = CONSTANTS.INVADER_MARGIN;
       const moveX = this.game.invaderDir * speed;
 
       if (this.game.invaderDir > 0 && this.game.gridX + this.game.gridW + moveX >= this.game.W - margin) moveDown = true;
@@ -101,7 +101,7 @@ export class EntityManager {
       if (moveDown) {
         this.game.invaderDir *= -1;
         this.game.invaders.forEach(inv => {
-          inv.y += 20;
+          inv.y += CONSTANTS.INVADER_DROP_DOWN;
           if (inv.sprite) inv.sprite.y = inv.y + inv.h / 2;
         });
       } else {
@@ -128,22 +128,22 @@ export class EntityManager {
   }
 
   invaderShoot(now) {
-    const shootInterval = Math.max(350, CONSTANTS.INVADER_SHOOT_INTERVAL_BASE - this.game.level * 60);
+    const shootInterval = Math.max(CONSTANTS.INVADER_SHOOT_INTERVAL_MIN, CONSTANTS.INVADER_SHOOT_INTERVAL_BASE - this.game.level * 60);
     if (this.game.invaders.length === 0 || now - this.game.lastInvaderShoot < shootInterval) return;
     this.game.lastInvaderShoot = now;
     const idx = Math.floor(Math.random() * this.game.invaders.length);
     const inv = this.game.invaders[idx];
     if (inv.y + inv.h < 0) return;
     this.game.invaderBullets.push({
-      x: inv.x + inv.w / 2 - 3,
+      x: inv.x + inv.w / 2 - CONSTANTS.INVADER_BULLET_W / 2,
       y: inv.y + inv.h,
-      w: 6,
-      h: 10,
+      w: CONSTANTS.INVADER_BULLET_W,
+      h: CONSTANTS.INVADER_BULLET_H,
     });
   }
 
   bossShoot(now) {
-    if (now - this.game.lastBossShoot < 3000) return;
+    if (now - this.game.lastBossShoot < CONSTANTS.BOSS_SHOOT_INTERVAL) return;
     const bosses = this.game.invaders.filter(inv => inv.isBoss);
     if (bosses.length === 0) return;
     
@@ -161,15 +161,15 @@ export class EntityManager {
       const dy = playerCy - startY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       
-      const speed = 5; 
+      const speed = CONSTANTS.BOSS_MISSILE_SPEED; 
       const vx = (dx / dist) * speed;
       const vy = (dy / dist) * speed;
       
       this.game.bossMissiles.push({
-        x: startX - 4, 
+        x: startX - CONSTANTS.BOSS_MISSILE_W / 2, 
         y: startY,
-        w: 8,
-        h: 16,
+        w: CONSTANTS.BOSS_MISSILE_W,
+        h: CONSTANTS.BOSS_MISSILE_H,
         vx,
         vy,
         angle: Math.atan2(vy, vx)

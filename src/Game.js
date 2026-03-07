@@ -28,7 +28,7 @@ export class Game {
         view: canvas,
         width: this.W,
         height: this.H,
-        backgroundColor: 0x0d0d14,
+        backgroundColor: CONSTANTS.BG_COLOR,
         antialias: true,
         resolution: window.devicePixelRatio || 1,
         autoDensity: true

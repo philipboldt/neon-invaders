@@ -9,6 +9,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Rendering:** Orchestrated by `Renderer.js` using PixiJS Layers (Containers).
 - **Asset Management:** `SpriteManager.js` generates textures procedurally from HTML5 Canvas shims at runtime.
 - **UI:** Hybrid approach using PixiJS for in-game HUD and standard HTML/CSS for menus and overlays.
+- **Configuration:** All game balancing, colors, and physical constants are centralized in `src/constants.js`.
 
 ## Current Features
 - **Core Gameplay:**
@@ -46,6 +47,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Modular Architecture:** Extracted core logic into specialized managers.
 
 ## Recent Changes
+- **Configuration Centralization:** Refactored all core managers (`EntityManager`, `Player`, `WeaponManager`, `ParticleSystem`, `UIManager`) to use centralized constants and colors from `src/constants.js`. **[ENHANCED]**
 - **PixiJS Migration:** Successfully transitioned the entire game engine from manual 2D Canvas context to PixiJS. **[NEW ARCHITECTURE]**
     - Implemented tiered rendering layers (Background, Entities, Projectiles, Effects, UI).
     - Refactored `ParticleSystem` to use pooled PixiJS Graphics and Text objects.
