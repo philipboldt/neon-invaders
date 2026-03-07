@@ -305,7 +305,7 @@ export class WeaponManager {
       const cy = r.y + CONSTANTS.ROCKET_H / 2;
       const dx = r.targetX - cx;
       const dy = r.targetY - cy;
-      const distSq = dx * dx + dy * dy;
+      const distSq = dx * dx + dry * dry;
       
       // Hit radius doesn't need scaling because it's compared against physical distance
       const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
@@ -394,6 +394,5 @@ export class WeaponManager {
       if (r.y < -CONSTANTS.ROCKET_H * 2 || r.y > this.game.H + CONSTANTS.ROCKET_H || r.x < -CONSTANTS.ROCKET_W * 2 || r.x > this.game.W + CONSTANTS.ROCKET_W) return false;
       return true;
     });
-  }
   }
 }
