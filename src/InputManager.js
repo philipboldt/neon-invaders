@@ -7,8 +7,14 @@ export class InputManager {
     const handleStart = (e) => {
       if (this.game.ui.nameInputActive) return;
       if (this.game.gameRunning && !this.game.isPaused) return;
-      if (!this.game.ui.els.startScreen.classList.contains('hidden')) {
+      
+      const isStartVisible = !this.game.ui.els.startScreen.classList.contains('hidden');
+      const isOverlayVisible = !this.game.ui.els.overlay.classList.contains('hidden');
+
+      if (isStartVisible || isOverlayVisible) {
         if (e && e.type.startsWith('pointer') && e.pointerType === 'mouse' && e.button !== 0) return;
+        
+        this.game.ui.hideScreens();
         this.game.startGame();
         if (e && typeof e.preventDefault === 'function') e.preventDefault();
       }
@@ -29,6 +35,14 @@ export class InputManager {
     }, { capture: true });
 
     document.addEventListener('keydown', (e) => {
+      // Space to Start logic - highest priority
+      if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
+        if (!this.game.gameRunning && !this.game.ui.els.startScreen.classList.contains('hidden')) {
+          handleStart(e);
+          return;
+        }
+      }
+
       if (this.game.ui.nameInputActive) {
         this.game.ui.handleNameInputKey(e);
         return;
