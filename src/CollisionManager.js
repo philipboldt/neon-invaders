@@ -77,7 +77,13 @@ export class CollisionManager {
     });
 
     this.game.invaderBullets = this.game.invaderBullets.filter(b => {
-      if (b.x + CONSTANTS.INVADER_BULLET_W > this.game.player.x && b.x < this.game.player.x + this.game.player.w && b.y + CONSTANTS.INVADER_BULLET_H > this.game.player.y && b.y < this.game.player.y + this.game.player.h) {
+      const bh = CONSTANTS.INVADER_BULLET_H * this.game.heightFactor;
+      // Hitbox padding for better feel
+      const pad = 4;
+      if (b.x + CONSTANTS.INVADER_BULLET_W - pad > this.game.player.x + pad && 
+          b.x + pad < this.game.player.x + this.game.player.w - pad && 
+          b.y + bh - pad > this.game.player.y + pad && 
+          b.y + pad < this.game.player.y + this.game.player.h - pad) {
         if (!this.game.debugMode) {
           this.game.shake = CONSTANTS.SHAKE_PLAYER_HIT;
           this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, Math.PI, Math.PI);
@@ -89,7 +95,10 @@ export class CollisionManager {
       const podY = this.game.player.y + (this.game.player.h - this.game.player.podH) / 2;
       if (this.game.player.pods.left.active) {
         const lx = this.game.player.x - this.game.player.podGap - this.game.player.podW;
-        if (b.x + CONSTANTS.INVADER_BULLET_W > lx && b.x < lx + this.game.player.podW && b.y + CONSTANTS.INVADER_BULLET_H > podY && b.y < podY + this.game.player.podH) {
+        if (b.x + CONSTANTS.INVADER_BULLET_W - pad > lx + pad && 
+            b.x + pad < lx + this.game.player.podW - pad && 
+            b.y + bh - pad > podY + pad && 
+            b.y + pad < podY + this.game.player.podH - pad) {
           if (!this.game.debugMode) {
             this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(lx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
@@ -103,7 +112,10 @@ export class CollisionManager {
       }
       if (this.game.player.pods.right.active) {
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap;
-        if (b.x + CONSTANTS.INVADER_BULLET_W > rx && b.x < rx + this.game.player.podW && b.y + CONSTANTS.INVADER_BULLET_H > podY && b.y < podY + this.game.player.podH) {
+        if (b.x + CONSTANTS.INVADER_BULLET_W - pad > rx + pad && 
+            b.x + pad < rx + this.game.player.podW - pad && 
+            b.y + bh - pad > podY + pad && 
+            b.y + pad < podY + this.game.player.podH - pad) {
           if (!this.game.debugMode) {
             this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(rx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
@@ -119,7 +131,13 @@ export class CollisionManager {
     });
 
     this.game.bossMissiles = this.game.bossMissiles.filter(m => {
-      if (m.x + m.w > this.game.player.x && m.x < this.game.player.x + this.game.player.w && m.y + m.h > this.game.player.y && m.y < this.game.player.y + this.game.player.h) {
+      const mh = CONSTANTS.BOSS_MISSILE_H * this.game.heightFactor;
+      // Precise AABB for boss missiles
+      const pad = 2;
+      if (m.x + m.w - pad > this.game.player.x + pad && 
+          m.x + pad < this.game.player.x + this.game.player.w - pad && 
+          m.y + mh - pad > this.game.player.y + pad && 
+          m.y + pad < this.game.player.y + this.game.player.h - pad) {
         if (!this.game.debugMode) {
           this.game.shake = CONSTANTS.SHAKE_PLAYER_HIT;
           this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, Math.PI, Math.PI);
@@ -131,7 +149,10 @@ export class CollisionManager {
       const podY = this.game.player.y + (this.game.player.h - this.game.player.podH) / 2;
       if (this.game.player.pods.left.active) {
         const lx = this.game.player.x - this.game.player.podGap - this.game.player.podW;
-        if (m.x + m.w > lx && m.x < lx + this.game.player.podW && m.y + m.h > podY && m.y < podY + this.game.player.podH) {
+        if (m.x + m.w - pad > lx + pad && 
+            m.x + pad < lx + this.game.player.podW - pad && 
+            m.y + mh - pad > podY + pad && 
+            m.y + pad < podY + this.game.player.podH - pad) {
           if (!this.game.debugMode) {
             this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(lx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
@@ -145,7 +166,10 @@ export class CollisionManager {
       }
       if (this.game.player.pods.right.active) {
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap;
-        if (m.x + m.w > rx && m.x < rx + this.game.player.podW && m.y + m.h > podY && m.y < podY + this.game.player.podH) {
+        if (m.x + m.w - pad > rx + pad && 
+            m.x + pad < rx + this.game.player.podW - pad && 
+            m.y + mh - pad > podY + pad && 
+            m.y + pad < podY + this.game.player.podH - pad) {
           if (!this.game.debugMode) {
             this.game.shake = CONSTANTS.SHAKE_POD_HIT;
             this.game.particles.spawnExplosion(rx + this.game.player.podW / 2, podY + this.game.player.podH / 2, COLORS.player, Math.PI, Math.PI);
