@@ -32,6 +32,69 @@ export class UIManager {
     this.pendingScore = 0;
     this.updateHighScores();
     this.bindNameInputTouch();
+    this.hudTexts = {};
+  }
+
+  initPixiHUD(game) {
+    this.game = game;
+    const padding = 15;
+    const y = 15;
+    const colWidth = (this.game.W - padding * 2) / 4;
+
+    this.hudTexts.score = this.createHudText('Score: 0', padding, y, 0x39ff14);
+    this.hudTexts.level = this.createHudText('Level: 1', padding + colWidth, y, 0xff6600);
+    this.hudTexts.lives = this.createHudText('Lives: 3', padding + colWidth * 2, y, 0xff3366);
+    this.hudTexts.shield = this.createHudText('Shield: NONE', padding + colWidth * 3, y, 0x00f5ff);
+
+    const y2 = y + 25;
+    this.hudTexts.pierce = this.createHudText('Pierce: NONE', padding, y2, 0xbc13fe);
+    this.hudTexts.damage = this.createHudText('Damage: 1', padding + colWidth, y2, 0x39ff14);
+    this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, 0xff6600);
+
+    this.debugText = new PIXI.Text('DEBUG MODE', {
+      fontFamily: 'Orbitron',
+      fontSize: 56,
+      fontWeight: 'bold',
+      fill: 0xff0844,
+      dropShadow: true,
+      dropShadowColor: 0xff0844,
+      dropShadowBlur: 20
+    });
+    this.debugText.anchor.set(0.5);
+    this.debugText.position.set(this.game.W / 2, 72);
+    this.debugText.visible = false;
+    this.game.uiLayer.addChild(this.debugText);
+  }
+
+  createHudText(text, x, y, valueColor) {
+    const container = new PIXI.Container();
+    container.position.set(x, y);
+    
+    const labelStr = text.split(': ')[0] + ': ';
+    const valStr = text.split(': ')[1];
+
+    const label = new PIXI.Text(labelStr, {
+      fontFamily: 'Orbitron',
+      fontSize: 16,
+      fontWeight: 'bold',
+      fill: 0x00f5ff
+    });
+    
+    const value = new PIXI.Text(valStr, {
+      fontFamily: 'Orbitron',
+      fontSize: 16,
+      fontWeight: 'bold',
+      fill: valueColor,
+      dropShadow: true,
+      dropShadowColor: valueColor,
+      dropShadowBlur: 8
+    });
+    
+    value.x = label.width;
+    container.addChild(label, value);
+    this.game.uiLayer.addChild(container);
+    
+    return { container, label, value };
   }
 
   bindNameInputTouch() {
@@ -74,50 +137,22 @@ export class UIManager {
   }
 
   updateStats(gameState) {
-    if (this.els.score) this.els.score.textContent = gameState.score;
-    if (this.els.level) this.els.level.textContent = gameState.level;
-    if (this.els.lives) this.els.lives.textContent = gameState.lives;
-    if (this.els.damage) this.els.damage.textContent = gameState.playerDamage;
-    if (this.els.shield) this.els.shield.textContent = gameState.shieldHits > 0 ? 'activated' : (gameState.hasShieldSystem ? 'deactivated' : 'no shield');
-    if (this.els.pierce) this.els.pierce.textContent = gameState.hasPierce ? 'active' : 'none';
-    if (this.els.rocket) this.els.rocket.textContent = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'none';
+    if (!this.hudTexts.score) return;
+
+    this.hudTexts.score.value.text = gameState.score;
+    this.hudTexts.level.value.text = gameState.level;
+    this.hudTexts.lives.value.text = gameState.lives;
+    this.hudTexts.damage.value.text = gameState.playerDamage;
+    
+    this.hudTexts.shield.value.text = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
+    this.hudTexts.pierce.value.text = gameState.hasPierce ? 'YES' : 'NONE';
+    this.hudTexts.rocket.value.text = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
+    
+    if (this.debugText) this.debugText.visible = gameState.debugMode;
   }
 
   drawHUD(ctx, gameState) {
-    ctx.save();
-    ctx.font = 'bold 16px Orbitron';
-    ctx.textBaseline = 'top';
-    const padding = 15;
-    const y = 15;
-    const colWidth = (gameState.W - padding * 2) / 4;
-
-    // Row 1
-    this.drawStat(ctx, 'Score: ', gameState.score, padding, y, '#39ff14');
-    this.drawStat(ctx, 'Level: ', gameState.level, padding + colWidth, y, '#ff6600');
-    this.drawStat(ctx, 'Lives: ', gameState.lives, padding + colWidth * 2, y, '#ff3366');
-    
-    const shieldText = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
-    this.drawStat(ctx, 'Shield: ', shieldText, padding + colWidth * 3, y, '#00f5ff');
-
-    // Row 2
-    const y2 = y + 25;
-    this.drawStat(ctx, 'Pierce: ', gameState.hasPierce ? 'YES' : 'NONE', padding, y2, '#bc13fe');
-    this.drawStat(ctx, 'Damage: ', gameState.playerDamage, padding + colWidth, y2, '#39ff14');
-    this.drawStat(ctx, 'Rocket: ', gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE', padding + colWidth * 2, y2, '#ff6600');
-
-    ctx.restore();
-  }
-
-  drawStat(ctx, label, value, x, y, valueColor) {
-    ctx.fillStyle = '#00f5ff';
-    ctx.textAlign = 'left';
-    ctx.fillText(label, x, y);
-    const labelWidth = ctx.measureText(label).width;
-    ctx.fillStyle = valueColor;
-    ctx.shadowColor = valueColor;
-    ctx.shadowBlur = 8;
-    ctx.fillText(value, x + labelWidth, y);
-    ctx.shadowBlur = 0;
+    // Legacy draw, no longer needed
   }
 
   setShootActive(isActive) {

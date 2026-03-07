@@ -50,6 +50,7 @@ export class Game {
     this.collisions = new CollisionManager(this);
     this.renderer = new Renderer(this);
     
+    this.ui.initPixiHUD(this);
     this.initSprites();
     this.resetState();
     this.inputs.bindInputs();
