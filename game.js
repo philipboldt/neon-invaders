@@ -1,11 +1,16 @@
-if (window.location.protocol === 'file:') {
-  alert('Neon Invaders uses ES Modules and requires a local web server to run. Please use "npm run report" or another server to view the game locally.');
-}
-
 import { Game } from './src/Game.js';
 
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.protocol === 'file:') {
+    alert('Neon Invaders uses ES Modules and requires a local web server to run. Please use "npm run report" or another server to view the game locally.');
+  }
 
-// Initialize Game
-window.game = new Game(canvas, ctx);
+  const canvas = document.getElementById('game');
+  if (!canvas) {
+    console.error('Canvas element not found!');
+    return;
+  }
+
+  // Initialize Game
+  window.game = new Game(canvas);
+});

@@ -4,7 +4,9 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
 
     test.beforeEach(async ({ page }) => {
         // Fail the test if any console error or unhandled exception occurs
+        page.on('console', msg => console.log(`PAGE LOG: ${msg.text()}`));
         page.on('pageerror', (exception) => {
+            console.error(`PAGE ERROR: ${exception.message}`);
             throw new Error(`Uncaught exception: ${exception.message}`);
         });
     });
@@ -17,8 +19,11 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
 
     test('State Inspection: window.game should be initialized', async ({ page }) => {
         await page.goto('/');
-        const isGameInitialized = await page.evaluate(() => !!window.game);
-        expect(isGameInitialized).toBe(true);
+        
+        // Wait for game to initialize (polling)
+        await expect.poll(async () => {
+            return await page.evaluate(() => !!window.game);
+        }, { timeout: 10000 }).toBe(true);
 
         const gameState = await page.evaluate(() => ({
             level: window.game.level,

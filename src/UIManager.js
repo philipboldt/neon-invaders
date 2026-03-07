@@ -25,6 +25,7 @@ export class UIManager {
       restartBtn: document.getElementById('restart'),
       rocket: document.getElementById('rocket')
     };
+    this.charEls = Array.from(document.querySelectorAll('.arcade-input .char'));
     this.nameInputActive = false;
     this.bossClearActive = false;
     this.currentCharIndex = 0;

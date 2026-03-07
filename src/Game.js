@@ -12,22 +12,32 @@ import { Renderer } from './Renderer.js';
 import { drawRect } from './utils.js';
 
 export class Game {
-  constructor(canvas, ctx) {
+  constructor(canvas) {
     this.canvas = canvas;
-    this.ctx = ctx; // Legacy context support for progressive migration
     this.W = canvas.width;
     this.H = canvas.height;
 
-    // Initialize PixiJS
-    this.app = new PIXI.Application({
-      view: canvas,
-      width: this.W,
-      height: this.H,
-      backgroundColor: 0x0d0d14,
-      antialias: true,
-      resolution: window.devicePixelRatio || 1,
-      autoDensity: true
-    });
+    console.log('Initializing PixiJS with resolution:', window.devicePixelRatio || 1);
+    if (typeof PIXI === 'undefined') {
+      console.error('CRITICAL: PIXI is not defined! Check index.html script loading.');
+      throw new Error('PIXI not found');
+    }
+    try {
+      // Initialize PixiJS
+      this.app = new PIXI.Application({
+        view: canvas,
+        width: this.W,
+        height: this.H,
+        backgroundColor: 0x0d0d14,
+        antialias: true,
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true
+      });
+      console.log('PixiJS Application created successfully');
+    } catch (err) {
+      console.error('Failed to create PixiJS Application:', err);
+      throw err;
+    }
 
     // Create Layers (Containers)
     this.stage = this.app.stage;
