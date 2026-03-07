@@ -47,8 +47,9 @@ export class WeaponManager {
     this.game.bossMissiles.forEach(m => {
       this.bossMissileGraphics.beginFill(this.parseColor(COLORS.boss));
       const matrix = new PIXI.Matrix();
-      matrix.translate(m.x + m.w / 2, m.y + m.h / 2);
+      // Correct order for local rotation: rotate first, then translate to world coordinates
       matrix.rotate(m.angle - Math.PI / 2);
+      matrix.translate(m.x + m.w / 2, m.y + m.h / 2);
       this.bossMissileGraphics.setMatrix(matrix);
       this.bossMissileGraphics.drawRect(-m.w / 2, -m.h / 2, m.w, m.h);
       this.bossMissileGraphics.setMatrix(new PIXI.Matrix());
@@ -64,8 +65,11 @@ export class WeaponManager {
       // Draw Rocket
       this.rocketGraphics.beginFill(rocketColor);
       const matrix = new PIXI.Matrix();
+      
+      // Correct order for local rotation: rotate first, then translate to world coordinates
+      matrix.rotate(Math.atan2(r.vy, r.vx) + Math.PI / 2);
       matrix.translate(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
-      matrix.rotate(Math.atan2(r.vy, r.vx));
+      
       this.rocketGraphics.setMatrix(matrix);
       this.rocketGraphics.drawRect(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
       this.rocketGraphics.setMatrix(new PIXI.Matrix());
