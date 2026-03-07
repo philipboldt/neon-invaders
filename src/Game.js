@@ -30,8 +30,8 @@ export class Game {
         height: this.H,
         backgroundColor: CONSTANTS.BG_COLOR,
         antialias: true,
-        resolution: window.devicePixelRatio || 1,
-        autoDensity: true
+        resolution: 1, // Let CSS handle scaling for retro look
+        autoDensity: false
       });
       console.log('PixiJS Application created successfully');
     } catch (err) {
