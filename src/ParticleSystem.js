@@ -1,18 +1,25 @@
 import { COLORS, CONSTANTS } from './constants.js';
 
 export class ParticleSystem {
-  constructor() {
+  constructor(game) {
+    this.game = game;
     this.maxParticles = 1024;
     this.pool = [];
-    this.activeIndices = []; // Keep track of active particles for faster iteration
-    this.freeIndices = [];   // Stack of free indices
+    this.activeIndices = []; 
+    this.freeIndices = [];   
     
     for (let i = 0; i < this.maxParticles; i++) {
+      const g = new PIXI.Graphics();
+      g.visible = false;
+      this.game.effectLayer.addChild(g);
+      
       this.pool.push({
         active: false,
         x: 0, y: 0, vx: 0, vy: 0,
         size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff',
-        text: null, isText: false, isLightning: false
+        text: null, isText: false, isLightning: false,
+        pixiObj: g,
+        pixiText: null
       });
       this.freeIndices.push(i);
     }
@@ -36,15 +43,33 @@ export class ParticleSystem {
     p.x = x;
     p.y = y;
     p.vx = 0;
-    p.vy = -3.5; // Increased vertical speed (was -1.5)
-    p.size = 16;  // Start font size
-    p.maxSize = 32; // End font size
+    p.vy = -3.5;
+    p.size = 16;
+    p.maxSize = 32;
     p.life = 0;
-    p.maxLife = 45; // ~0.75s at 60fps
-    p.color = '#ffff00'; // Neon yellow
+    p.maxLife = 45;
+    p.color = '#ffff00';
     p.text = `+${amount}`;
     p.isText = true;
     p.isLightning = false;
+
+    if (!p.pixiText) {
+      p.pixiText = new PIXI.Text('', {
+        fontFamily: 'Orbitron',
+        fontSize: 20,
+        fontWeight: 'bold',
+        fill: 0xffff00,
+        align: 'center',
+        stroke: 0x000000,
+        strokeThickness: 3
+      });
+      p.pixiText.anchor.set(0.5);
+      this.game.effectLayer.addChild(p.pixiText);
+    }
+    p.pixiText.text = p.text;
+    p.pixiText.style.fill = 0xffff00;
+    p.pixiText.visible = true;
+    p.pixiObj.visible = false;
 
     this.activeIndices.push(idx);
   }
@@ -59,21 +84,40 @@ export class ParticleSystem {
     p.x = x;
     p.y = y;
     p.vx = 0;
-    p.vy = 0; // Static position for better visibility
-    p.size = 20;  // Larger start font size
-    p.maxSize = 64; // Grow even bigger
+    p.vy = 0;
+    p.size = 20;
+    p.maxSize = 64;
     p.life = 0;
-    p.maxLife = 40; // ~0.66s
-    p.color = '#ff0844'; // Neon red
+    p.maxLife = 40;
+    p.color = '#ff0844';
     p.text = `-${amount}`;
     p.isText = true;
     p.isLightning = false;
+
+    if (!p.pixiText) {
+      p.pixiText = new PIXI.Text('', {
+        fontFamily: 'Orbitron',
+        fontSize: 20,
+        fontWeight: 'bold',
+        fill: 0xff0844,
+        align: 'center',
+        stroke: 0x000000,
+        strokeThickness: 3
+      });
+      p.pixiText.anchor.set(0.5);
+      this.game.effectLayer.addChild(p.pixiText);
+    }
+    p.pixiText.text = p.text;
+    p.pixiText.style.fill = 0xff0844;
+    p.pixiText.visible = true;
+    p.pixiObj.visible = false;
 
     this.activeIndices.push(idx);
   }
 
   spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
     const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
+    const tint = this.parseColor(color);
     for (let n = 0; n < particleCount; n++) {
       if (this.freeIndices.length === 0) break;
       
@@ -98,19 +142,27 @@ export class ParticleSystem {
       p.text = null;
       p.isLightning = false;
       
+      p.pixiObj.clear();
+      p.pixiObj.beginFill(0xFFFFFF);
+      p.pixiObj.drawRect(-maxSize/2, -maxSize/2, maxSize, maxSize);
+      p.pixiObj.endFill();
+      p.pixiObj.tint = tint;
+      p.pixiObj.visible = true;
+      if (p.pixiText) p.pixiText.visible = false;
+
       this.activeIndices.push(idx);
     }
   }
 
   spawnStunningExplosion(cx, cy, color) {
-    // A screen-filling, massive explosion for bosses
     const layers = [
-      { count: 128, speed: 45, life: 100, size: 50, color: '#ffffff' }, // Ultra-fast core flash
-      { count: 256, speed: 25, life: 150, size: 35, color: color },    // Massive main burst
-      { count: 256, speed: 12, life: 200, size: 20, color: color },    // Screen-covering embers
+      { count: 128, speed: 45, life: 100, size: 50, color: '#ffffff' },
+      { count: 256, speed: 25, life: 150, size: 35, color: color },
+      { count: 256, speed: 12, life: 200, size: 20, color: color },
     ];
 
     layers.forEach(layer => {
+      const tint = this.parseColor(layer.color);
       for (let n = 0; n < layer.count; n++) {
         if (this.freeIndices.length === 0) break;
         
@@ -132,6 +184,14 @@ export class ParticleSystem {
         p.text = null;
         p.isLightning = false;
         
+        p.pixiObj.clear();
+        p.pixiObj.beginFill(0xFFFFFF);
+        p.pixiObj.drawRect(-maxSize/2, -maxSize/2, maxSize, maxSize);
+        p.pixiObj.endFill();
+        p.pixiObj.tint = tint;
+        p.pixiObj.visible = true;
+        if (p.pixiText) p.pixiText.visible = false;
+
         this.activeIndices.push(idx);
       }
     });
@@ -160,6 +220,14 @@ export class ParticleSystem {
     p.text = null;
     p.isLightning = false;
     
+    p.pixiObj.clear();
+    p.pixiObj.beginFill(0xFFFFFF);
+    p.pixiObj.drawRect(-p.maxSize/2, -p.maxSize/2, p.maxSize, p.maxSize);
+    p.pixiObj.endFill();
+    p.pixiObj.tint = this.parseColor(COLORS.rocket);
+    p.pixiObj.visible = true;
+    if (p.pixiText) p.pixiText.visible = false;
+
     this.activeIndices.push(idx);
   }
 
@@ -186,10 +254,22 @@ export class ParticleSystem {
       p.color = '#555555';
       p.isText = false;
       p.text = null;
-      p.isLightning = true; // Special flag for color transition
+      p.isLightning = true;
+
+      p.pixiObj.clear();
+      p.pixiObj.beginFill(0xFFFFFF);
+      p.pixiObj.drawRect(-p.maxSize/2, -p.maxSize/2, p.maxSize, p.maxSize);
+      p.pixiObj.endFill();
+      p.pixiObj.tint = 0x555555;
+      p.pixiObj.visible = true;
+      if (p.pixiText) p.pixiText.visible = false;
 
       this.activeIndices.push(idx);
     }
+  }
+
+  parseColor(hex) {
+    return parseInt(hex.replace('#', '0x'));
   }
 
   update() {
@@ -200,19 +280,32 @@ export class ParticleSystem {
       p.x += p.vx;
       p.y += p.vy;
       p.life++;
+      const t = p.life / p.maxLife;
       
-      if (p.isLightning) {
-        const t = p.life / p.maxLife;
-        p.color = t < 0.25 ? '#555555' : 
-                  t < 0.50 ? '#00f5ff' : 
-                  t < 0.75 ? '#ffffff' : 
-                  t < 0.90 ? '#00f5ff' : '#555555';
+      if (p.isText) {
+        p.pixiText.position.set(p.x, p.y);
+        p.pixiText.alpha = 1 - t;
+        const fontSize = p.size + (p.maxSize - p.size) * t;
+        p.pixiText.style.fontSize = Math.floor(fontSize);
+      } else {
+        p.pixiObj.position.set(p.x, p.y);
+        p.pixiObj.alpha = 1 - t;
+        p.pixiObj.scale.set(1 - t);
+        
+        if (p.isLightning) {
+          const colorHex = t < 0.25 ? 0x555555 : 
+                           t < 0.50 ? 0x00f5ff : 
+                           t < 0.75 ? 0xffffff : 
+                           t < 0.90 ? 0x00f5ff : 0x555555;
+          p.pixiObj.tint = colorHex;
+        }
       }
       
       if (p.life >= p.maxLife) {
         p.active = false;
+        if (p.pixiObj) p.pixiObj.visible = false;
+        if (p.pixiText) p.pixiText.visible = false;
         this.freeIndices.push(idx);
-        // Faster remove from active array
         this.activeIndices[i] = this.activeIndices[this.activeIndices.length - 1];
         this.activeIndices.pop();
       }
@@ -220,63 +313,6 @@ export class ParticleSystem {
   }
 
   draw(ctx) {
-    if (this.activeIndices.length === 0) return;
-
-    const textParticles = [];
-    const byColor = {};
-
-    for (let i = 0; i < this.activeIndices.length; i++) {
-      const p = this.pool[this.activeIndices[i]];
-      if (p.isText) {
-        textParticles.push(p);
-      } else {
-        if (!byColor[p.color]) byColor[p.color] = [];
-        byColor[p.color].push(p);
-      }
-    }
-
-    // Draw regular particles
-    ctx.shadowBlur = 8;
-    for (const color in byColor) {
-      ctx.fillStyle = color;
-      ctx.shadowColor = color;
-      const particles = byColor[color];
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        const t = p.life / p.maxLife;
-        const size = p.maxSize * (1 - t);
-        if (size > 0) {
-          ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
-        }
-      }
-    }
-
-    // Draw text particles (growing and fading)
-    for (let i = 0; i < textParticles.length; i++) {
-      const p = textParticles[i];
-      const t = p.life / p.maxLife;
-      const opacity = 1 - t;
-      const fontSize = p.size + (p.maxSize - p.size) * t;
-      
-      ctx.save();
-      ctx.globalAlpha = opacity;
-      ctx.font = `bold ${Math.floor(fontSize)}px Orbitron`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      // Draw black border/stroke first
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 3;
-      ctx.strokeText(p.text, p.x, p.y);
-      
-      // Draw neon color on top
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 20;
-      ctx.fillText(p.text, p.x, p.y);
-      ctx.restore();
-    }
-    
-    ctx.shadowBlur = 0;
+    // Legacy draw, no longer needed
   }
 }

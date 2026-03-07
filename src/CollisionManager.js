@@ -164,7 +164,15 @@ export class CollisionManager {
   updateUpgrades(now) {
     this.game.upgrades = this.game.upgrades.filter(u => {
       u.y += CONSTANTS.UPGRADE_FALL_SPEED;
-      if (u.y > this.game.H) return false;
+      if (u.sprite) u.sprite.position.set(u.x + u.w / 2, u.y + u.h / 2);
+      
+      if (u.y > this.game.H) {
+        if (u.sprite) {
+          this.game.entityLayer.removeChild(u.sprite);
+          u.sprite.destroy();
+        }
+        return false;
+      }
       
       let collected = false;
       if (u.x + u.w > this.game.player.x && u.x < this.game.player.x + this.game.player.w && u.y + u.h > this.game.player.y && u.y < this.game.player.y + this.game.player.h) {
@@ -191,7 +199,7 @@ export class CollisionManager {
 
           if (type === 'shield') { 
             this.game.shieldHits = 1; this.game.hasShieldSystem = true; this.game.lastShieldLostTime = -1; 
-            limitReached = true; // Shield is a one-time pick usually
+            limitReached = true; 
           }
           if (type === 'double') { 
             if (this.game.shotCount < CONSTANTS.PLAYER_MAX_SHOT_COUNT) {
@@ -224,14 +232,20 @@ export class CollisionManager {
             this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 20, amount);
           }
 
-          // If limit reached, convert all existing upgrades of this type to points
           if (limitReached && type !== 'points') {
             this.game.upgrades.forEach(otherU => {
-              if (otherU.type === type) otherU.type = 'points';
+              if (otherU.type === type) {
+                otherU.type = 'points';
+                if (otherU.sprite) otherU.sprite.texture = this.game.sprites.getTexture('upg_points');
+              }
             });
           }
 
           this.game.ui.updateStats(this.game);        
+        }
+        if (u.sprite) {
+          this.game.entityLayer.removeChild(u.sprite);
+          u.sprite.destroy();
         }
         return false;
       }

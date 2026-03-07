@@ -3,6 +3,71 @@ import { COLORS, CONSTANTS } from './constants.js';
 export class WeaponManager {
   constructor(game) {
     this.game = game;
+    this.bulletGraphics = new PIXI.Graphics();
+    this.game.projectileLayer.addChild(this.bulletGraphics);
+
+    this.invaderBulletGraphics = new PIXI.Graphics();
+    this.game.projectileLayer.addChild(this.invaderBulletGraphics);
+
+    this.bossMissileGraphics = new PIXI.Graphics();
+    this.game.projectileLayer.addChild(this.bossMissileGraphics);
+
+    this.rocketGraphics = new PIXI.Graphics();
+    this.game.projectileLayer.addChild(this.rocketGraphics);
+
+    this.lightningGraphics = new PIXI.Graphics();
+    this.game.effectLayer.addChild(this.lightningGraphics);
+
+    this.pdcGraphics = new PIXI.Graphics();
+    this.game.effectLayer.addChild(this.pdcGraphics);
+  }
+
+  updateProjectilesRender() {
+    // Bullets
+    this.bulletGraphics.clear();
+    this.bulletGraphics.beginFill(this.parseColor(COLORS.bullet));
+    this.game.bullets.forEach(b => {
+      this.bulletGraphics.drawRect(b.x, b.y, b.w, b.h);
+    });
+    this.bulletGraphics.endFill();
+
+    // Invader Bullets
+    this.invaderBulletGraphics.clear();
+    this.invaderBulletGraphics.beginFill(this.parseColor(COLORS.invader1));
+    this.game.invaderBullets.forEach(b => {
+      this.invaderBulletGraphics.drawRect(b.x, b.y, b.w, b.h);
+    });
+    this.invaderBulletGraphics.endFill();
+
+    // Boss Missiles
+    this.bossMissileGraphics.clear();
+    this.game.bossMissiles.forEach(m => {
+      this.bossMissileGraphics.beginFill(0xff0844);
+      const matrix = new PIXI.Matrix();
+      matrix.translate(m.x + m.w / 2, m.y + m.h / 2);
+      matrix.rotate(m.angle - Math.PI / 2);
+      this.bossMissileGraphics.setMatrix(matrix);
+      this.bossMissileGraphics.drawRect(-m.w / 2, -m.h / 2, m.w, m.h);
+      this.bossMissileGraphics.setMatrix(new PIXI.Matrix());
+      this.bossMissileGraphics.endFill();
+    });
+
+    // Rockets
+    this.rocketGraphics.clear();
+    this.game.rockets.forEach(r => {
+      this.rocketGraphics.beginFill(this.parseColor(COLORS.rocket));
+      const matrix = new PIXI.Matrix();
+      matrix.translate(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
+      matrix.rotate(Math.atan2(r.vy, r.vx));
+      this.rocketGraphics.setMatrix(matrix);
+      this.rocketGraphics.drawRect(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
+      this.rocketGraphics.setMatrix(new PIXI.Matrix());
+      this.rocketGraphics.endFill();
+    });
+  }
+
+  parseColor(hex) {
+    return parseInt(hex.replace('#', '0x'));
   }
 
   playerShoot(now) {
@@ -10,7 +75,6 @@ export class WeaponManager {
     this.game.lastPlayerShot = now;
     const maxBullets = 15; 
     
-    // Main ship bullets
     if (this.game.bullets.length < maxBullets) {
       const spread = 14;
       const startX = this.game.player.x + this.game.player.w / 2 - 2 - (this.game.shotCount - 1) * (spread / 2);
@@ -21,20 +85,20 @@ export class WeaponManager {
   }
 
   updatePDC(now) {
-    // Clear old tracer
     if (this.game.activePDCTracer && now - this.game.activePDCTracer.startTime > 40) {
       this.game.activePDCTracer = null;
+      this.pdcGraphics.clear();
     }
 
     if (!this.game.player.pods.left.active) {
       this.game.pdcTarget = null;
+      this.pdcGraphics.clear();
       return;
     }
 
     const podX = this.game.player.x - this.game.player.podGap - this.game.player.podW / 2;
     const podY = this.game.player.y + this.game.player.h / 2;
 
-    // Validate current target
     if (this.game.pdcTarget) {
       const targets = [...this.game.invaderBullets, ...this.game.bossMissiles];
       const stillExists = targets.includes(this.game.pdcTarget);
@@ -45,7 +109,6 @@ export class WeaponManager {
       }
     }
 
-    // Find new target if needed
     if (!this.game.pdcTarget) {
       const targets = [...this.game.invaderBullets, ...this.game.bossMissiles];
       let bestTarget = null;
@@ -68,7 +131,6 @@ export class WeaponManager {
     if (this.game.pdcTarget && now - this.game.lastPDCTime >= CONSTANTS.PDC_INTERVAL_MS) {
       this.game.lastPDCTime = now;
       
-      // Firing visual (tracer)
       this.game.activePDCTracer = {
         startTime: now,
         startX: podX,
@@ -76,7 +138,11 @@ export class WeaponManager {
         target: this.game.pdcTarget 
       };
 
-      // 10% chance to destroy
+      this.pdcGraphics.clear();
+      this.pdcGraphics.lineStyle(2, 0xffffff, 1);
+      this.pdcGraphics.moveTo(podX, podY);
+      this.pdcGraphics.lineTo(this.game.pdcTarget.x + this.game.pdcTarget.w / 2, this.game.pdcTarget.y + this.game.pdcTarget.h / 2);
+
       if (Math.random() < CONSTANTS.PDC_CHANCE) {
         const bIdx = this.game.invaderBullets.indexOf(this.game.pdcTarget);
         if (bIdx > -1) {
@@ -86,7 +152,7 @@ export class WeaponManager {
           if (mIdx > -1) this.game.bossMissiles.splice(mIdx, 1);
         }
         this.game.particles.spawnExplosion(this.game.pdcTarget.x + this.game.pdcTarget.w / 2, this.game.pdcTarget.y + this.game.pdcTarget.h / 2, '#ffffff', 0, Math.PI * 2, 5);
-        this.game.pdcTarget = null; // Clear target after destruction
+        this.game.pdcTarget = null;
       }
     }
   }
@@ -94,6 +160,7 @@ export class WeaponManager {
   updateLightning(now) {
     if (this.game.activeLightning && now - this.game.activeLightning.startTime > CONSTANTS.LIGHTNING_DURATION_MS) {
       this.game.activeLightning = null;
+      this.lightningGraphics.clear();
     }
 
     if (this.game.lightningLevel <= 0 || !this.game.player.pods.right.active || this.game.invaders.length === 0) return;
@@ -115,12 +182,16 @@ export class WeaponManager {
             this.game.spawnUpgrade(target.x + target.w * 0.75, target.y + target.h / 2);
             this.game.spawnUpgrade(target.x + target.w / 2, target.y + target.h / 2);
             
-            // Boss reward: increase player potential
             this.game.maxLives += 2;
             this.game.maxDamage += 2;
             this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
           } else {
             this.game.spawnUpgrade(target.x, target.y);
+          }
+          
+          if (target.sprite) {
+            this.game.entityLayer.removeChild(target.sprite);
+            target.sprite.destroy();
           }
           this.game.invaders.splice(randomIdx, 1);
 
@@ -154,6 +225,43 @@ export class WeaponManager {
         };
       }
     }
+
+    if (this.game.activeLightning) {
+      this.renderLightning(now);
+    }
+  }
+
+  renderLightning(now) {
+    if (!this.game.activeLightning) return;
+    const age = now - this.game.activeLightning.startTime;
+    const t = age / CONSTANTS.LIGHTNING_DURATION_MS;
+    const rx = this.game.player.x + this.game.player.w + this.game.player.podGap + this.game.player.podW / 2;
+    const ry = this.game.player.y + this.game.player.h / 2;
+    const target = this.game.activeLightning.target;
+    const tx = target.hp > 0 ? target.x + target.w / 2 : this.game.activeLightning.points[this.game.activeLightning.points.length-1].x;
+    const ty = target.hp > 0 ? target.y + target.h / 2 : this.game.activeLightning.points[this.game.activeLightning.points.length-1].y;
+
+    const color = t < 0.25 ? 0x555555 : t < 0.50 ? 0x00f5ff : t < 0.75 ? 0xffffff : t < 0.90 ? 0x00f5ff : 0x555555;
+    const bw = t < 0.5 ? 12 : 24 * (1 - t);
+
+    this.lightningGraphics.clear();
+    this.lightningGraphics.lineStyle(bw + 4, 0x000000, 1);
+    this.drawLightningPath(rx, ry, tx, ty, this.game.activeLightning.points);
+    this.lightningGraphics.lineStyle(bw, color, 1);
+    this.drawLightningPath(rx, ry, tx, ty, this.game.activeLightning.points);
+  }
+
+  drawLightningPath(rx, ry, tx, ty, origPoints) {
+    this.lightningGraphics.moveTo(rx, ry);
+    for (let i = 1; i < origPoints.length - 1; i++) {
+      const segT = i / (origPoints.length - 1);
+      const curX = rx + (tx - rx) * segT;
+      const curY = ry + (ty - ry) * segT;
+      const origBaseX = origPoints[0].x + (origPoints[origPoints.length-1].x - origPoints[0].x) * segT;
+      const origBaseY = origPoints[0].y + (origPoints[origPoints.length-1].y - origPoints[0].y) * segT;
+      this.lightningGraphics.lineTo(curX + (origPoints[i].x - origBaseX), curY + (origPoints[i].y - origBaseY));
+    }
+    this.lightningGraphics.lineTo(tx, ty);
   }
 
   updateRockets(now) {
@@ -226,7 +334,6 @@ export class WeaponManager {
                 this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
 
-                // Boss reward: increase player potential
                 this.game.maxLives += 2;
                 this.game.maxDamage += 2;
                 this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
@@ -234,6 +341,10 @@ export class WeaponManager {
                 this.game.spawnUpgrade(inv.x, inv.y);
               }
               
+              if (inv.sprite) {
+                this.game.entityLayer.removeChild(inv.sprite);
+                inv.sprite.destroy();
+              }
               this.game.invaders.splice(i, 1);
             }
           }

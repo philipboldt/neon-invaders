@@ -43,7 +43,7 @@ export class Game {
     this.particles = new ParticleSystem();
     this.player = new Player(this.W, this.H, this);
     this.sprites = new SpriteManager(this.app); // Pass app for texture generation
-    this.starfield = new Starfield(this.W, this.H);
+    this.starfield = new Starfield(this.W, this.H, this);
     this.inputs = new InputManager(this);
     this.weapons = new WeaponManager(this);
     this.entities = new EntityManager(this);
@@ -129,10 +129,18 @@ export class Game {
     });
     if (availableTypes.length === 0) return;
     const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-    this.upgrades.push({
+    const u = {
       x: x + CONSTANTS.INVADER_W / 2 - CONSTANTS.UPGRADE_W / 2, y: y,
       w: CONSTANTS.UPGRADE_W, h: CONSTANTS.UPGRADE_H, type, level: this.level 
-    });
+    };
+
+    // Initialize Pixi Sprite for upgrade
+    u.sprite = new PIXI.Sprite(this.sprites.getTexture(`upg_${type}`));
+    u.sprite.anchor.set(0.5);
+    u.sprite.position.set(u.x + u.w / 2, u.y + u.h / 2);
+    this.entityLayer.addChild(u.sprite);
+
+    this.upgrades.push(u);
   }
 
   updateEntities(now) {
