@@ -148,6 +148,7 @@ export class Game {
     this.activeLightning = null; this.lastPlayerShot = 0; this.lastInvaderShoot = 0; this.lastBossShoot = 0;
     this.lastRocketTime = 0; this.lastLightningTime = 0; this.lastPDCTime = 0;
     this.activePDCTracer = null; this.pdcTarget = null; this.invaderDir = 1;
+    this.fps = 60; this.lastFpsUpdate = 0; this.frameCount = 0;
     
     this.ui.updateStats(this);
     this.ui.setShootActive(false);
@@ -250,6 +251,16 @@ export class Game {
 
   gameLoop(now) {
     requestAnimationFrame(this.gameLoop);
+
+    // FPS Calculation
+    this.frameCount++;
+    if (now - this.lastFpsUpdate >= 1000) {
+      this.fps = (this.frameCount * 1000) / (now - this.lastFpsUpdate);
+      this.frameCount = 0;
+      this.lastFpsUpdate = now;
+      this.ui.updateStats(this);
+    }
+
     this.starfield.update();
     if (this.gameRunning && !this.isPaused) {
       this.updateEntities(now);

@@ -55,6 +55,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **HUD FPS Counter:** Added a real-time FPS counter to the HUD to monitor performance. The counter updates every second and is integrated into the PixiJS-powered UI layout. **[NEW]**
 - **Rocket Physics Fix:** Refactored rocket steering and movement to use logical `ry` coordinates. This ensures consistent homing, thrust, and collision behavior across all aspect ratios by performing math in a fixed 800x600 space before projecting to the actual screen height. **[FIX]**
 - **Mobile Portrait Tests:** Added `tests/mobile-portrait.spec.js` to verify dynamic logical dimensions, responsive grid layouts, and player positioning in portrait mode. **[TEST]**
 - **Portrait Mobile Optimization:** Implemented dynamic logical height (600-1400) and fixed logical width (800). Added Time-to-Impact scaling for projectiles and faster invader descent to maintain game balance on taller screens. Updated CSS for a responsive, full-screen layout and added a resize listener to handle aspect ratio changes. **[NEW]**

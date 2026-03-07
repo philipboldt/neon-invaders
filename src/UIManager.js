@@ -53,6 +53,7 @@ export class UIManager {
     this.hudTexts.pierce = this.createHudText('Pierce: NONE', padding, y2, this.parseHexColor(COLORS.pierce));
     this.hudTexts.damage = this.createHudText('Damage: 1', padding + colWidth, y2, this.parseHexColor(COLORS.invader2));
     this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, this.parseHexColor(COLORS.rocket));
+    this.hudTexts.fps = this.createHudText('FPS: 60', padding + colWidth * 3, y2, this.parseHexColor(COLORS.textYellow));
 
     this.debugText = new PIXI.Text('DEBUG MODE', {
       fontFamily: 'Orbitron',
@@ -155,6 +156,7 @@ export class UIManager {
     this.hudTexts.shield.value.text = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
     this.hudTexts.pierce.value.text = gameState.hasPierce ? 'YES' : 'NONE';
     this.hudTexts.rocket.value.text = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
+    if (this.hudTexts.fps) this.hudTexts.fps.value.text = Math.round(gameState.fps || 0);
     
     if (this.debugText) {
       this.debugText.visible = gameState.debugMode;
@@ -176,6 +178,7 @@ export class UIManager {
     if (this.hudTexts.pierce) this.hudTexts.pierce.container.position.set(padding, y2);
     if (this.hudTexts.damage) this.hudTexts.damage.container.position.set(padding + colWidth, y2);
     if (this.hudTexts.rocket) this.hudTexts.rocket.container.position.set(padding + colWidth * 2, y2);
+    if (this.hudTexts.fps) this.hudTexts.fps.container.position.set(padding + colWidth * 3, y2);
 
     if (this.debugText) this.debugText.position.set(game.W / 2, 72);
   }
