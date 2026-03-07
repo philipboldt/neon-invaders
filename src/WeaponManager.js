@@ -389,6 +389,7 @@ export class WeaponManager {
           }
         }
         this.game.ui.updateStats(this.game);
+        if (r.sprite) this.returnSprite('rocket', r.sprite);
         this.game.rockets.splice(j, 1);
         continue;
       }
@@ -424,6 +425,7 @@ export class WeaponManager {
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       
       if (r.y < -CONSTANTS.ROCKET_H * 2 || r.y > this.game.H + CONSTANTS.ROCKET_H || r.x < -CONSTANTS.ROCKET_W * 2 || r.x > this.game.W + CONSTANTS.ROCKET_W) {
+        if (r.sprite) this.returnSprite('rocket', r.sprite);
         this.game.rockets.splice(j, 1);
       }
     }
