@@ -159,6 +159,15 @@ export class InputManager {
       }
     });
 
+    this.game.ui.els.bossClearScreen.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.preventDefault();
+      if (this.game.ui.bossClearActive) {
+        this.game.ui.hideBossClear();
+        this.game.isPaused = false;
+      }
+    });
+
     this.game.ui.els.overlay.addEventListener('pointerdown', (e) => {
       if (this.game.ui.nameInputActive) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;

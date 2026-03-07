@@ -164,6 +164,29 @@ test.describe('Neon Invaders E2E Tests (MCP Enhanced)', () => {
         expect(level).toBe(16);
     });
 
+    test('Boss Clear: Should dismiss with tap (Mobile fix)', async ({ page }) => {
+        await page.goto('/');
+        await page.keyboard.press('Space');
+
+        // Force Boss defeat at level 5
+        await page.evaluate(() => {
+            window.game.level = 5;
+            window.game.invaders = []; 
+        });
+
+        // Wait for boss clear screen
+        const bossClearScreen = page.locator('#boss-clear-screen');
+        await expect(bossClearScreen).toBeVisible({ timeout: 5000 });
+        
+        // Dismiss with Click/Tap
+        await bossClearScreen.click();
+        await expect(bossClearScreen).toBeHidden();
+        
+        // Game should have advanced to level 6
+        const level = await page.evaluate(() => window.game.level);
+        expect(level).toBe(6);
+    });
+
     test('Gameplay: Starting the game should populate invaders', async ({ page }) => {
         await page.goto('/');
         await page.keyboard.press('Space');

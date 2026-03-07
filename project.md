@@ -74,6 +74,7 @@ A Space Invaders-style arcade shooter built with HTML5 Canvas and JavaScript. Th
 - **Testing:** Playwright E2E Tests with **MCP-Ready State Inspection** (`window.game`) and **Visual Snapshots**.
 
 ## Recent Changes
+- **Mobile Interaction Fix (Boss Clear):** Added a pointer listener to the boss clear screen, allowing mobile users to resume the game by tapping anywhere on the screen after defeating a boss. **[FIX]**
 - **Dynamic Upgrade Conversion:** When a player reaches the maximum limit for an upgrade category (Health, Damage, Rockets, etc.), all other upgrades of that same type currently on the screen instantly transform into 'Points' upgrades. **[NEW]**
 - **Configuration Centralization:** Migrated all remaining hard-coded numbers from `CollisionManager.js` and other weapon systems into `constants.js`. This allows for centralized game balancing. **[NEW]**
 - **Boss Kill Fix:** Ensured that player potential scaling (max health/damage) is correctly applied regardless of whether the boss was killed by bullets, lightning, or rockets. **[FIX]**
