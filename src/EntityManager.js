@@ -160,27 +160,28 @@ export class EntityManager {
       if (boss.y + boss.h < 0) return;
       
       const startX = boss.x + boss.w / 2;
-      const startY = boss.y + boss.h;
+      const startRY = boss.y / this.game.heightFactor; // Logical Y
       
       const playerCx = this.game.player.x + this.game.player.w / 2;
-      const playerCy = this.game.player.y + this.game.player.h / 2;
+      const playerCRY = (this.game.player.y + this.game.player.h / 2) / this.game.heightFactor; // Logical Y
       
       const dx = playerCx - startX;
-      const dy = playerCy - startY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dry = playerCRY - startRY;
+      const dist = Math.sqrt(dx * dx + dry * dry);
       
       const speed = CONSTANTS.BOSS_MISSILE_SPEED; 
       const vx = (dx / dist) * speed;
-      const vy = (dy / dist) * speed;
+      const vy = (dry / dist) * speed;
       
       this.game.bossMissiles.push({
         x: startX - CONSTANTS.BOSS_MISSILE_W / 2, 
-        y: startY,
+        y: boss.y + boss.h, // Initial screen y
+        ry: (boss.y + boss.h) / this.game.heightFactor,
         w: CONSTANTS.BOSS_MISSILE_W,
         h: CONSTANTS.BOSS_MISSILE_H,
         vx,
         vy,
-        angle: Math.atan2(vy, vx)
+        angle: Math.atan2(vy * this.game.heightFactor, vx) // Physical angle for rendering
       });
     });
   }
@@ -195,8 +196,9 @@ export class EntityManager {
       return b.y < this.game.H + 20;
     });
     this.game.bossMissiles = this.game.bossMissiles.filter(m => {
-      m.x += m.vx * this.game.heightFactor;
-      m.y += m.vy * this.game.heightFactor;
+      m.x += m.vx;
+      m.ry += m.vy;
+      m.y = m.ry * this.game.heightFactor;
       return m.y < this.game.H + 50 && m.x > -50 && m.x < this.game.W + 50;
     });
   }

@@ -58,7 +58,8 @@ export class WeaponManager {
       this.rocketGraphics.beginFill(this.parseColor(COLORS.rocket));
       const matrix = new PIXI.Matrix();
       matrix.translate(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
-      matrix.rotate(Math.atan2(r.vy, r.vx));
+      // Use physical velocity components for angle
+      matrix.rotate(Math.atan2(r.vy * this.game.heightFactor, r.vx));
       this.rocketGraphics.setMatrix(matrix);
       this.rocketGraphics.drawRect(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
       this.rocketGraphics.setMatrix(new PIXI.Matrix());

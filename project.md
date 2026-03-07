@@ -55,6 +55,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **Boss Missile & Rocket Physics Fix:** Refactored boss missiles to use logical `ry` coordinates for consistent aiming and movement across all aspect ratios. Fixed distorted vector math that caused missiles to fly incorrectly on portrait screens. Also updated rocket rendering to use physical velocity components for correct rotation angles. **[FIX]**
 - **Rocket Crash Fix:** Fixed a critical typo in `WeaponManager.js` where an undefined `target.sprite` was accessed during rocket explosion, causing the game to crash. **[FIX]**
 - **HUD FPS Counter:** Added a real-time FPS counter to the HUD to monitor performance. The counter updates every second and is integrated into the PixiJS-powered UI layout. **[NEW]**
 - **Rocket Physics Fix:** Refactored rocket steering and movement to use logical `ry` coordinates. This ensures consistent homing, thrust, and collision behavior across all aspect ratios by performing math in a fixed 800x600 space before projecting to the actual screen height. **[FIX]**
