@@ -3,18 +3,16 @@ import { COLORS, CONSTANTS } from './constants.js';
 export class WeaponManager {
   constructor(game) {
     this.game = game;
-    this.bulletGraphics = new PIXI.Graphics();
-    this.game.projectileLayer.addChild(this.bulletGraphics);
-
-    this.invaderBulletGraphics = new PIXI.Graphics();
-    this.game.projectileLayer.addChild(this.invaderBulletGraphics);
-
-    this.bossMissileGraphics = new PIXI.Graphics();
-    this.game.projectileLayer.addChild(this.bossMissileGraphics);
-
-    this.rocketGraphics = new PIXI.Graphics();
-    this.game.projectileLayer.addChild(this.rocketGraphics);
-
+    
+    // Object pools for sprites to avoid creating/destroying PIXI objects every frame
+    this.pools = {
+      bullet: [],
+      invaderBullet: [],
+      bossMissile: [],
+      rocket: []
+    };
+    
+    // We still use Graphics for transient effects that are drawn uniquely each frame
     this.lightningGraphics = new PIXI.Graphics();
     this.game.effectLayer.addChild(this.lightningGraphics);
 
@@ -25,55 +23,55 @@ export class WeaponManager {
     this.game.effectLayer.addChild(this.markerGraphics);
   }
 
+  getSprite(type) {
+    let sprite = this.pools[type].pop();
+    if (!sprite) {
+      sprite = new PIXI.Sprite(this.game.sprites.getTexture(type));
+      sprite.anchor.set(0.5);
+      this.game.projectileLayer.addChild(sprite);
+    }
+    sprite.visible = true;
+    return sprite;
+  }
+
+  returnSprite(type, sprite) {
+    sprite.visible = false;
+    this.pools[type].push(sprite);
+  }
+
   updateProjectilesRender() {
+    // We now sync sprites to logical data, and return unused sprites to pool
+    let activeSprites = 0;
+
     // Bullets
-    this.bulletGraphics.clear();
-    this.bulletGraphics.beginFill(this.parseColor(COLORS.bullet));
     this.game.bullets.forEach(b => {
-      this.bulletGraphics.drawRect(b.x, b.y, b.w, b.h);
+      if (!b.sprite) b.sprite = this.getSprite('bullet');
+      b.sprite.position.set(b.x + b.w / 2, b.y + b.h / 2);
     });
-    this.bulletGraphics.endFill();
 
     // Invader Bullets
-    this.invaderBulletGraphics.clear();
-    this.invaderBulletGraphics.beginFill(this.parseColor(COLORS.invader1));
     this.game.invaderBullets.forEach(b => {
-      this.invaderBulletGraphics.drawRect(b.x, b.y, b.w, b.h);
+      if (!b.sprite) b.sprite = this.getSprite('invaderBullet');
+      b.sprite.position.set(b.x + b.w / 2, b.y + b.h / 2);
     });
-    this.invaderBulletGraphics.endFill();
 
     // Boss Missiles
-    this.bossMissileGraphics.clear();
     this.game.bossMissiles.forEach(m => {
-      this.bossMissileGraphics.beginFill(this.parseColor(COLORS.boss));
-      const matrix = new PIXI.Matrix();
-      // Correct order for local rotation: rotate first, then translate to world coordinates
-      matrix.rotate(m.angle - Math.PI / 2);
-      matrix.translate(m.x + m.w / 2, m.y + m.h / 2);
-      this.bossMissileGraphics.setMatrix(matrix);
-      this.bossMissileGraphics.drawRect(-m.w / 2, -m.h / 2, m.w, m.h);
-      this.bossMissileGraphics.setMatrix(new PIXI.Matrix());
-      this.bossMissileGraphics.endFill();
+      if (!m.sprite) m.sprite = this.getSprite('bossMissile');
+      m.sprite.position.set(m.x + m.w / 2, m.y + m.h / 2);
+      m.sprite.rotation = m.angle - Math.PI / 2;
     });
 
     // Rockets & Target Markers
-    this.rocketGraphics.clear();
     this.markerGraphics.clear();
     const rocketColor = this.parseColor(COLORS.rocket);
     
     this.game.rockets.forEach(r => {
-      // Draw Rocket
-      this.rocketGraphics.beginFill(rocketColor);
-      const matrix = new PIXI.Matrix();
-      
-      // Correct order for local rotation: rotate first, then translate to world coordinates
-      matrix.rotate(Math.atan2(r.vy, r.vx) + Math.PI / 2);
-      matrix.translate(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
-      
-      this.rocketGraphics.setMatrix(matrix);
-      this.rocketGraphics.drawRect(-CONSTANTS.ROCKET_W / 2, -CONSTANTS.ROCKET_H / 2, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H);
-      this.rocketGraphics.setMatrix(new PIXI.Matrix());
-      this.rocketGraphics.endFill();
+      if (!r.sprite) r.sprite = this.getSprite('rocket');
+      r.sprite.position.set(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
+      // Math.atan2 gives 0 for Right, -PI/2 for Up.
+      // Since sprite is drawn pointing Up, add PI/2 so it visually points in the velocity direction.
+      r.sprite.rotation = Math.atan2(r.vy, r.vx) + Math.PI / 2;
 
       // Draw Target Marker
       this.markerGraphics.lineStyle(2, rocketColor, 0.6);

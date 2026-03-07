@@ -130,6 +130,20 @@ export class Game {
         ctx.beginPath(); ctx.arc(radius, radius, radius, 0, Math.PI * 2); ctx.fill();
       });
     });
+
+    // Pre-render Projectiles
+    this.sprites.preRender('bullet', CONSTANTS.BULLET_W, CONSTANTS.BULLET_H, (ctx) => {
+      drawRect(ctx, 0, 0, CONSTANTS.BULLET_W, CONSTANTS.BULLET_H, COLORS.bullet, false);
+    });
+    this.sprites.preRender('invaderBullet', CONSTANTS.INVADER_BULLET_W, CONSTANTS.INVADER_BULLET_H, (ctx) => {
+      drawRect(ctx, 0, 0, CONSTANTS.INVADER_BULLET_W, CONSTANTS.INVADER_BULLET_H, COLORS.invader1, false);
+    });
+    this.sprites.preRender('bossMissile', CONSTANTS.BOSS_MISSILE_W, CONSTANTS.BOSS_MISSILE_H, (ctx) => {
+      drawRect(ctx, 0, 0, CONSTANTS.BOSS_MISSILE_W, CONSTANTS.BOSS_MISSILE_H, COLORS.boss, false);
+    });
+    this.sprites.preRender('rocket', CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H, (ctx) => {
+      drawRect(ctx, 0, 0, CONSTANTS.ROCKET_W, CONSTANTS.ROCKET_H, COLORS.rocket, false);
+    });
   }
 
   resetState() {
