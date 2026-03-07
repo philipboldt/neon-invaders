@@ -258,7 +258,7 @@ export class Game {
       this.fps = (this.frameCount * 1000) / (now - this.lastFpsUpdate);
       this.frameCount = 0;
       this.lastFpsUpdate = now;
-      this.ui.updateStats(this);
+      this.ui.updateFPS(this.fps);
     }
 
     this.starfield.update();

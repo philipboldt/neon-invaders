@@ -99,6 +99,10 @@ export class UIManager {
     });
     
     value.x = label.width;
+    // Set a minimum width for the value to prevent layout shifts
+    // but keep it dynamic enough for larger scores.
+    // We can use a container or just rely on the next field's column width.
+    
     container.addChild(label, value);
     this.game.uiLayer.addChild(container);
     
@@ -156,11 +160,16 @@ export class UIManager {
     this.hudTexts.shield.value.text = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
     this.hudTexts.pierce.value.text = gameState.hasPierce ? 'YES' : 'NONE';
     this.hudTexts.rocket.value.text = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
-    if (this.hudTexts.fps) this.hudTexts.fps.value.text = Math.round(gameState.fps || 0);
     
     if (this.debugText) {
       this.debugText.visible = gameState.debugMode;
       this.debugText.position.set(gameState.W / 2, 72);
+    }
+  }
+
+  updateFPS(fps) {
+    if (this.hudTexts.fps) {
+      this.hudTexts.fps.value.text = Math.round(fps || 0);
     }
   }
 
