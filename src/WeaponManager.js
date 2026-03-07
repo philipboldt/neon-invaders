@@ -270,14 +270,14 @@ export class WeaponManager {
     if (this.game.rocketLevel > 0 && currentLowest.length > 0 && now - this.game.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
       this.game.lastRocketTime = now;
       const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
-      const logicalPlayerY = this.game.player.y / this.game.heightFactor;
       this.game.rockets.push({
         x: this.game.player.x + this.game.player.w / 2 - CONSTANTS.ROCKET_W / 2,
         y: this.game.player.y,
-        ry: logicalPlayerY,
         targetX: targetInv.x + targetInv.w / 2,
-        targetRY: (targetInv.y + targetInv.h / 2) / this.game.heightFactor,
-        vx: 0, vy: -CONSTANTS.ROCKET_INITIAL_SPEED,
+        targetY: targetInv.y + targetInv.h / 2,
+        vx: 0, 
+        // Initial vertical speed scaled by heightFactor
+        vy: -CONSTANTS.ROCKET_INITIAL_SPEED * this.game.heightFactor,
         distanceTraveled: 0,
       });
     }
@@ -287,8 +287,9 @@ export class WeaponManager {
         let bestInv = null;
         let bestD = Infinity;
         for (const inv of currentLowest) {
-          const invRY = (inv.y + inv.h / 2) / this.game.heightFactor;
-          const d = (inv.x + inv.w / 2 - r.targetX) ** 2 + (invRY - r.targetRY) ** 2;
+          const invCx = inv.x + inv.w / 2;
+          const invCy = inv.y + inv.h / 2;
+          const d = (invCx - r.targetX) ** 2 + (invCy - r.targetY) ** 2;
           if (d < bestD) {
             bestD = d;
             bestInv = inv;
@@ -296,30 +297,31 @@ export class WeaponManager {
         }
         if (bestInv) {
           r.targetX = bestInv.x + bestInv.w / 2;
-          r.targetRY = (bestInv.y + bestInv.h / 2) / this.game.heightFactor;
+          r.targetY = bestInv.y + bestInv.h / 2;
         }
       }
 
       const cx = r.x + CONSTANTS.ROCKET_W / 2;
-      const cry = r.ry + (CONSTANTS.ROCKET_H / 2) / this.game.heightFactor;
+      const cy = r.y + CONSTANTS.ROCKET_H / 2;
       const dx = r.targetX - cx;
-      const dry = r.targetRY - cry;
-      const distSq = dx * dx + dry * dry;
-      const hitRadiusSq = (CONSTANTS.ROCKET_HIT_RADIUS / this.game.heightFactor) ** 2;
+      const dy = r.targetY - cy;
+      const distSq = dx * dx + dy * dy;
+      
+      // Hit radius doesn't need scaling because it's compared against physical distance
+      const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
 
       if (distSq < hitRadiusSq) {
         const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W;
         this.game.shake = 10;
         
-        const screenCY = r.ry * this.game.heightFactor + (CONSTANTS.ROCKET_H / 2);
-        this.game.particles.spawnExplosion(cx, screenCY, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
-        this.game.particles.spawnExplosion(cx, screenCY, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
+        this.game.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
+        this.game.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
 
         for (let i = this.game.invaders.length - 1; i >= 0; i--) {
           const inv = this.game.invaders[i];
           const invCx = inv.x + inv.w / 2;
           const invCy = inv.y + inv.h / 2;
-          const distSqToInv = (invCx - cx) ** 2 + (invCy - screenCY) ** 2;
+          const distSqToInv = (invCx - cx) ** 2 + (invCy - cy) ** 2;
           const checkRange = blastRadius + Math.max(inv.w, inv.h) / 2;
           
           if (distSqToInv <= checkRange * checkRange) {
@@ -359,30 +361,32 @@ export class WeaponManager {
       }
 
       const dist = Math.sqrt(distSq);
-      if (dist > 0 && r.distanceTraveled >= CONSTANTS.ROCKET_VERTICAL_PHASE) {
-        const desiredDx = dx / dist;
-        const desiredDry = dry / dist;
-        const steerX = desiredDx * CONSTANTS.ROCKET_MAX_SPEED - r.vx;
-        const steerRY = desiredDry * CONSTANTS.ROCKET_MAX_SPEED - r.vy;
+      // Scale dynamic limits by heightFactor
+      const maxSpeed = CONSTANTS.ROCKET_MAX_SPEED * this.game.heightFactor;
+      const thrust = CONSTANTS.ROCKET_THRUST * this.game.heightFactor;
+      const verticalPhaseLimit = CONSTANTS.ROCKET_VERTICAL_PHASE * this.game.heightFactor;
+
+      if (dist > 0 && r.distanceTraveled >= verticalPhaseLimit) {
+        const desiredDx = (dx / dist) * maxSpeed;
+        const desiredDy = (dy / dist) * maxSpeed;
+        const steerX = desiredDx - r.vx;
+        const steerY = desiredDy - r.vy;
         r.vx += steerX * CONSTANTS.ROCKET_STEER_STRENGTH;
-        r.vy += steerRY * CONSTANTS.ROCKET_STEER_STRENGTH;
+        r.vy += steerY * CONSTANTS.ROCKET_STEER_STRENGTH;
       }
 
       const speed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       if (speed > 0) {
-        const thrustX = (r.vx / speed) * CONSTANTS.ROCKET_THRUST;
-        const thrustRY = (r.vy / speed) * CONSTANTS.ROCKET_THRUST;
-        r.vx += thrustX;
-        r.vy += thrustRY;
+        r.vx += (r.vx / speed) * thrust;
+        r.vy += (r.vy / speed) * thrust;
         const newSpeed = Math.sqrt(r.vx * r.vx + r.vy * r.vy);
-        if (newSpeed > CONSTANTS.ROCKET_MAX_SPEED) {
-          r.vx = (r.vx / newSpeed) * CONSTANTS.ROCKET_MAX_SPEED;
-          r.vy = (r.vy / newSpeed) * CONSTANTS.ROCKET_MAX_SPEED;
+        if (newSpeed > maxSpeed) {
+          r.vx = (r.vx / newSpeed) * maxSpeed;
+          r.vy = (r.vy / newSpeed) * maxSpeed;
         }
       }
       r.x += r.vx;
-      r.ry += r.vy;
-      r.y = r.ry * this.game.heightFactor;
+      r.y += r.vy;
 
       this.game.particles.spawnRocketTrail(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2, r.vx, r.vy);
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
@@ -390,5 +394,6 @@ export class WeaponManager {
       if (r.y < -CONSTANTS.ROCKET_H * 2 || r.y > this.game.H + CONSTANTS.ROCKET_H || r.x < -CONSTANTS.ROCKET_W * 2 || r.x > this.game.W + CONSTANTS.ROCKET_W) return false;
       return true;
     });
+  }
   }
 }
