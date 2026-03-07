@@ -112,6 +112,7 @@ export class WeaponManager {
 
     if (!this.game.player.pods.left.active) {
       this.game.pdcTarget = null;
+      this.game.activePDCTracer = null;
       this.pdcGraphics.clear();
       return;
     }
@@ -153,15 +154,11 @@ export class WeaponManager {
       
       this.game.activePDCTracer = {
         startTime: now,
-        startX: podX,
-        startY: podY,
-        target: this.game.pdcTarget 
+        target: this.game.pdcTarget,
+        destroyed: false,
+        frozenX: 0,
+        frozenY: 0
       };
-
-      this.pdcGraphics.clear();
-      this.pdcGraphics.lineStyle(2, 0xffffff, 1);
-      this.pdcGraphics.moveTo(podX, podY);
-      this.pdcGraphics.lineTo(this.game.pdcTarget.x + this.game.pdcTarget.w / 2, this.game.pdcTarget.y + this.game.pdcTarget.h / 2);
 
       if (Math.random() < CONSTANTS.PDC_CHANCE) {
         const bIdx = this.game.invaderBullets.indexOf(this.game.pdcTarget);
@@ -171,9 +168,28 @@ export class WeaponManager {
           const mIdx = this.game.bossMissiles.indexOf(this.game.pdcTarget);
           if (mIdx > -1) this.game.bossMissiles.splice(mIdx, 1);
         }
-        this.game.particles.spawnExplosion(this.game.pdcTarget.x + this.game.pdcTarget.w / 2, this.game.pdcTarget.y + this.game.pdcTarget.h / 2, '#ffffff', 0, Math.PI * 2, 5);
+        
+        const hitX = this.game.pdcTarget.x + this.game.pdcTarget.w / 2;
+        const hitY = this.game.pdcTarget.y + this.game.pdcTarget.h / 2;
+        this.game.particles.spawnExplosion(hitX, hitY, '#ffffff', 0, Math.PI * 2, 5);
+        
+        this.game.activePDCTracer.destroyed = true;
+        this.game.activePDCTracer.frozenX = hitX;
+        this.game.activePDCTracer.frozenY = hitY;
         this.game.pdcTarget = null;
       }
+    }
+
+    // Dynamic redrawing for the lifetime of the tracer
+    if (this.game.activePDCTracer) {
+      const tracer = this.game.activePDCTracer;
+      const endX = tracer.destroyed ? tracer.frozenX : (tracer.target.x + tracer.target.w / 2);
+      const endY = tracer.destroyed ? tracer.frozenY : (tracer.target.y + tracer.target.h / 2);
+      
+      this.pdcGraphics.clear();
+      this.pdcGraphics.lineStyle(2, 0xffffff, 1);
+      this.pdcGraphics.moveTo(podX, podY);
+      this.pdcGraphics.lineTo(endX, endY);
     }
   }
 
