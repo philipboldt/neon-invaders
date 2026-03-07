@@ -305,7 +305,7 @@ export class WeaponManager {
       const cy = r.y + CONSTANTS.ROCKET_H / 2;
       const dx = r.targetX - cx;
       const dy = r.targetY - cy;
-      const distSq = dx * dx + dry * dry;
+      const distSq = dx * dx + dy * dy;
       
       // Hit radius doesn't need scaling because it's compared against physical distance
       const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
