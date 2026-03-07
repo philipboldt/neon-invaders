@@ -46,8 +46,16 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Object Pooling:** Particle system utilizes a pre-allocated pool (1024 particles) to eliminate Garbage Collection spikes.
 - **Modular Architecture:** Extracted core logic into specialized managers.
 
+## Mobile Optimization (Portraitish)
+- **Goal:** Transform the game into a dynamic vertical shooter for mobile portrait orientation.
+- **Dynamic Canvas:** Fixed logical width (800) with variable logical height (600-1400) based on aspect ratio.
+- **Gameplay Balancing:** 
+  - **Time-to-Impact Scaling:** Projectile speeds scale with height to maintain game rhythm.
+  - **Faster Descent:** Invader drop-down distance increases on taller screens.
+  - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
+
 ## Recent Changes
-- **Guidelines Update:** Updated `Gemini.md` to establish tests as the final authority on correctness and explicitly prohibit modifying tests just to make them pass. **[GUIDELINES]**
+- **Mobile Optimization Plan:** Created `mobile.md` outlining the strategy for a "Portraitish" mobile version, including Time-to-Impact scaling and dynamic grid layouts. **[PLAN]**
 - **Point Upgrade Values:** Fixed a regression from the PixiJS migration where point upgrades were missing their numeric values. They now dynamically display their point amount using `PIXI.Text`. **[FIX]**
 - **Configuration Centralization:** Refactored all core managers (`EntityManager`, `Player`, `WeaponManager`, `ParticleSystem`, `UIManager`) to use centralized constants and colors from `src/constants.js`. **[ENHANCED]**
 - **PixiJS Migration:** Successfully transitioned the entire game engine from manual 2D Canvas context to PixiJS. **[NEW ARCHITECTURE]**
