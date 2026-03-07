@@ -346,7 +346,7 @@ export class WeaponManager {
               }
               
               if (inv.sprite) {
-                this.game.entityLayer.removeChild(target.sprite);
+                this.game.entityLayer.removeChild(inv.sprite);
                 inv.sprite.destroy();
               }
               this.game.invaders.splice(i, 1);
