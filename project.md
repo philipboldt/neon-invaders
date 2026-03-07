@@ -48,6 +48,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 
 ## Recent Changes
 - **Guidelines Update:** Updated `Gemini.md` to establish tests as the final authority on correctness and explicitly prohibit modifying tests just to make them pass. **[GUIDELINES]**
+- **Point Upgrade Values:** Fixed a regression from the PixiJS migration where point upgrades were missing their numeric values. They now dynamically display their point amount using `PIXI.Text`. **[FIX]**
 - **Configuration Centralization:** Refactored all core managers (`EntityManager`, `Player`, `WeaponManager`, `ParticleSystem`, `UIManager`) to use centralized constants and colors from `src/constants.js`. **[ENHANCED]**
 - **PixiJS Migration:** Successfully transitioned the entire game engine from manual 2D Canvas context to PixiJS. **[NEW ARCHITECTURE]**
     - Implemented tiered rendering layers (Background, Entities, Projectiles, Effects, UI).

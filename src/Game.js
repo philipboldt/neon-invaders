@@ -151,7 +151,28 @@ export class Game {
     u.sprite.position.set(u.x + u.w / 2, u.y + u.h / 2);
     this.entityLayer.addChild(u.sprite);
 
+    if (type === 'points') {
+      this.addPointsTextToUpgrade(u);
+    }
+
     this.upgrades.push(u);
+  }
+
+  addPointsTextToUpgrade(u) {
+    const amount = u.level * CONSTANTS.POINTS_MULTIPLIER;
+    const textStr = amount >= 1000 ? (amount / 1000).toFixed(1) + 'k' : amount;
+    
+    const text = new PIXI.Text(textStr, {
+      fontFamily: 'Orbitron',
+      fontSize: 10,
+      fontWeight: 'bold',
+      fill: 0x000000,
+      align: 'center'
+    });
+    text.anchor.set(0.5);
+    // Position relative to sprite center (0,0 because anchor is 0.5)
+    text.position.set(0, 1); 
+    u.sprite.addChild(text);
   }
 
   updateEntities(now) {

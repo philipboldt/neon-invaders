@@ -236,7 +236,10 @@ export class CollisionManager {
             this.game.upgrades.forEach(otherU => {
               if (otherU.type === type) {
                 otherU.type = 'points';
-                if (otherU.sprite) otherU.sprite.texture = this.game.sprites.getTexture('upg_points');
+                if (otherU.sprite) {
+                  otherU.sprite.texture = this.game.sprites.getTexture('upg_points');
+                  this.game.addPointsTextToUpgrade(otherU);
+                }
               }
             });
           }
