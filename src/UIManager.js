@@ -40,6 +40,7 @@ export class UIManager {
 
   initPixiHUD(game) {
     this.game = game;
+    this.lastStats = {};
     const padding = 15;
     const y = 15;
     const colWidth = (this.game.W - padding * 2) / 4;
