@@ -187,18 +187,29 @@ export class EntityManager {
   }
 
   updateProjectiles() {
-    this.game.bullets = this.game.bullets.filter(b => {
+    for (let i = this.game.bullets.length - 1; i >= 0; i--) {
+      const b = this.game.bullets[i];
       b.y += CONSTANTS.BULLET_SPEED * this.game.heightFactor;
-      return b.y > -20;
-    });
-    this.game.invaderBullets = this.game.invaderBullets.filter(b => {
+      if (b.y <= -20) {
+        this.game.bullets.splice(i, 1);
+      }
+    }
+
+    for (let i = this.game.invaderBullets.length - 1; i >= 0; i--) {
+      const b = this.game.invaderBullets[i];
       b.y += CONSTANTS.INVADER_BULLET_SPEED * this.game.heightFactor;
-      return b.y < this.game.H + 20;
-    });
-    this.game.bossMissiles = this.game.bossMissiles.filter(m => {
+      if (b.y >= this.game.H + 20) {
+        this.game.invaderBullets.splice(i, 1);
+      }
+    }
+
+    for (let i = this.game.bossMissiles.length - 1; i >= 0; i--) {
+      const m = this.game.bossMissiles[i];
       m.x += m.vx;
       m.y += m.vy;
-      return m.y < this.game.H + 50 && m.x > -50 && m.x < this.game.W + 50;
-    });
+      if (m.y >= this.game.H + 50 || m.x <= -50 || m.x >= this.game.W + 50) {
+        this.game.bossMissiles.splice(i, 1);
+      }
+    }
   }
 }

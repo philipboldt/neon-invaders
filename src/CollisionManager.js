@@ -6,7 +6,9 @@ export class CollisionManager {
   }
 
   checkCollisions(now) {
-    this.game.bullets = this.game.bullets.filter(b => {
+    for (let j = this.game.bullets.length - 1; j >= 0; j--) {
+      const b = this.game.bullets[j];
+      let bulletRemoved = false;
       for (let i = 0; i < this.game.invaders.length; i++) {
         const inv = this.game.invaders[i];
         if (b.x + CONSTANTS.BULLET_W > inv.x && b.x < inv.x + inv.w && b.y < inv.y + inv.h && b.y + CONSTANTS.BULLET_H > inv.y) {
@@ -67,20 +69,26 @@ export class CollisionManager {
 
             if (this.game.hasPierce && !b.pierced) {
               b.pierced = true;
-              return true;
+              continue;
             }
           }
-          return false;
+          
+          if (!this.game.hasPierce || (this.game.hasPierce && !b.pierced)) {
+            this.game.bullets.splice(j, 1);
+            bulletRemoved = true;
+            break;
+          }
         }
       }
-      return true;
-    });
+      if (bulletRemoved) continue;
+    }
 
-    this.game.invaderBullets = this.game.invaderBullets.filter(b => {
-      // Use buffer height directly (not scaled) because both player and bullet are in same buffer
+    for (let i = this.game.invaderBullets.length - 1; i >= 0; i--) {
+      const b = this.game.invaderBullets[i];
       const bh = CONSTANTS.INVADER_BULLET_H;
-      // Hitbox padding for better feel
       const pad = 2;
+      let removed = false;
+
       if (b.x + CONSTANTS.INVADER_BULLET_W - pad > this.game.player.x + pad && 
           b.x + pad < this.game.player.x + this.game.player.w - pad && 
           b.y + bh - pad > this.game.player.y + pad && 
@@ -91,8 +99,10 @@ export class CollisionManager {
           if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else { this.game.lives--; }
           this.game.ui.updateStats(this.game);
         }
-        return false;
+        this.game.invaderBullets.splice(i, 1);
+        continue;
       }
+      
       const podY = this.game.player.y + (this.game.player.h - this.game.player.podH) / 2;
       if (this.game.player.pods.left.active) {
         const lx = this.game.player.x - this.game.player.podGap - this.game.player.podW;
@@ -108,9 +118,11 @@ export class CollisionManager {
               if (this.game.player.pods.left.hp <= 0) this.game.player.pods.left.active = false;
             }
           }
-          return false;
+          this.game.invaderBullets.splice(i, 1);
+          continue;
         }
       }
+
       if (this.game.player.pods.right.active) {
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap;
         if (b.x + CONSTANTS.INVADER_BULLET_W - pad > rx + pad && 
@@ -125,16 +137,17 @@ export class CollisionManager {
               if (this.game.player.pods.right.hp <= 0) this.game.player.pods.right.active = false;
             }
           }
-          return false;
+          this.game.invaderBullets.splice(i, 1);
+          continue;
         }
       }
-      return true;
-    });
+    }
 
-    this.game.bossMissiles = this.game.bossMissiles.filter(m => {
+    for (let i = this.game.bossMissiles.length - 1; i >= 0; i--) {
+      const m = this.game.bossMissiles[i];
       const mh = CONSTANTS.BOSS_MISSILE_H;
-      // Precise AABB for boss missiles
       const pad = 2;
+      
       if (m.x + m.w - pad > this.game.player.x + pad && 
           m.x + pad < this.game.player.x + this.game.player.w - pad && 
           m.y + mh - pad > this.game.player.y + pad && 
@@ -145,8 +158,10 @@ export class CollisionManager {
           if (this.game.shieldHits > 0) { this.game.shieldHits = 0; this.game.lastShieldLostTime = now; } else { this.game.lives--; }
           this.game.ui.updateStats(this.game);
         }
-        return false;
+        this.game.bossMissiles.splice(i, 1);
+        continue;
       }
+
       const podY = this.game.player.y + (this.game.player.h - this.game.player.podH) / 2;
       if (this.game.player.pods.left.active) {
         const lx = this.game.player.x - this.game.player.podGap - this.game.player.podW;
@@ -162,9 +177,11 @@ export class CollisionManager {
               if (this.game.player.pods.left.hp <= 0) this.game.player.pods.left.active = false;
             }
           }
-          return false;
+          this.game.bossMissiles.splice(i, 1);
+          continue;
         }
       }
+
       if (this.game.player.pods.right.active) {
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap;
         if (m.x + m.w - pad > rx + pad && 
@@ -179,15 +196,16 @@ export class CollisionManager {
               if (this.game.player.pods.right.hp <= 0) this.game.player.pods.right.active = false;
             }
           }
-          return false;
+          this.game.bossMissiles.splice(i, 1);
+          continue;
         }
       }
-      return true;
-    });
+    }
   }
 
   updateUpgrades(now) {
-    this.game.upgrades = this.game.upgrades.filter(u => {
+    for (let i = this.game.upgrades.length - 1; i >= 0; i--) {
+      const u = this.game.upgrades[i];
       u.y += CONSTANTS.UPGRADE_FALL_SPEED * this.game.heightFactor;
       if (u.sprite) u.sprite.position.set(u.x + u.w / 2, u.y + u.h / 2);
       
@@ -196,7 +214,8 @@ export class CollisionManager {
           this.game.entityLayer.removeChild(u.sprite);
           u.sprite.destroy();
         }
-        return false;
+        this.game.upgrades.splice(i, 1);
+        continue;
       }
       
       let collected = false;
@@ -275,19 +294,17 @@ export class CollisionManager {
           this.game.entityLayer.removeChild(u.sprite);
           u.sprite.destroy();
         }
-        return false;
+        this.game.upgrades.splice(i, 1);
+        continue;
       }
       
-      // Cleanup if upgrade falls off the screen
       if (u.y > this.game.H + 50) {
         if (u.sprite) {
           this.game.entityLayer.removeChild(u.sprite);
           u.sprite.destroy();
         }
-        return false;
+        this.game.upgrades.splice(i, 1);
       }
-      
-      return true;
-    });
+    }
   }
 }

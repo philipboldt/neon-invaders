@@ -316,7 +316,8 @@ export class WeaponManager {
       });
     }
 
-    this.game.rockets = this.game.rockets.filter((r) => {
+    for (let j = this.game.rockets.length - 1; j >= 0; j--) {
+      const r = this.game.rockets[j];
       const cx = r.x + CONSTANTS.ROCKET_W / 2;
       const cy = r.y + CONSTANTS.ROCKET_H / 2;
 
@@ -390,7 +391,8 @@ export class WeaponManager {
           }
         }
         this.game.ui.updateStats(this.game);
-        return false;
+        this.game.rockets.splice(j, 1);
+        continue;
       }
 
       const dist = Math.sqrt(distSq);
@@ -423,8 +425,9 @@ export class WeaponManager {
       this.game.particles.spawnRocketTrail(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2, r.vx, r.vy);
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       
-      if (r.y < -CONSTANTS.ROCKET_H * 2 || r.y > this.game.H + CONSTANTS.ROCKET_H || r.x < -CONSTANTS.ROCKET_W * 2 || r.x > this.game.W + CONSTANTS.ROCKET_W) return false;
-      return true;
-    });
+      if (r.y < -CONSTANTS.ROCKET_H * 2 || r.y > this.game.H + CONSTANTS.ROCKET_H || r.x < -CONSTANTS.ROCKET_W * 2 || r.x > this.game.W + CONSTANTS.ROCKET_W) {
+        this.game.rockets.splice(j, 1);
+      }
+    }
   }
 }
