@@ -41,7 +41,7 @@ export class Game {
 
     this.ui = new UIManager();
     this.particles = new ParticleSystem();
-    this.player = new Player(this.W, this.H);
+    this.player = new Player(this.W, this.H, this);
     this.sprites = new SpriteManager(this.app); // Pass app for texture generation
     this.starfield = new Starfield(this.W, this.H);
     this.inputs = new InputManager(this);

@@ -58,6 +58,10 @@ export class CollisionManager {
               this.game.spawnUpgrade(inv.x, inv.y);
             }
             
+            if (inv.sprite) {
+              this.game.entityLayer.removeChild(inv.sprite);
+              inv.sprite.destroy();
+            }
             this.game.invaders.splice(i, 1);
             this.game.ui.updateStats(this.game);
 

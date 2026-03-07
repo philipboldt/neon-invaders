@@ -68,6 +68,24 @@ export class EntityManager {
         scoreValue: isBossLevel ? 500 : 250
       });
     }
+
+    // Initialize Pixi Sprites for all invaders (including bosses)
+    this.game.invaders.forEach(inv => {
+      // Use pre-rendered textures from SpriteManager
+      const textureKey = `inv_${inv.color}`;
+      inv.sprite = new PIXI.Sprite(this.game.sprites.getTexture(textureKey));
+      inv.sprite.anchor.set(0.5);
+      // Sprite is larger than hit area due to glow, so we center it on the hit area
+      inv.sprite.position.set(inv.x + inv.w / 2, inv.y + inv.h / 2);
+      
+      // Scale boss sprite if it's a boss (pre-rendered textures are usually small)
+      if (inv.isBoss) {
+        inv.sprite.width = inv.w + 40; // +40 for glow padding
+        inv.sprite.height = inv.h + 40;
+      }
+
+      this.game.entityLayer.addChild(inv.sprite);
+    });
   }
 
   updateInvaders() {
@@ -82,11 +100,30 @@ export class EntityManager {
 
       if (moveDown) {
         this.game.invaderDir *= -1;
-        this.game.invaders.forEach(inv => (inv.y += 20));
+        this.game.invaders.forEach(inv => {
+          inv.y += 20;
+          if (inv.sprite) inv.sprite.y = inv.y + inv.h / 2;
+        });
       } else {
         this.game.gridX += moveX;
-        this.game.invaders.forEach(inv => (inv.x += moveX));
+        this.game.invaders.forEach(inv => {
+          inv.x += moveX;
+          if (inv.sprite) inv.sprite.x = inv.x + inv.w / 2;
+        });
       }
+
+      // Sync health tint
+      this.game.invaders.forEach(inv => {
+        if (inv.sprite) {
+          const ratio = inv.maxHp > 1 ? 0.45 + 0.55 * (inv.hp / inv.maxHp) : 1;
+          if (ratio < 1) {
+            const val = Math.floor(255 * ratio);
+            inv.sprite.tint = (val << 16) | (val << 8) | val;
+          } else {
+            inv.sprite.tint = 0xFFFFFF;
+          }
+        }
+      });
     }
   }
 
