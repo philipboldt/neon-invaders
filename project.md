@@ -55,15 +55,14 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
-- **Universal Height Scaling Sweep:** Performed a comprehensive codebase audit to ensure all vertical position and speed calculations (`ParticleSystem`, `Starfield`, `Projectiles`, `Upgrades`) correctly implement the dynamic `heightFactor`. This ensures visual and gameplay consistency across all aspect ratios from landscape to portrait. **[ENHANCED]**
-- **Collision Accuracy Fix:** Refactored collision detection to account for dynamic height scaling. Hitbox dimensions for projectiles now scale with `heightFactor` to match their visual representation. Also added internal padding to player hitboxes to prevent "unfair" deaths and improve gameplay feel. **[FIX]**
-- **Ghost Object Fix:** Added explicit sprite cleanup to `initInvaders` to ensure all PixiJS sprites from previous waves or games are destroyed and removed from the stage before initializing a new grid. This prevents non-moving "ghost" entities from remaining on the screen. **[FIX]**
-- **Boss Missile & Rocket Physics Fix:** Refactored boss missiles to use logical `ry` coordinates for consistent aiming and movement across all aspect ratios. Fixed distorted vector math that caused missiles to fly incorrectly on portrait screens. Also updated rocket rendering to use physical velocity components for correct rotation angles. **[FIX]**
-- **Rocket Crash Fix:** Fixed a critical typo in `WeaponManager.js` where an undefined `target.sprite` was accessed during rocket explosion, causing the game to crash. **[FIX]**
-- **HUD FPS Counter:** Added a real-time FPS counter to the HUD to monitor performance. The counter updates every second and is integrated into the PixiJS-powered UI layout. **[NEW]**
-- **Rocket Physics Fix:** Refactored rocket steering and movement to use logical `ry` coordinates. This ensures consistent homing, thrust, and collision behavior across all aspect ratios by performing math in a fixed 800x600 space before projecting to the actual screen height. **[FIX]**
-- **Mobile Portrait Tests:** Added `tests/mobile-portrait.spec.js` to verify dynamic logical dimensions, responsive grid layouts, and player positioning in portrait mode. **[TEST]**
-- **Portrait Mobile Optimization:** Implemented dynamic logical height (600-1400) and fixed logical width (800). Added Time-to-Impact scaling for projectiles and faster invader descent to maintain game balance on taller screens. Updated CSS for a responsive, full-screen layout and added a resize listener to handle aspect ratio changes. **[NEW]**
+- **Collision Logic Refinement:** Removed redundant `heightFactor` scaling from projectile hitboxes and reduced player hitbox padding to 2px for better accuracy. **[FIX]**
+- **Boss Missile Trajectory Fix:** Simplified boss missile targeting to use consistent buffer-pixel math, ensuring missiles follow a straight path toward the player. **[FIX]**
+- **Universal Height Scaling Sweep:** Performed a comprehensive codebase audit to ensure all vertical position and speed calculations (`ParticleSystem`, `Starfield`, `Projectiles`, `Upgrades`) correctly implement the dynamic `heightFactor`. **[ENHANCED]**
+- **Ghost Object Fix:** Added explicit sprite cleanup to `initInvaders` to ensure PixiJS sprites from previous waves are destroyed. **[FIX]**
+- **Rocket Crash Fix:** Fixed a critical typo in `WeaponManager.js` where an undefined `target.sprite` was accessed. **[FIX]**
+- **HUD FPS Counter:** Added a real-time FPS counter to the HUD. **[NEW]**
+- **Rocket Physics Fix:** Refactored rocket steering to use logical `ry` coordinates for consistent behavior. **[FIX]**
+- **Mobile Portrait Optimization:** Implemented dynamic logical height (600-1400) and responsive grid layouts for portrait screens. **[NEW]**
 - **Mobile Optimization Plan:** Created `mobile.md` outlining the strategy for a "Portraitish" mobile version, including Time-to-Impact scaling and dynamic grid layouts. **[PLAN]**
 - **Point Upgrade Values:** Fixed a regression from the PixiJS migration where point upgrades were missing their numeric values. They now dynamically display their point amount using `PIXI.Text`. **[FIX]**
 - **Configuration Centralization:** Refactored all core managers (`EntityManager`, `Player`, `WeaponManager`, `ParticleSystem`, `UIManager`) to use centralized constants and colors from `src/constants.js`. **[ENHANCED]**

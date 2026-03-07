@@ -77,9 +77,10 @@ export class CollisionManager {
     });
 
     this.game.invaderBullets = this.game.invaderBullets.filter(b => {
-      const bh = CONSTANTS.INVADER_BULLET_H * this.game.heightFactor;
+      // Use buffer height directly (not scaled) because both player and bullet are in same buffer
+      const bh = CONSTANTS.INVADER_BULLET_H;
       // Hitbox padding for better feel
-      const pad = 4;
+      const pad = 2;
       if (b.x + CONSTANTS.INVADER_BULLET_W - pad > this.game.player.x + pad && 
           b.x + pad < this.game.player.x + this.game.player.w - pad && 
           b.y + bh - pad > this.game.player.y + pad && 
@@ -131,7 +132,7 @@ export class CollisionManager {
     });
 
     this.game.bossMissiles = this.game.bossMissiles.filter(m => {
-      const mh = CONSTANTS.BOSS_MISSILE_H * this.game.heightFactor;
+      const mh = CONSTANTS.BOSS_MISSILE_H;
       // Precise AABB for boss missiles
       const pad = 2;
       if (m.x + m.w - pad > this.game.player.x + pad && 

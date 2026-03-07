@@ -169,28 +169,28 @@ export class EntityManager {
       if (boss.y + boss.h < 0) return;
       
       const startX = boss.x + boss.w / 2;
-      const startRY = boss.y / this.game.heightFactor; // Logical Y
+      const startY = boss.y + boss.h;
       
       const playerCx = this.game.player.x + this.game.player.w / 2;
-      const playerCRY = (this.game.player.y + this.game.player.h / 2) / this.game.heightFactor; // Logical Y
+      const playerCy = this.game.player.y + this.game.player.h / 2;
       
       const dx = playerCx - startX;
-      const dry = playerCRY - startRY;
-      const dist = Math.sqrt(dx * dx + dry * dry);
+      const dy = playerCy - startY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
       
-      const speed = CONSTANTS.BOSS_MISSILE_SPEED; 
+      // Scale speed by height factor to maintain Time-to-Impact rhythm
+      const speed = CONSTANTS.BOSS_MISSILE_SPEED * this.game.heightFactor; 
       const vx = (dx / dist) * speed;
-      const vy = (dry / dist) * speed;
+      const vy = (dy / dist) * speed;
       
       this.game.bossMissiles.push({
         x: startX - CONSTANTS.BOSS_MISSILE_W / 2, 
-        y: boss.y + boss.h, // Initial screen y
-        ry: (boss.y + boss.h) / this.game.heightFactor,
+        y: startY,
         w: CONSTANTS.BOSS_MISSILE_W,
         h: CONSTANTS.BOSS_MISSILE_H,
         vx,
         vy,
-        angle: Math.atan2(vy * this.game.heightFactor, vx) // Physical angle for rendering
+        angle: Math.atan2(vy, vx) // Angle in buffer pixels
       });
     });
   }
@@ -206,8 +206,7 @@ export class EntityManager {
     });
     this.game.bossMissiles = this.game.bossMissiles.filter(m => {
       m.x += m.vx;
-      m.ry += m.vy;
-      m.y = m.ry * this.game.heightFactor;
+      m.y += m.vy;
       return m.y < this.game.H + 50 && m.x > -50 && m.x < this.game.W + 50;
     });
   }
