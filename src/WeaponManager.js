@@ -376,7 +376,7 @@ export class WeaponManager {
         }
       }
       r.x += r.vx;
-      r.y += r.vy;
+      r.y += r.vy * this.game.heightFactor;
       this.game.particles.spawnRocketTrail(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2, r.vx, r.vy);
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);
       

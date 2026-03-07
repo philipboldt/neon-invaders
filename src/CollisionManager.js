@@ -163,7 +163,7 @@ export class CollisionManager {
 
   updateUpgrades(now) {
     this.game.upgrades = this.game.upgrades.filter(u => {
-      u.y += CONSTANTS.UPGRADE_FALL_SPEED;
+      u.y += CONSTANTS.UPGRADE_FALL_SPEED * this.game.heightFactor;
       if (u.sprite) u.sprite.position.set(u.x + u.w / 2, u.y + u.h / 2);
       
       if (u.y > this.game.H) {

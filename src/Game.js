@@ -14,8 +14,9 @@ import { drawRect } from './utils.js';
 export class Game {
   constructor(canvas) {
     this.canvas = canvas;
-    this.W = canvas.width;
-    this.H = canvas.height;
+    
+    // Initial dimensions
+    this.updateDimensions();
 
     console.log('Initializing PixiJS with resolution:', window.devicePixelRatio || 1);
     if (typeof PIXI === 'undefined') {
@@ -30,7 +31,7 @@ export class Game {
         height: this.H,
         backgroundColor: CONSTANTS.BG_COLOR,
         antialias: true,
-        resolution: 1, // Let CSS handle scaling for retro look
+        resolution: 1, 
         autoDensity: false
       });
       console.log('PixiJS Application created successfully');
@@ -52,7 +53,7 @@ export class Game {
     this.ui = new UIManager();
     this.particles = new ParticleSystem(this);
     this.player = new Player(this.W, this.H, this);
-    this.sprites = new SpriteManager(this.app); // Pass app for texture generation
+    this.sprites = new SpriteManager(this.app); 
     this.starfield = new Starfield(this.W, this.H, this);
     this.inputs = new InputManager(this);
     this.weapons = new WeaponManager(this);
@@ -65,9 +66,52 @@ export class Game {
     this.resetState();
     this.inputs.bindInputs();
     
+    window.addEventListener('resize', () => this.handleResize());
+    
     console.log('Neon Invaders Initialized with PixiJS');
     this.gameLoop = this.gameLoop.bind(this);
     requestAnimationFrame(this.gameLoop);
+  }
+
+  updateDimensions() {
+    const rect = this.canvas.getBoundingClientRect();
+    const aspect = rect.height / rect.width;
+    
+    this.W = 800; // Fixed logical width
+    // Logical height based on aspect ratio, clamped between 600 and 1400
+    this.H = Math.max(600, Math.min(1400, Math.floor(800 * aspect)));
+    
+    // Multipliers for balancing
+    this.heightFactor = this.H / 600;
+  }
+
+  handleResize() {
+    const oldH = this.H;
+    this.updateDimensions();
+    
+    if (this.app) {
+      this.app.renderer.resize(this.W, this.H);
+    }
+    
+    // Update managers that care about dimensions
+    if (this.player) {
+      this.player.W = this.W;
+      this.player.H = this.H;
+      this.player.y = this.H - 80;
+      this.player.syncRender();
+    }
+    
+    if (this.starfield) {
+      this.starfield.W = this.W;
+      this.starfield.H = this.H;
+      // Stars will wrap naturally on next update
+    }
+
+    if (this.ui) {
+      this.ui.updateLayout(this);
+    }
+    
+    console.log(`Resized: ${this.W}x${this.H} (Factor: ${this.heightFactor.toFixed(2)})`);
   }
 
   initSprites() {

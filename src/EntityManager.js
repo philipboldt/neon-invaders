@@ -8,9 +8,20 @@ export class EntityManager {
 
   initInvaders() {
     this.game.invaders = [];
-    let startX = 80;
-    let startY = 80;
     const gap = 8;
+    
+    // Dynamic Grid based on aspect ratio
+    const isPortrait = this.game.H > this.game.W;
+    let baseCols = isPortrait ? 6 : 11;
+    let baseRows = isPortrait ? 9 : 5;
+
+    const rows = Math.min(baseRows + Math.floor(this.game.level / 2), isPortrait ? 12 : CONSTANTS.INVADER_MAX_ROWS);
+    const cols = Math.min(baseCols + Math.floor(this.game.level / 3), isPortrait ? 8 : CONSTANTS.INVADER_MAX_COLS);
+    
+    // Calculate startX to center the grid
+    const totalGridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
+    let startX = (this.game.W - totalGridW) / 2;
+    let startY = 80;
     
     const isBossLevel = this.game.level % 10 === 0;
     const isMiniBossLevel = this.game.level % 10 === 5;
@@ -18,14 +29,11 @@ export class EntityManager {
     const bossW = isBossLevel ? CONSTANTS.INVADER_W * CONSTANTS.BOSS_W_MULT : (isMiniBossLevel ? CONSTANTS.INVADER_W * CONSTANTS.BOSS_W_MULT_MINI : 0);
     const bossH = isBossLevel ? CONSTANTS.INVADER_H * CONSTANTS.BOSS_H_MULT : (isMiniBossLevel ? CONSTANTS.INVADER_H * CONSTANTS.BOSS_H_MULT_MINI : 0);
 
-    const rows = Math.min(CONSTANTS.INVADER_ROWS + Math.floor(this.game.level / 2), CONSTANTS.INVADER_MAX_ROWS);
-    const cols = Math.min(CONSTANTS.INVADER_COLS + Math.floor(this.game.level / 3), CONSTANTS.INVADER_MAX_COLS);
     const block = Math.floor((this.game.level - 1) / 4);
     const p = (this.game.level - 1) % 4;
     const baseHp = 1 + block * 2;
     const higherHp = baseHp + 2;
     const rowsWithHigher = p * 2;
-    const actualMaxHp = rowsWithHigher > 0 ? higherHp : baseHp;
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -49,12 +57,12 @@ export class EntityManager {
     }
     this.game.invaderDir = 1;
     this.game.gridX = startX;
-    this.game.gridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
+    this.game.gridW = totalGridW;
     
     if (isBossLevel || isMiniBossLevel) {
-      const bossMaxHp = isBossLevel ? actualMaxHp * CONSTANTS.BOSS_HP_MULT : actualMaxHp * CONSTANTS.BOSS_HP_MULT_MINI;
+      const bossMaxHp = isBossLevel ? (1 + block * 2) * CONSTANTS.BOSS_HP_MULT : (1 + block * 2) * CONSTANTS.BOSS_HP_MULT_MINI;
       const bossColor = isBossLevel ? COLORS.boss : COLORS.invader3; 
-      const bX = startX + this.game.gridW / 2 - bossW / 2;
+      const bX = this.game.W / 2 - bossW / 2;
       const bY = startY - bossH - gap * 2;
       this.game.invaders.push({
         x: bX,
@@ -101,7 +109,7 @@ export class EntityManager {
       if (moveDown) {
         this.game.invaderDir *= -1;
         this.game.invaders.forEach(inv => {
-          inv.y += CONSTANTS.INVADER_DROP_DOWN;
+          inv.y += CONSTANTS.INVADER_DROP_DOWN * this.game.heightFactor;
           if (inv.sprite) inv.sprite.y = inv.y + inv.h / 2;
         });
       } else {
@@ -179,16 +187,16 @@ export class EntityManager {
 
   updateProjectiles() {
     this.game.bullets = this.game.bullets.filter(b => {
-      b.y += CONSTANTS.BULLET_SPEED;
+      b.y += CONSTANTS.BULLET_SPEED * this.game.heightFactor;
       return b.y > -20;
     });
     this.game.invaderBullets = this.game.invaderBullets.filter(b => {
-      b.y += CONSTANTS.INVADER_BULLET_SPEED;
+      b.y += CONSTANTS.INVADER_BULLET_SPEED * this.game.heightFactor;
       return b.y < this.game.H + 20;
     });
     this.game.bossMissiles = this.game.bossMissiles.filter(m => {
-      m.x += m.vx;
-      m.y += m.vy;
+      m.x += m.vx * this.game.heightFactor;
+      m.y += m.vy * this.game.heightFactor;
       return m.y < this.game.H + 50 && m.x > -50 && m.x < this.game.W + 50;
     });
   }

@@ -35,15 +35,15 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* True Best Fit: width is limited by viewport width OR available viewport height */
-  width: min(100%, calc((100vh - 150px) * 4 / 3));
-  max-width: 100%;
+  width: 100%;
+  max-width: 800px; /* Logical width max */
+  height: 100%;
   max-height: 100vh;
   z-index: 1;
 }
 
 .title {
-  font-size: min(2rem, 6vw);
+  font-size: min(1.5rem, 5vw);
   font-weight: 900;
   letter-spacing: 0.3em;
   margin-bottom: 0.5rem;
@@ -67,14 +67,16 @@ body::before {
   image-rendering: crisp-edges;
   background: #0d0d14;
   line-height: 0;
-  aspect-ratio: 4 / 3;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 #game {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill; /* Use fill to cover the entire area, logical size will be handled in JS */
   touch-action: none;
 }
 

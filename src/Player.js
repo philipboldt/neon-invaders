@@ -74,7 +74,7 @@ export class Player {
 
   reset() {
     this.x = this.W / 2 - this.w / 2;
-    this.y = this.H - 60;
+    this.y = this.H - 80;
     this.dir = 0;
     this.pods.left = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };
     this.pods.right = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };

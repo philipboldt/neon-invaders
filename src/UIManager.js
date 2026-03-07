@@ -156,7 +156,28 @@ export class UIManager {
     this.hudTexts.pierce.value.text = gameState.hasPierce ? 'YES' : 'NONE';
     this.hudTexts.rocket.value.text = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
     
-    if (this.debugText) this.debugText.visible = gameState.debugMode;
+    if (this.debugText) {
+      this.debugText.visible = gameState.debugMode;
+      this.debugText.position.set(gameState.W / 2, 72);
+    }
+  }
+
+  updateLayout(game) {
+    const padding = 15;
+    const y = 15;
+    const colWidth = (game.W - padding * 2) / 4;
+
+    if (this.hudTexts.score) this.hudTexts.score.container.position.set(padding, y);
+    if (this.hudTexts.level) this.hudTexts.level.container.position.set(padding + colWidth, y);
+    if (this.hudTexts.lives) this.hudTexts.lives.container.position.set(padding + colWidth * 2, y);
+    if (this.hudTexts.shield) this.hudTexts.shield.container.position.set(padding + colWidth * 3, y);
+
+    const y2 = y + 25;
+    if (this.hudTexts.pierce) this.hudTexts.pierce.container.position.set(padding, y2);
+    if (this.hudTexts.damage) this.hudTexts.damage.container.position.set(padding + colWidth, y2);
+    if (this.hudTexts.rocket) this.hudTexts.rocket.container.position.set(padding + colWidth * 2, y2);
+
+    if (this.debugText) this.debugText.position.set(game.W / 2, 72);
   }
 
   drawHUD(ctx, gameState) {
