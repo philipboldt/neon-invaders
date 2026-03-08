@@ -9,6 +9,7 @@ import { WeaponManager } from './WeaponManager.js';
 import { EntityManager } from './EntityManager.js';
 import { CollisionManager } from './CollisionManager.js';
 import { Renderer } from './Renderer.js';
+import { AudioManager } from './AudioManager.js';
 import { drawRect } from './utils.js';
 import { Upgrade } from './entities/Upgrade.js';
 
@@ -97,6 +98,7 @@ export class Game {
     this.entities = new EntityManager(this);
     this.collisions = new CollisionManager(this);
     this.renderer = new Renderer(this);
+    this.audio = new AudioManager(this);
     
     this.ui.initPixiHUD(this);
     this.ui.updateLayout(this);
@@ -232,6 +234,7 @@ export class Game {
     this.state = CONSTANTS.GAME_STATES.PLAYING;
     this.isPaused = false;
     this.ui.hideScreens();
+    this.audio.playBGM();
   }
 
   restartGame() {
@@ -243,10 +246,12 @@ export class Game {
     if (this.state === CONSTANTS.GAME_STATES.PAUSED) {
       this.state = this.previousState || CONSTANTS.GAME_STATES.PLAYING;
       this.ui.toggleHelp(false);
+      this.audio.resumeBGM();
     } else {
       this.previousState = this.state;
       this.state = CONSTANTS.GAME_STATES.PAUSED;
       this.ui.toggleHelp(true);
+      this.audio.pauseBGM();
     }
   }
 
@@ -254,6 +259,7 @@ export class Game {
     this.isPaused = false;
     this.spacePressed = false;
     this.ui.setShootActive(false);
+    this.audio.stopBGM();
     
     if (this.ui.isHighscore(this.score)) {
       this.state = CONSTANTS.GAME_STATES.HIGHSCORE;

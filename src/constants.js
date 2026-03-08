@@ -221,5 +221,12 @@ export const CONSTANTS = {
 
   // --- TOUCH SYSTEM ---
   TOUCH_DOUBLE_TAP_MS: 300,
-  TOUCH_LABEL_ALPHA: 0.15
+  TOUCH_LABEL_ALPHA: 0.15,
+
+  // --- AUDIO ---
+  AUDIO_BGM_VOLUME: 0.4,
+  AUDIO_SFX_VOLUME: 0.6,
+  AUDIO_ASSETS: {
+    BGM: 'res/bgm.ogg'
+  }
 };
