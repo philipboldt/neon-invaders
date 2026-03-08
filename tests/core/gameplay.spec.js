@@ -117,6 +117,10 @@ test.describe('Neon Invaders - Core Gameplay', () => {
         const rewards = await page.evaluate(() => window.game.ui.views.bossClear.rewardContainer.children.map(c => c.text));
         expect(rewards.some(r => r.includes('PDC'))).toBe(true);
 
+        // Verify Pod is active in game state
+        const isLeftPodActive = await page.evaluate(() => window.game.player.pods.left.active);
+        expect(isLeftPodActive).toBe(true);
+
         // Dismiss
         await page.keyboard.press('Space');
         const state = await page.evaluate(() => window.game.state);

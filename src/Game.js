@@ -358,12 +358,23 @@ export class Game {
     if (noInvaders && noUpgrades && noParticles) {
       const isBossOrMiniBoss = this.level % 5 === 0;
       const rewards = ['+2 Max Health', '+2 Max Damage'];
-      if (this.level === CONSTANTS.BOSS_UNLOCK_LEFT) rewards.push('Left Pod Unlocked: PDC');
-      else if (this.level === CONSTANTS.BOSS_UNLOCK_RIGHT) rewards.push('Right Pod Unlocked: Lightning');
-      else if (this.level % 10 === 0) rewards.push('Sidepods Fully Restored');
-      else if (this.level % 5 === 0) rewards.push('Sidepods Partially Repaired');
+      
+      if (this.level === CONSTANTS.BOSS_UNLOCK_LEFT) {
+        rewards.push('Left Pod Unlocked: PDC');
+        this.player.pods.left.active = true;
+      } else if (this.level === CONSTANTS.BOSS_UNLOCK_RIGHT) {
+        rewards.push('Right Pod Unlocked: Lightning');
+        this.player.pods.right.active = true;
+      } else if (this.level % 10 === 0) {
+        rewards.push('Sidepods Fully Restored');
+      } else if (this.level % 5 === 0) {
+        rewards.push('Sidepods Partially Repaired');
+      }
 
+      // Heal pods on every boss/miniboss kill
       if (isBossOrMiniBoss) {
+        if (this.player.pods.left.active) this.player.pods.left.hp = this.player.pods.left.maxHp;
+        if (this.player.pods.right.active) this.player.pods.right.hp = this.player.pods.right.maxHp;
         this.ui.showBossClear(this.level, rewards);
         this.state = CONSTANTS.GAME_STATES.BOSSKILLED;
       }

@@ -59,6 +59,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Pod Reward Logic Restoration:** Fixed a critical bug where sidepods (PDC/Lightning) were not being activated in the game state after defeating bosses. Pods are now correctly unlocked at levels 5 and 10, and their health is restored upon every boss/miniboss victory. **[FIX]**
 - **Configuration Cleanup:** Centralized the desktop controls instruction text into `src/constants.js` (`UI_CONTROLS_TEXT`), maintaining the clean separation of concerns. **[CLEANUP]**
 - **Desktop Controls Restoration:** Restored the in-canvas controls explanation text for desktop players. It dynamically hides on touch devices to favor the new zone-based overlay, keeping the UI clean and context-aware. **[FIX]**
 - **Touch Overlay Optimization:** Updated the `ControlOverlayView` to dynamically detect device capabilities. The touch grid visual guides are now only shown on devices with touch screens (coarse pointers), ensuring a cleaner UI for desktop players. **[FIX]**
