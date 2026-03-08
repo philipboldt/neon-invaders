@@ -69,6 +69,7 @@ export class Game {
     this.renderer = new Renderer(this);
     
     this.ui.initPixiHUD(this);
+    this.ui.updateLayout(this);
     this.initSprites();
     this.resetState();
     this.inputs.bindInputs();
@@ -266,6 +267,7 @@ export class Game {
     this.fps = 60; this.lastFpsUpdate = 0; this.frameCount = 0;
     
     this.ui.updateStats(this);
+    this.ui.updateLayout(this);
     this.ui.setShootActive(false);
     this.player.reset();
   }
