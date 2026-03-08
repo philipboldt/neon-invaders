@@ -81,9 +81,8 @@ export class UIManager {
     this.lastInputTime = performance.now();
     if (this.attractModeActive) {
       this.attractModeActive = false;
-      if (this.game.state === CONSTANTS.GAME_STATES.START) {
-        this.handleStateChange(CONSTANTS.GAME_STATES.START);
-      }
+      // Re-trigger the current state to hide credits and show original UI
+      this.handleStateChange(this.game.state);
     }
   }
 
@@ -114,7 +113,7 @@ export class UIManager {
       this.views.start.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.START) && !this.attractModeActive;
     }
     if (this.views.gameOver.highscoreContainer) {
-      this.views.gameOver.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.GAMEOVER);
+      this.views.gameOver.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.GAMEOVER) && !this.attractModeActive;
     }
 
     // Update global marquee visibility and layout whenever state changes
@@ -130,11 +129,15 @@ export class UIManager {
           this.views.start.show();
         }
         break;
+      case CONSTANTS.GAME_STATES.GAMEOVER:
+        if (this.attractModeActive) {
+          this.views.credits.show();
+        } else {
+          this.views.gameOver.show();
+        }
+        break;
       case CONSTANTS.GAME_STATES.PAUSED:
         this.views.help.show();
-        break;
-      case CONSTANTS.GAME_STATES.GAMEOVER:
-        this.views.gameOver.show();
         break;
       case CONSTANTS.GAME_STATES.BOSSKILLED:
         this.views.bossClear.show();
@@ -278,10 +281,11 @@ export class UIManager {
     }
 
     // Attract Mode Logic
-    if (this.game.state === CONSTANTS.GAME_STATES.START && !this.attractModeActive) {
+    const isAttractEligible = this.game.state === CONSTANTS.GAME_STATES.START || this.game.state === CONSTANTS.GAME_STATES.GAMEOVER;
+    if (isAttractEligible && !this.attractModeActive) {
       if (now - this.lastInputTime > 15000) { // 15 seconds
         this.attractModeActive = true;
-        this.handleStateChange(CONSTANTS.GAME_STATES.START);
+        this.handleStateChange(this.game.state);
       }
     }
 
