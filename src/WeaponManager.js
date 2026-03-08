@@ -42,37 +42,32 @@ export class WeaponManager {
   }
 
   updateProjectilesRender() {
-    // We now sync sprites to logical data, and return unused sprites to pool
-    let activeSprites = 0;
-
-    // Bullets
+    // 1. Sync Bullets
     this.game.bullets.forEach(b => {
       if (!b.sprite) b.sprite = this.getSprite('bullet');
       b.sprite.position.set(b.x + b.w / 2, b.y + b.h / 2);
     });
 
-    // Invader Bullets
+    // 2. Sync Invader Bullets
     this.game.invaderBullets.forEach(b => {
       if (!b.sprite) b.sprite = this.getSprite('invaderBullet');
       b.sprite.position.set(b.x + b.w / 2, b.y + b.h / 2);
     });
 
-    // Boss Missiles
+    // 3. Sync Boss Missiles
     this.game.bossMissiles.forEach(m => {
       if (!m.sprite) m.sprite = this.getSprite('bossMissile');
       m.sprite.position.set(m.x + m.w / 2, m.y + m.h / 2);
       m.sprite.rotation = m.angle - Math.PI / 2;
     });
 
-    // Rockets & Target Markers
+    // 4. Sync Rockets & Target Markers
     this.markerGraphics.clear();
     const rocketColor = this.parseColor(COLORS.rocket);
     
     this.game.rockets.forEach(r => {
       if (!r.sprite) r.sprite = this.getSprite('rocket');
       r.sprite.position.set(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
-      // Math.atan2 gives 0 for Right, -PI/2 for Up.
-      // Since sprite is drawn pointing Up, add PI/2 so it visually points in the velocity direction.
       r.sprite.rotation = Math.atan2(r.vy, r.vx) + Math.PI / 2;
 
       // Draw Target Marker

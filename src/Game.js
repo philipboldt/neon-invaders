@@ -387,7 +387,7 @@ export class Game {
     }
     this.renderer.draw();
     if (!this.gameRunning || this.isPaused) return;
-    if (this.invaders.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0 && this.upgrades.length === 0 && this.activeLightning === null) {
+    if (this.invaders.length === 0 && this.invaderBullets.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0 && this.upgrades.length === 0 && this.activeLightning === null) {
       const isBossOrMiniBoss = this.level % 5 === 0;
       const rewards = ['+2 Max Health', '+2 Max Damage'];
       
