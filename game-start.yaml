@@ -1,0 +1,22 @@
+- generic [ref=e2]:
+  - heading "NEON INVADERS" [level=1] [ref=e3]
+  - generic [ref=e4]:
+    - text: ▶ ▶ ▶
+    - generic [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]:
+        - heading "HIGH SCORES" [level=2]
+        - list [ref=e8]:
+          - listitem [ref=e9]:
+            - generic [ref=e10]: "1."
+            - generic [ref=e11]: NEO
+            - generic [ref=e12]: "01000"
+          - listitem [ref=e13]:
+            - generic [ref=e14]: "2."
+            - generic [ref=e15]: TRN
+            - generic [ref=e16]: "00500"
+          - listitem [ref=e17]:
+            - generic [ref=e18]: "3."
+            - generic [ref=e19]: FLY
+            - generic [ref=e20]: "00250"
+      - paragraph: Press SPACE or Tap to start
+  - paragraph [ref=e21]: ← → move · SPACE shoot · H help
