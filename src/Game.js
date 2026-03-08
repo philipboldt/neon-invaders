@@ -50,6 +50,13 @@ export class Game {
 
     this.stage.addChild(this.bgLayer, this.entityLayer, this.projectileLayer, this.effectLayer, this.uiLayer);
 
+    this.invaders = [];
+    this.bullets = [];
+    this.invaderBullets = [];
+    this.bossMissiles = [];
+    this.upgrades = [];
+    this.rockets = [];
+
     this.ui = new UIManager();
     this.particles = new ParticleSystem(this);
     this.player = new Player(this.W, this.H, this);
@@ -146,8 +153,8 @@ export class Game {
     });
   }
 
-  resetState() {
-    // Explicit PixiJS Cleanup to prevent 'ghost' objects
+  clearAllEntities() {
+    // 1. Clear Invaders (Destroy Sprites)
     if (this.invaders) {
       this.invaders.forEach(inv => {
         if (inv.sprite) {
@@ -155,7 +162,28 @@ export class Game {
           inv.sprite.destroy({ children: true });
         }
       });
+      this.invaders = [];
     }
+
+    // 2. Clear Projectiles (Return to Pools)
+    if (this.weapons) {
+      if (this.bullets) this.bullets.forEach(b => { if (b.sprite) this.weapons.returnSprite('bullet', b.sprite); });
+      if (this.invaderBullets) this.invaderBullets.forEach(b => { if (b.sprite) this.weapons.returnSprite('invaderBullet', b.sprite); });
+      if (this.bossMissiles) this.bossMissiles.forEach(m => { if (m.sprite) this.weapons.returnSprite('bossMissile', m.sprite); });
+      if (this.rockets) this.rockets.forEach(r => { if (r.sprite) this.weapons.returnSprite('rocket', r.sprite); });
+      
+      // Clear Graphics
+      if (this.weapons.lightningGraphics) this.weapons.lightningGraphics.clear();
+      if (this.weapons.pdcGraphics) this.weapons.pdcGraphics.clear();
+      if (this.weapons.markerGraphics) this.weapons.markerGraphics.clear();
+    }
+    
+    this.bullets = [];
+    this.invaderBullets = [];
+    this.bossMissiles = [];
+    this.rockets = [];
+
+    // 3. Clear Upgrades (Destroy Sprites)
     if (this.upgrades) {
       this.upgrades.forEach(u => {
         if (u.sprite) {
@@ -163,8 +191,19 @@ export class Game {
           u.sprite.destroy({ children: true });
         }
       });
+      this.upgrades = [];
     }
 
+    // 4. Other transients
+    this.activeLightning = null;
+    this.activePDCTracer = null;
+    this.pdcTarget = null;
+    
+    if (this.particles) this.particles.reset();
+  }
+
+  resetState() {
+    this.clearAllEntities();
     this.gameRunning = false; this.isPaused = false; this.debugMode = false;
     this.score = 0;
     this.lives = CONSTANTS.PLAYER_INITIAL_LIVES;
@@ -176,14 +215,11 @@ export class Game {
     this.shieldHits = 0; this.hasShieldSystem = false; this.lastShieldLostTime = -1;
     this.rocketLevel = 0; this.lightningLevel = 1; this.hasPierce = false; this.spacePressed = false; this.shake = 0;
     
-    this.invaders = []; this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.upgrades = []; this.rockets = [];
-    this.activeLightning = null; this.lastPlayerShot = 0; this.lastInvaderShoot = 0; this.lastBossShoot = 0;
+    this.lastPlayerShot = 0; this.lastInvaderShoot = 0; this.lastBossShoot = 0;
     this.lastRocketTime = 0; this.lastLightningTime = 0; this.lastPDCTime = 0;
-    this.activePDCTracer = null; this.pdcTarget = null; this.invaderDir = 1;
+    this.invaderDir = 1;
     this.fps = 60; this.lastFpsUpdate = 0; this.frameCount = 0;
     
-    if (this.particles) this.particles.reset();
-
     this.ui.updateStats(this);
     this.ui.setShootActive(false);
     this.player.reset();
@@ -321,7 +357,7 @@ export class Game {
       }
 
       this.level++; this.ui.updateStats(this);
-      this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.upgrades = []; this.rockets = [];
+      this.clearAllEntities();
       this.entities.initInvaders(); this.lastInvaderShoot = now; this.lastBossShoot = now;
     } else if (this.checkLose()) {
       this.endGame(false);
