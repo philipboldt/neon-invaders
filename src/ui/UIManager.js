@@ -9,7 +9,6 @@ export class UIManager {
   constructor() {
     this.els = {
       overlay: document.getElementById('overlay'),
-      overlayText: document.getElementById('overlay-text'),
       nameInputContainer: document.getElementById('name-input-container'),
       saveNameBtn: document.getElementById('save-name'),
       charEls: Array.from(document.querySelectorAll('.arcade-input .char')),
@@ -59,25 +58,20 @@ export class UIManager {
   }
 
   handleStateChange(newState) {
-    // Hide all menu views by default
     Object.values(this.views).forEach(v => v.hide());
     
-    // HUD visibility
     if (newState === CONSTANTS.GAME_STATES.START) {
       this.views.hud.hide();
     } else {
       this.views.hud.show();
     }
 
-    // Watermark visibility
     this.watermarkContainer.visible = (newState === CONSTANTS.GAME_STATES.PLAYING);
 
-    // Highscore board visibility
     if (this.highscorePixiContainer) {
       this.highscorePixiContainer.visible = (newState === CONSTANTS.GAME_STATES.START || newState === CONSTANTS.GAME_STATES.GAMEOVER);
     }
 
-    // Show specific view
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
         this.views.start.show();
@@ -90,10 +84,6 @@ export class UIManager {
         break;
       case CONSTANTS.GAME_STATES.BOSSKILLED:
         this.views.bossClear.show();
-        break;
-      case CONSTANTS.GAME_STATES.HIGHSCORE:
-        // Shows only Big Title (handled by handleStateChange calling hide on all views)
-        // and we show the HTML Name Input via showNameInput
         break;
     }
   }
@@ -113,9 +103,7 @@ export class UIManager {
   showGameOver(won) {
     this.views.gameOver.setResult(won);
     this.handleStateChange(CONSTANTS.GAME_STATES.GAMEOVER);
-    this.els.overlay.classList.remove('hidden');
-    this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
-    this.els.overlayText.classList.toggle('win', won);
+    if (this.els.overlay) this.els.overlay.classList.remove('hidden');
     this.els.nameInputContainer.classList.add('hidden');
   }
 
@@ -132,8 +120,7 @@ export class UIManager {
     this.chars = ['A', 'A', 'A'];
     this.updateCharDisplay();
     this.els.nameInputContainer.classList.remove('hidden');
-    this.els.overlay.classList.remove('hidden');
-    this.els.overlayText.textContent = 'NEW HIGH SCORE!';
+    if (this.els.overlay) this.els.overlay.classList.remove('hidden');
   }
 
   saveHighscore() {
@@ -141,7 +128,6 @@ export class UIManager {
     this.updateHighScores({ name, score: this.pendingScore });
     this.nameInputActive = false;
     this.els.nameInputContainer.classList.add('hidden');
-    this.els.overlayText.textContent = 'SCORE SAVED!';
     this.game.state = CONSTANTS.GAME_STATES.GAMEOVER;
     this.handleStateChange(this.game.state);
   }
@@ -178,8 +164,6 @@ export class UIManager {
 
     if (this.views.start) this.views.start.updateHighScores(scores);
     if (this.views.gameOver) this.views.gameOver.updateHighScores(scores);
-    
-    // Alias highscorePixiContainer to StartView's one for layout management
     this.highscorePixiContainer = this.views.start.highscoreContainer;
   }
 
