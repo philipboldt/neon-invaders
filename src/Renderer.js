@@ -24,6 +24,11 @@ export class Renderer {
     } else if (this.game.ui.mainTitleContainer) {
       this.game.ui.mainTitleContainer.scale.set(1.0);
     }
+
+    // Blinking animation for start prompt
+    if (this.game.ui.startPromptText && this.game.ui.startPromptText.visible) {
+      this.game.ui.startPromptText.alpha = 0.5 + Math.sin(performance.now() / 300) * 0.5;
+    }
     
     // Explicitly clear transient effects if they were reset
     if (!this.game.activeLightning && this.game.weapons.lightningGraphics) {

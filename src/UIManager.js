@@ -113,7 +113,20 @@ export class UIManager {
     this.highscorePixiContainer.visible = false;
     this.game.uiLayer.addChild(this.highscorePixiContainer);
 
-    // 4. Help Container (Pixi)
+    // 4. Start Prompt (Pixi)
+    this.startPromptText = new PIXI.Text('Press SPACE or Tap to start', {
+      fontFamily: 'Orbitron',
+      fontSize: 20,
+      fill: this.parseHexColor(COLORS.text),
+      dropShadow: true,
+      dropShadowColor: this.parseHexColor(COLORS.text),
+      dropShadowBlur: 10
+    });
+    this.startPromptText.anchor.set(0.5, 0);
+    this.startPromptText.visible = false;
+    this.game.uiLayer.addChild(this.startPromptText);
+
+    // 5. Help Container (Pixi)
     this.helpPixiContainer = new PIXI.Container();
     this.helpPixiContainer.visible = false;
     this.game.uiLayer.addChild(this.helpPixiContainer);
@@ -309,6 +322,7 @@ export class UIManager {
     if (this.debugText) this.debugText.position.set(game.W / 2, 160);
     if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
     if (this.helpPixiContainer) this.helpPixiContainer.position.set(game.W / 2, 220);
+    if (this.startPromptText) this.startPromptText.position.set(game.W / 2, 380);
   }
 
   setShootActive(isActive) {
@@ -320,6 +334,7 @@ export class UIManager {
     if (this.watermarkContainer) this.watermarkContainer.visible = false;
     if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
     if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
+    if (this.startPromptText) this.startPromptText.visible = true;
     this.els.startScreen.classList.remove('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -331,6 +346,7 @@ export class UIManager {
     if (this.watermarkContainer) this.watermarkContainer.visible = true;
     if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
     if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
+    if (this.startPromptText) this.startPromptText.visible = false;
     this.els.startScreen.classList.add('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
