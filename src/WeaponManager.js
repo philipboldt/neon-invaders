@@ -263,6 +263,7 @@ export class WeaponManager {
   }
 
   updateRockets(now) {
+    this.markerGraphics.clear();
     const currentLowest = this.game.getLowestRowInvaders();
     if (this.game.rocketLevel > 0 && currentLowest.length > 0 && now - this.game.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
       this.game.lastRocketTime = now;
