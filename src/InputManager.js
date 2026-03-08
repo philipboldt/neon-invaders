@@ -59,6 +59,10 @@ export class InputManager {
         this.game.ui.toggleHelp(this.game.isPaused);
         return;
       }
+      if (e.code === 'Escape' && this.game.gameRunning) {
+        this.game.endGame(false);
+        return;
+      }
       if (this.game.isPaused) return;
 
       if (e.code === 'KeyD' && this.game.gameRunning) {
