@@ -155,23 +155,22 @@ export class Game {
 
   clearAllEntities() {
     if (this.invaders) {
-      this.invaders.forEach(inv => {
-        if (inv.sprite) { this.entityLayer.removeChild(inv.sprite); inv.sprite.destroy({ children: true }); }
-      });
+      this.invaders.forEach(inv => inv.destroy());
       this.invaders = [];
     }
     if (this.weapons) {
-      if (this.bullets) this.bullets.forEach(b => { if (b.sprite) this.weapons.returnSprite('bullet', b.sprite); });
-      if (this.invaderBullets) this.invaderBullets.forEach(b => { if (b.sprite) this.weapons.returnSprite('invaderBullet', b.sprite); });
-      if (this.bossMissiles) this.bossMissiles.forEach(m => { if (m.sprite) this.weapons.returnSprite('bossMissile', m.sprite); });
-      if (this.rockets) this.rockets.forEach(r => { if (r.sprite) this.weapons.returnSprite('rocket', r.sprite); });
+      this.bullets.forEach(b => b.deactivate());
+      this.invaderBullets.forEach(b => b.deactivate());
+      this.bossMissiles.forEach(m => m.deactivate());
+      this.rockets.forEach(r => r.deactivate());
+      
       if (this.weapons.lightningGraphics) this.weapons.lightningGraphics.clear();
       if (this.weapons.pdcGraphics) this.weapons.pdcGraphics.clear();
       if (this.weapons.markerGraphics) this.weapons.markerGraphics.clear();
     }
     this.bullets = []; this.invaderBullets = []; this.bossMissiles = []; this.rockets = [];
     if (this.upgrades) {
-      this.upgrades.forEach(u => { if (u.sprite) { this.entityLayer.removeChild(u.sprite); u.sprite.destroy({ children: true }); } });
+      this.upgrades.forEach(u => u.deactivate());
       this.upgrades = [];
     }
     this.activeLightning = null; this.activePDCTracer = null; this.pdcTarget = null;

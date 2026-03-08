@@ -25,6 +25,10 @@ export class ParticleSystem {
     }
   }
 
+  get hasActiveParticles() {
+    return this.activeIndices.length > 0;
+  }
+
   getFreeParticleIndex() {
     return this.freeIndices.pop();
   }

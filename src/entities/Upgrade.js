@@ -6,7 +6,7 @@ export class Upgrade extends BaseEntity {
     super(game, x, y, CONSTANTS.UPGRADE_W, CONSTANTS.UPGRADE_H);
     this.type = type;
     this.level = level;
-    this.vy = CONSTANTS.UPGRADE_SPEED;
+    this.vy = CONSTANTS.UPGRADE_SPEED * this.game.heightFactor;
     
     this.initSprite();
   }
@@ -35,7 +35,16 @@ export class Upgrade extends BaseEntity {
     this.syncSprite();
     
     if (this.y > this.game.H + 50) {
-      this.destroy();
+      this.deactivate();
     }
+  }
+
+  deactivate() {
+    if (this.sprite) {
+      this.game.entityLayer.removeChild(this.sprite);
+      this.sprite.destroy({ children: true });
+      this.sprite = null;
+    }
+    this.toDestroy = true;
   }
 }
