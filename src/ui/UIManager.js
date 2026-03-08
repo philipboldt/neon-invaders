@@ -46,6 +46,16 @@ export class UIManager {
     this.views.bossClear = new BossClearView(game);
     this.views.nameEntry = new NameEntryView(game);
 
+    // 7. In-Canvas Border & Global Instructions
+    this.borderGraphics = new PIXI.Graphics();
+    this.game.uiLayer.addChild(this.borderGraphics);
+
+    this.controlsText = new PIXI.Text('← → move · SPACE shoot · H help · ESC end', {
+      fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.4
+    });
+    this.controlsText.anchor.set(0.5, 1);
+    this.game.uiLayer.addChild(this.controlsText);
+
     this.updateHighScores();
   }
 
@@ -100,6 +110,18 @@ export class UIManager {
     Object.values(this.views).forEach(v => v.updateLayout(game.W, game.H));
     if (this.watermarkContainer) this.watermarkContainer.position.set(20, game.H - 45);
     if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
+
+    // Update Border
+    if (this.borderGraphics) {
+      this.borderGraphics.clear();
+      this.borderGraphics.lineStyle(2, this.parseHexColor(COLORS.player), 1);
+      this.borderGraphics.drawRect(0, 0, game.W, game.H);
+    }
+
+    // Update Instructions
+    if (this.controlsText) {
+      this.controlsText.position.set(game.W / 2, game.H - 10);
+    }
   }
 
   updateStats(gameState) { this.views.hud.updateStats(gameState); }

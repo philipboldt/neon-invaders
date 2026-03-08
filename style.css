@@ -53,14 +53,10 @@ body::before {
 }
 
 .canvas-container {
-  position: relative;
+  position: absolute;
   width: 100%;
   flex-grow: 1;
   margin: 0 auto;
-  border: 2px solid #00f5ff;
-  box-shadow:
-    0 0 20px rgba(0, 245, 255, 0.3),
-    inset 0 0 60px rgba(0, 245, 255, 0.03);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   background: #0d0d14;
