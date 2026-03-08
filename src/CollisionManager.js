@@ -107,8 +107,12 @@ export class CollisionManager {
       case 'double': 
         if (this.game.shotCount < CONSTANTS.PLAYER_MAX_SHOT_COUNT) {
           this.game.shotCount++; text = "WEAPONS UPGRADED"; 
-        } else {
+        } else if (this.game.playerDamage < this.game.maxDamage) {
           this.game.playerDamage++; text = "DAMAGE INCREASED";
+        } else {
+          // Convert to points if fully maxed
+          const gain = level * CONSTANTS.POINTS_MULTIPLIER;
+          this.game.score += gain; text = `${gain} BONUS`;
         }
         break;
       case 'rocket': this.game.rocketLevel++; text = "ROCKETS ARMED"; break;

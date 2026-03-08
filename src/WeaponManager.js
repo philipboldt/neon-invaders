@@ -164,22 +164,7 @@ export class WeaponManager {
         this.game.particles.spawnLightningHit(target.x + target.w / 2, target.y + target.h / 2);
         
         if (target.takeDamage(this.game.playerDamage)) {
-          if (target.isBoss) {
-            this.game.shake = CONSTANTS.SHAKE_BOSS_DEATH;
-            this.game.particles.spawnStunningExplosion(target.x + target.w / 2, target.y + target.h / 2, target.color);
-            this.game.spawnUpgrade(target.x + target.w / 4, target.y + target.h / 2);
-            this.game.spawnUpgrade(target.x + target.w * 0.75, target.y + target.h / 2);
-            this.game.spawnUpgrade(target.x + target.w / 2, target.y + target.h / 2);
-            
-            this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
-            this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
-            this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
-          } else {
-            this.game.spawnUpgrade(target.x, target.y);
-          }
-          
-          target.destroy();
-          this.game.invaders.splice(randomIdx, 1);
+          this.game.collisions.handleInvaderDeath(target, randomIdx);
         }
 
         const rx = this.game.player.x + this.game.player.w + this.game.player.podGap + this.game.player.podW / 2;
