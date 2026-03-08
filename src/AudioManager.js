@@ -26,22 +26,29 @@ export class AudioManager {
   }
 
   resumeContext() {
-    if (typeof PIXI.sound !== 'undefined' && PIXI.sound.context && PIXI.sound.context.audioContext) {
-      if (PIXI.sound.context.audioContext.state === 'suspended') {
-        PIXI.sound.context.audioContext.resume();
-      }
+    if (typeof PIXI.sound === 'undefined') return;
+    
+    // Pixi Sound has its own context manager
+    const context = PIXI.sound.context;
+    if (context && context.audioContext && context.audioContext.state === 'suspended') {
+      context.audioContext.resume().then(() => {
+        console.log('AudioContext resumed successfully');
+      }).catch(err => {
+        console.warn('Failed to resume AudioContext:', err);
+      });
     }
   }
 
   playBGM() {
     if (typeof PIXI.sound === 'undefined') return;
-    
-    // Ensure BGM is playing and handle browser auto-play restrictions
     if (!PIXI.sound.exists('bgm')) return;
     
     const bgm = PIXI.sound.find('bgm');
-    if (!bgm.isPlaying) {
+    // Important: Only trigger play if not already playing AND not already loading/readying
+    if (!bgm.isPlaying && !bgm.isPaused) {
       PIXI.sound.play('bgm');
+    } else if (bgm.isPaused) {
+      PIXI.sound.resume('bgm');
     }
   }
 
