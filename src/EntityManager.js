@@ -1,4 +1,6 @@
 import { COLORS, CONSTANTS } from './constants.js';
+import { Invader } from './entities/Invader.js';
+import { Projectile } from './entities/Projectile.js';
 
 export class EntityManager {
   constructor(game) {
@@ -9,7 +11,6 @@ export class EntityManager {
     this.game.invaders = [];
     const gap = 8;
     
-    // Dynamic Grid based on aspect ratio
     const isPortrait = this.game.H > this.game.W;
     let baseCols = isPortrait ? 6 : 11;
     let baseRows = isPortrait ? 9 : 5;
@@ -17,10 +18,9 @@ export class EntityManager {
     const rows = Math.min(baseRows + Math.floor(this.game.level / 2), isPortrait ? 12 : CONSTANTS.INVADER_MAX_ROWS);
     const cols = Math.min(baseCols + Math.floor(this.game.level / 3), isPortrait ? 8 : CONSTANTS.INVADER_MAX_COLS);
     
-    // Calculate startX to center the grid
     const totalGridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
     let startX = (this.game.W - totalGridW) / 2;
-    let startY = 80;
+    let startY = 100; // Adjusted for new in-canvas title
     
     const isBossLevel = this.game.level % 10 === 0;
     const isMiniBossLevel = this.game.level % 10 === 5;
@@ -41,17 +41,14 @@ export class EntityManager {
           row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
         const maxHp = row < rowsWithHigher ? higherHp : baseHp;
         const scoreValue = color === COLORS.invader3 ? 30 : color === COLORS.invader1 ? 20 : 10;
-        this.game.invaders.push({
-          x: startX + col * (CONSTANTS.INVADER_W + gap),
-          y: startY + row * (CONSTANTS.INVADER_H + gap),
-          w: CONSTANTS.INVADER_W,
-          h: CONSTANTS.INVADER_H,
-          color,
-          maxHp,
-          hp: maxHp,
-          isBoss: false,
-          scoreValue
-        });
+        
+        const invX = startX + col * (CONSTANTS.INVADER_W + gap);
+        const invY = startY + row * (CONSTANTS.INVADER_H + gap);
+        
+        this.game.invaders.push(new Invader(this.game, invX, invY, {
+          w: CONSTANTS.INVADER_W, h: CONSTANTS.INVADER_H,
+          color, maxHp, hp: maxHp, scoreValue
+        }));
       }
     }
     this.game.invaderDir = 1;
@@ -63,36 +60,16 @@ export class EntityManager {
       const bossColor = isBossLevel ? COLORS.boss : COLORS.invader3; 
       const bX = this.game.W / 2 - bossW / 2;
       const bY = startY - bossH - gap * 2;
-      this.game.invaders.push({
-        x: bX,
-        y: bY,
-        w: bossW,
-        h: bossH,
-        color: bossColor,
-        maxHp: bossMaxHp,
-        hp: bossMaxHp,
-        isBoss: true,
-        scoreValue: isBossLevel ? CONSTANTS.BOSS_SCORE : CONSTANTS.BOSS_SCORE_MINI
-      });
-    }
-
-    // Initialize Pixi Sprites for all invaders (including bosses)
-    this.game.invaders.forEach(inv => {
-      const textureKey = `inv_${inv.color}`;
-      inv.sprite = new PIXI.Sprite(this.game.sprites.getTexture(textureKey));
-      inv.sprite.anchor.set(0.5);
-      inv.sprite.position.set(inv.x + inv.w / 2, inv.y + inv.h / 2);
       
-      if (inv.isBoss) {
-        inv.sprite.width = inv.w + 40;
-        inv.sprite.height = inv.h + 40;
-      }
-
-      this.game.entityLayer.addChild(inv.sprite);
-    });
+      this.game.invaders.push(new Invader(this.game, bX, bY, {
+        w: bossW, h: bossH, color: bossColor,
+        maxHp: bossMaxHp, hp: bossMaxHp, isBoss: true,
+        scoreValue: isBossLevel ? CONSTANTS.BOSS_SCORE : CONSTANTS.BOSS_SCORE_MINI
+      }));
+    }
   }
 
-  updateInvaders() {
+  updateInvaders(now) {
     if (this.game.invaders.length > 0) {
       const speed = (CONSTANTS.INVADER_SPEED_BASE + this.game.level * CONSTANTS.INVADER_SPEED_INC) / 60;
       let moveDown = false;
@@ -106,32 +83,15 @@ export class EntityManager {
         this.game.invaderDir *= -1;
         this.game.invaders.forEach(inv => {
           inv.y += CONSTANTS.INVADER_DROP_DOWN * this.game.heightFactor;
-          if (inv.sprite) {
-            inv.sprite.y = inv.y + inv.h / 2;
-            this.syncInvaderTint(inv);
-          }
+          inv.update(now);
         });
       } else {
         this.game.gridX += moveX;
         this.game.invaders.forEach(inv => {
           inv.x += moveX;
-          if (inv.sprite) {
-            inv.sprite.x = inv.x + inv.w / 2;
-            this.syncInvaderTint(inv);
-          }
+          inv.update(now);
         });
       }
-    }
-  }
-
-  syncInvaderTint(inv) {
-    const ratio = inv.maxHp > 1 ? 0.45 + 0.55 * (inv.hp / inv.maxHp) : 1;
-    if (ratio < 1) {
-      const val = Math.floor(255 * ratio);
-      const targetTint = (val << 16) | (val << 8) | val;
-      if (inv.sprite.tint !== targetTint) inv.sprite.tint = targetTint;
-    } else if (inv.sprite.tint !== 0xFFFFFF) {
-      inv.sprite.tint = 0xFFFFFF;
     }
   }
 
@@ -143,16 +103,12 @@ export class EntityManager {
     const inv = this.game.invaders[idx];
     if (inv.y + inv.h < 0) return;
     
-    const bullet = {
-      x: inv.x + inv.w / 2 - CONSTANTS.INVADER_BULLET_W / 2,
-      y: inv.y + inv.h,
-      w: CONSTANTS.INVADER_BULLET_W,
-      h: CONSTANTS.INVADER_BULLET_H,
-    };
-    bullet.sprite = this.game.weapons.getSprite('invaderBullet');
-    bullet.sprite.position.set(bullet.x + bullet.w / 2, bullet.y + bullet.h / 2);
-    
-    this.game.invaderBullets.push(bullet);
+    this.game.invaderBullets.push(new Projectile(this.game, 
+      inv.x + inv.w / 2 - CONSTANTS.INVADER_BULLET_W / 2, 
+      inv.y + inv.h, 
+      'invaderBullet', 
+      { w: CONSTANTS.INVADER_BULLET_W, h: CONSTANTS.INVADER_BULLET_H }
+    ));
   }
 
   bossShoot(now) {
@@ -164,79 +120,33 @@ export class EntityManager {
     bosses.forEach(boss => {
       if (boss.y + boss.h < 0) return;
       
-      const startX = boss.x + boss.w / 2;
-      const startY = boss.y + boss.h;
-      
-      const playerCx = this.game.player.x + this.game.player.w / 2;
-      const playerCy = this.game.player.y + this.game.player.h / 2;
-      
-      const dx = playerCx - startX;
-      const dy = playerCy - startY;
+      const dx = (this.game.player.x + this.game.player.w / 2) - (boss.x + boss.w / 2);
+      const dy = (this.game.player.y + this.game.player.h / 2) - (boss.y + boss.h);
       const dist = Math.sqrt(dx * dx + dy * dy);
-      
       const speed = CONSTANTS.BOSS_MISSILE_SPEED * this.game.heightFactor; 
-      const vx = (dx / dist) * speed;
-      const vy = (dy / dist) * speed;
       
-      const m = {
-        x: startX - CONSTANTS.BOSS_MISSILE_W / 2, 
-        y: startY,
-        w: CONSTANTS.BOSS_MISSILE_W,
-        h: CONSTANTS.BOSS_MISSILE_H,
-        vx,
-        vy,
-        angle: Math.atan2(vy, vx)
-      };
-      m.sprite = this.game.weapons.getSprite('bossMissile');
-      m.sprite.position.set(m.x + m.w / 2, m.y + m.h / 2);
-      m.sprite.rotation = m.angle - Math.PI / 2;
-      
-      this.game.bossMissiles.push(m);
+      this.game.bossMissiles.push(new Projectile(this.game,
+        boss.x + boss.w / 2 - CONSTANTS.BOSS_MISSILE_W / 2,
+        boss.y + boss.h,
+        'bossMissile',
+        { 
+          w: CONSTANTS.BOSS_MISSILE_W, h: CONSTANTS.BOSS_MISSILE_H,
+          vx: (dx / dist) * speed, vy: (dy / dist) * speed,
+          angle: Math.atan2(dy, dx)
+        }
+      ));
     });
   }
 
-  updateProjectiles() {
-    for (let i = this.game.bullets.length - 1; i >= 0; i--) {
-      const b = this.game.bullets[i];
-      b.y += CONSTANTS.BULLET_SPEED * this.game.heightFactor;
-      if (b.y <= -20) {
-        if (b.sprite) {
-          b.sprite.visible = false;
-          this.game.weapons.returnSprite('bullet', b.sprite);
-        }
-        this.game.bullets.splice(i, 1);
-      } else if (b.sprite) {
-        b.sprite.y = b.y + b.h / 2;
+  updateProjectiles(now) {
+    const processArr = (arr) => {
+      for (let i = arr.length - 1; i >= 0; i--) {
+        arr[i].update(now);
+        if (arr[i].toDestroy) arr.splice(i, 1);
       }
-    }
-
-    for (let i = this.game.invaderBullets.length - 1; i >= 0; i--) {
-      const b = this.game.invaderBullets[i];
-      b.y += CONSTANTS.INVADER_BULLET_SPEED * this.game.heightFactor;
-      if (b.y >= this.game.H + 20) {
-        if (b.sprite) {
-          b.sprite.visible = false;
-          this.game.weapons.returnSprite('invaderBullet', b.sprite);
-        }
-        this.game.invaderBullets.splice(i, 1);
-      } else if (b.sprite) {
-        b.sprite.y = b.y + b.h / 2;
-      }
-    }
-
-    for (let i = this.game.bossMissiles.length - 1; i >= 0; i--) {
-      const m = this.game.bossMissiles[i];
-      m.x += m.vx;
-      m.y += m.vy;
-      if (m.y >= this.game.H + 50 || m.x <= -50 || m.x >= this.game.W + 50) {
-        if (m.sprite) {
-          m.sprite.visible = false;
-          this.game.weapons.returnSprite('bossMissile', m.sprite);
-        }
-        this.game.bossMissiles.splice(i, 1);
-      } else if (m.sprite) {
-        m.sprite.position.set(m.x + m.w / 2, m.y + m.h / 2);
-      }
-    }
+    };
+    processArr(this.game.bullets);
+    processArr(this.game.invaderBullets);
+    processArr(this.game.bossMissiles);
   }
 }

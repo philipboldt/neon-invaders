@@ -8,17 +8,6 @@ import { NameEntryView } from './NameEntryView.js';
 
 export class UIManager {
   constructor() {
-    this.els = {
-      overlay: document.getElementById('overlay'),
-      btnShoot: document.getElementById('btn-shoot'),
-      btnLeft: document.getElementById('btn-left'),
-      btnRight: document.getElementById('btn-right'),
-      btnPause: document.getElementById('btn-pause'),
-      restartBtn: document.getElementById('restart'),
-      helpScreen: document.getElementById('help-screen'),
-      bossClearScreen: document.getElementById('boss-clear-screen')
-    };
-    
     this.nameInputActive = false;
     this.bossClearActive = false;
     this.pendingScore = 0;
@@ -28,6 +17,7 @@ export class UIManager {
   initPixiHUD(game) {
     this.game = game;
     
+    // Background Watermark (Persistent across all states)
     this.watermarkContainer = new PIXI.Container();
     const waterTitle = new PIXI.Text(CONSTANTS.TITLE, {
       fontFamily: 'Orbitron', fontSize: 20, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 2
@@ -39,6 +29,7 @@ export class UIManager {
     this.watermarkContainer.addChild(waterTitle, waterVer);
     this.game.bgLayer.addChild(this.watermarkContainer);
 
+    // Initialize View Modules
     this.views.hud = new HudView(game);
     this.views.start = new StartView(game);
     this.views.help = new HelpView(game);
@@ -46,7 +37,7 @@ export class UIManager {
     this.views.bossClear = new BossClearView(game);
     this.views.nameEntry = new NameEntryView(game);
 
-    // 7. In-Canvas Border & Global Instructions
+    // In-Canvas Border & Global Instructions
     this.borderGraphics = new PIXI.Graphics();
     this.game.uiLayer.addChild(this.borderGraphics);
 
@@ -64,44 +55,43 @@ export class UIManager {
   }
 
   handleStateChange(newState) {
+    // Hide all menu views by default
     Object.values(this.views).forEach(v => v.hide());
     
+    // HUD visibility
     if (newState === CONSTANTS.GAME_STATES.START) {
       this.views.hud.hide();
     } else {
       this.views.hud.show();
     }
 
+    // Watermark visibility
     this.watermarkContainer.visible = (newState === CONSTANTS.GAME_STATES.PLAYING);
 
-    if (this.highscorePixiContainer) {
-      this.highscorePixiContainer.visible = (newState === CONSTANTS.GAME_STATES.START || newState === CONSTANTS.GAME_STATES.GAMEOVER);
+    // Highscore board visibility
+    if (this.views.start.highscoreContainer) {
+      this.views.start.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.START);
+    }
+    if (this.views.gameOver.highscoreContainer) {
+      this.views.gameOver.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.GAMEOVER);
     }
 
-    // Interactive Overlays (DOM) cleanup - hide all by default
-    if (this.els.overlay) this.els.overlay.classList.add('hidden');
-    if (this.els.bossClearScreen) this.els.bossClearScreen.classList.add('hidden');
-    if (this.els.helpScreen) this.els.helpScreen.classList.add('hidden');
-
+    // Show specific view
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
         this.views.start.show();
         break;
       case CONSTANTS.GAME_STATES.PAUSED:
         this.views.help.show();
-        if (this.els.helpScreen) this.els.helpScreen.classList.remove('hidden');
         break;
       case CONSTANTS.GAME_STATES.GAMEOVER:
         this.views.gameOver.show();
-        if (this.els.overlay) this.els.overlay.classList.remove('hidden');
         break;
       case CONSTANTS.GAME_STATES.BOSSKILLED:
         this.views.bossClear.show();
-        if (this.els.bossClearScreen) this.els.bossClearScreen.classList.remove('hidden');
         break;
       case CONSTANTS.GAME_STATES.HIGHSCORE:
         this.views.nameEntry.show();
-        if (this.els.overlay) this.els.overlay.classList.remove('hidden');
         break;
     }
   }
@@ -109,16 +99,13 @@ export class UIManager {
   updateLayout(game) {
     Object.values(this.views).forEach(v => v.updateLayout(game.W, game.H));
     if (this.watermarkContainer) this.watermarkContainer.position.set(20, game.H - 45);
-    if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
-
-    // Update Border
+    
     if (this.borderGraphics) {
       this.borderGraphics.clear();
       this.borderGraphics.lineStyle(2, this.parseHexColor(COLORS.player), 1);
       this.borderGraphics.drawRect(0, 0, game.W, game.H);
     }
 
-    // Update Instructions
     if (this.controlsText) {
       this.controlsText.position.set(game.W / 2, game.H - 10);
     }
@@ -170,8 +157,7 @@ export class UIManager {
     try {
       const saved = localStorage.getItem('neonInvadersHighScores');
       if (saved) {
-        scores = JSON.parse(saved);
-        scores = scores.map(s => {
+        scores = JSON.parse(saved).map(s => {
           if (typeof s === 'number') return { name: '???' , score: s };
           if (s && typeof s.score === 'number') return s;
           return { name: '???' , score: 0 };
@@ -190,7 +176,6 @@ export class UIManager {
 
     if (this.views.start) this.views.start.updateHighScores(scores);
     if (this.views.gameOver) this.views.gameOver.updateHighScores(scores);
-    this.highscorePixiContainer = this.views.start.highscoreContainer;
   }
 
   update(now) {
@@ -210,7 +195,8 @@ export class UIManager {
   }
 
   setShootActive(isActive) {
-    if (this.els.btnShoot) this.els.btnShoot.classList.toggle('active', isActive);
+    const btn = document.getElementById('btn-shoot');
+    if (btn) btn.classList.toggle('active', isActive);
   }
 
   isHighscore(score) {
