@@ -146,11 +146,13 @@ export class UIManager {
     // UI simply reacts to the game state
     this.handleStateChange(this.game.state);
     
-    // Manage HTML pointer-sink overlay
-    if (isVisible) {
-      this.els.helpScreen.classList.remove('hidden');
-    } else {
-      this.els.helpScreen.classList.add('hidden');
+    // Manage HTML pointer-sink overlay (if it still exists)
+    if (this.els.helpScreen) {
+      if (isVisible) {
+        this.els.helpScreen.classList.remove('hidden');
+      } else {
+        this.els.helpScreen.classList.add('hidden');
+      }
     }
   }
 
