@@ -4,28 +4,24 @@ import { StartView } from './StartView.js';
 import { HelpView } from './HelpView.js';
 import { GameOverView } from './GameOverView.js';
 import { BossClearView } from './BossClearView.js';
+import { NameEntryView } from './NameEntryView.js';
 
 export class UIManager {
   constructor() {
     this.els = {
       overlay: document.getElementById('overlay'),
-      nameInputContainer: document.getElementById('name-input-container'),
-      saveNameBtn: document.getElementById('save-name'),
-      charEls: Array.from(document.querySelectorAll('.arcade-input .char')),
-      touchArrows: document.querySelectorAll('.touch-arrow'),
       btnShoot: document.getElementById('btn-shoot'),
       btnLeft: document.getElementById('btn-left'),
       btnRight: document.getElementById('btn-right'),
       btnPause: document.getElementById('btn-pause'),
       restartBtn: document.getElementById('restart'),
-      helpScreen: document.getElementById('help-screen')
+      helpScreen: document.getElementById('help-screen'),
+      bossClearScreen: document.getElementById('boss-clear-screen')
     };
     
     this.nameInputActive = false;
-    this.currentCharIndex = 0;
-    this.chars = ['A', 'A', 'A'];
+    this.bossClearActive = false;
     this.pendingScore = 0;
-    
     this.views = {};
   }
 
@@ -48,9 +44,9 @@ export class UIManager {
     this.views.help = new HelpView(game);
     this.views.gameOver = new GameOverView(game);
     this.views.bossClear = new BossClearView(game);
+    this.views.nameEntry = new NameEntryView(game);
 
     this.updateHighScores();
-    this.bindNameInputTouch();
   }
 
   parseHexColor(hex) {
@@ -72,18 +68,30 @@ export class UIManager {
       this.highscorePixiContainer.visible = (newState === CONSTANTS.GAME_STATES.START || newState === CONSTANTS.GAME_STATES.GAMEOVER);
     }
 
+    // Interactive Overlays (DOM) cleanup - hide all by default
+    if (this.els.overlay) this.els.overlay.classList.add('hidden');
+    if (this.els.bossClearScreen) this.els.bossClearScreen.classList.add('hidden');
+    if (this.els.helpScreen) this.els.helpScreen.classList.add('hidden');
+
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
         this.views.start.show();
         break;
       case CONSTANTS.GAME_STATES.PAUSED:
         this.views.help.show();
+        if (this.els.helpScreen) this.els.helpScreen.classList.remove('hidden');
         break;
       case CONSTANTS.GAME_STATES.GAMEOVER:
         this.views.gameOver.show();
+        if (this.els.overlay) this.els.overlay.classList.remove('hidden');
         break;
       case CONSTANTS.GAME_STATES.BOSSKILLED:
         this.views.bossClear.show();
+        if (this.els.bossClearScreen) this.els.bossClearScreen.classList.remove('hidden');
+        break;
+      case CONSTANTS.GAME_STATES.HIGHSCORE:
+        this.views.nameEntry.show();
+        if (this.els.overlay) this.els.overlay.classList.remove('hidden');
         break;
     }
   }
@@ -103,40 +111,36 @@ export class UIManager {
   showGameOver(won) {
     this.views.gameOver.setResult(won);
     this.handleStateChange(CONSTANTS.GAME_STATES.GAMEOVER);
-    if (this.els.overlay) this.els.overlay.classList.remove('hidden');
-    this.els.nameInputContainer.classList.add('hidden');
   }
 
   showBossClear(level, rewards) {
     this.views.bossClear.setData(level, rewards);
+    this.bossClearActive = true;
     this.handleStateChange(CONSTANTS.GAME_STATES.BOSSKILLED);
   }
 
+  hideBossClear() {
+    this.bossClearActive = false;
+    this.handleStateChange(CONSTANTS.GAME_STATES.PLAYING);
+  }
+
   showNameInput(score) {
-    this.handleStateChange(CONSTANTS.GAME_STATES.HIGHSCORE);
     this.pendingScore = score;
     this.nameInputActive = true;
-    this.currentCharIndex = 0;
-    this.chars = ['A', 'A', 'A'];
-    this.updateCharDisplay();
-    this.els.nameInputContainer.classList.remove('hidden');
-    if (this.els.overlay) this.els.overlay.classList.remove('hidden');
+    this.views.nameEntry.reset();
+    this.handleStateChange(CONSTANTS.GAME_STATES.HIGHSCORE);
   }
 
   saveHighscore() {
-    const name = this.chars.join('');
+    const name = this.views.nameEntry.getName();
     this.updateHighScores({ name, score: this.pendingScore });
     this.nameInputActive = false;
-    this.els.nameInputContainer.classList.add('hidden');
     this.game.state = CONSTANTS.GAME_STATES.GAMEOVER;
     this.handleStateChange(this.game.state);
   }
 
   toggleHelp(isVisible) {
     this.handleStateChange(this.game.state);
-    if (this.els.helpScreen) {
-      this.els.helpScreen.classList.toggle('hidden', !isVisible);
-    }
   }
 
   updateHighScores(newEntry) {
@@ -173,54 +177,13 @@ export class UIManager {
     });
   }
 
-  bindNameInputTouch() {
-    this.els.touchArrows.forEach(arrow => {
-      arrow.addEventListener('pointerdown', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const index = parseInt(arrow.dataset.index);
-        const dir = arrow.dataset.dir;
-        this.currentCharIndex = index;
-        this.changeChar(index, dir === 'up' ? 1 : -1);
-      });
-    });
-    if (this.els.saveNameBtn) {
-      this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
-        if (!this.nameInputActive) return;
-        e.preventDefault(); e.stopPropagation();
-        this.saveHighscore();
-      });
-    }
-    this.els.charEls.forEach((charEl, index) => {
-      charEl.addEventListener('pointerdown', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        this.currentCharIndex = index;
-        this.updateCharDisplay();
-      });
-    });
-  }
-
-  changeChar(index, delta) {
-    let charCode = this.chars[index].charCodeAt(0);
-    charCode = ((charCode - 65 + delta + 26) % 26) + 65;
-    this.chars[index] = String.fromCharCode(charCode);
-    this.updateCharDisplay();
-  }
-
-  updateCharDisplay() {
-    this.els.charEls.forEach((el, i) => {
-      el.textContent = this.chars[i];
-      el.classList.toggle('active', i === this.currentCharIndex);
-    });
-  }
-
   handleNameInputKey(e) {
-    if (!this.nameInputActive) return;
-    if (e.code === 'ArrowLeft') this.currentCharIndex = (this.currentCharIndex - 1 + 3) % 3;
-    else if (e.code === 'ArrowRight') this.currentCharIndex = (this.currentCharIndex + 1) % 3;
-    else if (e.code === 'ArrowUp') this.changeChar(this.currentCharIndex, 1);
-    else if (e.code === 'ArrowDown') this.changeChar(this.currentCharIndex, -1);
+    if (this.game.state !== CONSTANTS.GAME_STATES.HIGHSCORE) return;
+    if (e.code === 'ArrowLeft') this.views.nameEntry.moveSlot(-1);
+    else if (e.code === 'ArrowRight') this.views.nameEntry.moveSlot(1);
+    else if (e.code === 'ArrowUp') this.views.nameEntry.changeChar(1);
+    else if (e.code === 'ArrowDown') this.views.nameEntry.changeChar(-1);
     else if (e.code === 'Enter' || e.code === 'Space') { this.saveHighscore(); return; }
-    this.updateCharDisplay();
     e.preventDefault();
   }
 
