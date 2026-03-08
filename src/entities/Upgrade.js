@@ -30,8 +30,8 @@ export class Upgrade extends BaseEntity {
     this.syncSprite();
   }
 
-  update(now) {
-    this.y += this.vy;
+  update(dt = 1) {
+    this.y += this.vy * dt;
     this.syncSprite();
     
     const buffer = CONSTANTS.UPGRADE_BOUNDS_BUFFER;

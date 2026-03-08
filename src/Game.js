@@ -291,18 +291,19 @@ export class Game {
     });
   }
 
-  updateEntities(now) {
+  updateEntities(dt = 1) {
+    const now = performance.now();
     if (this.shake > 0) { this.shake *= CONSTANTS.SHAKE_DECAY; if (this.shake < CONSTANTS.SHAKE_THRESHOLD) this.shake = 0; }
-    this.player.update();
-    this.entities.updateProjectiles(now);
-    this.entities.updateInvaders(now);
-    this.collisions.updateUpgrades(now);
+    this.player.update(dt);
+    this.entities.updateProjectiles(dt);
+    this.entities.updateInvaders(dt);
+    this.collisions.updateUpgrades(dt);
     if (this.hasShieldSystem && this.shieldHits === 0 && this.lastShieldLostTime >= 0) {
       if (now - this.lastShieldLostTime >= CONSTANTS.SHIELD_RECHARGE_MS) {
         this.shieldHits = 1; this.lastShieldLostTime = -1; this.ui.updateStats(this);
       }
     }
-    this.weapons.updateRockets(now);
+    this.weapons.updateRockets(dt);
     this.weapons.updateLightning(now);
     this.weapons.updatePDC(now);
   }
@@ -320,17 +321,21 @@ export class Game {
 
   gameLoop() {
     const now = performance.now();
-    this.starfield.update();
+    // Pixi ticker.deltaTime is normalized: 1.0 = 1/60s
+    // Clamp to [0.1, 1.2] to handle lag/focus without massive jumps (slow-mo instead)
+    const dt = Math.min(this.app.ticker.deltaTime, 1.2);
+
+    this.starfield.update(dt);
     
     // In START state, we only update background elements (stars, layout)
     // In PLAYING state, we run full logic
     if (this.state === CONSTANTS.GAME_STATES.PLAYING) {
-      this.updateEntities(now);
+      this.updateEntities(dt);
       this.weapons.playerShoot(now);
       this.entities.invaderShoot(now);
       this.entities.bossShoot(now);
       this.collisions.checkCollisions(now);
-      this.particles.update();
+      this.particles.update(dt);
     } else if (this.state === CONSTANTS.GAME_STATES.GAMEOVER || this.state === CONSTANTS.GAME_STATES.PAUSED || this.state === CONSTANTS.GAME_STATES.START) {
       // Just keep things visually synced
       this.player.updateSpritePositions();

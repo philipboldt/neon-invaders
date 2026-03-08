@@ -69,12 +69,12 @@ export class EntityManager {
     }
   }
 
-  updateInvaders(now) {
+  updateInvaders(dt = 1) {
     if (this.game.invaders.length > 0) {
       const speed = (CONSTANTS.INVADER_SPEED_BASE + this.game.level * CONSTANTS.INVADER_SPEED_INC) / CONSTANTS.FPS_TARGET;
       let moveDown = false;
       const margin = CONSTANTS.INVADER_MARGIN;
-      const moveX = this.game.invaderDir * speed;
+      const moveX = this.game.invaderDir * speed * dt;
 
       if (this.game.invaderDir > 0 && this.game.gridX + this.game.gridW + moveX >= this.game.W - margin) moveDown = true;
       if (this.game.invaderDir < 0 && this.game.gridX + moveX <= margin) moveDown = true;
@@ -82,14 +82,14 @@ export class EntityManager {
       if (moveDown) {
         this.game.invaderDir *= -1;
         this.game.invaders.forEach(inv => {
-          inv.y += CONSTANTS.INVADER_DROP_DOWN * this.game.heightFactor;
-          inv.update(now);
+          inv.y += CONSTANTS.INVADER_DROP_DOWN * this.game.heightFactor * dt;
+          inv.update(dt);
         });
       } else {
         this.game.gridX += moveX;
         this.game.invaders.forEach(inv => {
           inv.x += moveX;
-          inv.update(now);
+          inv.update(dt);
         });
       }
     }
@@ -138,15 +138,16 @@ export class EntityManager {
     });
   }
 
-  updateProjectiles(now) {
+  updateProjectiles(dt = 1) {
     const processArr = (arr) => {
       for (let i = arr.length - 1; i >= 0; i--) {
-        arr[i].update(now);
+        arr[i].update(dt);
         if (arr[i].toDestroy) arr.splice(i, 1);
       }
     };
     processArr(this.game.bullets);
     processArr(this.game.invaderBullets);
     processArr(this.game.bossMissiles);
+    if (this.game.rockets) processArr(this.game.rockets);
   }
 }

@@ -80,8 +80,8 @@ export class Player {
     this.updateSpritePositions();
   }
 
-  update() {
-    this.x += this.dir * this.speed;
+  update(dt = 1) {
+    this.x += this.dir * this.speed * dt;
     
     const leftLimit = this.pods.left.active ? this.podW + this.podGap : 0;
     const rightLimit = this.pods.right.active ? this.podW + this.podGap : 0;

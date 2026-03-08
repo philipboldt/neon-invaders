@@ -32,10 +32,10 @@ export class Starfield {
     });
   }
 
-  update() {
+  update(dt = 1) {
     this.layers.forEach(layer => {
       layer.stars.forEach(star => {
-        star.y += layer.speed * this.game.heightFactor;
+        star.y += layer.speed * this.game.heightFactor * dt;
         if (star.y > this.H) {
           star.y = -layer.size;
           star.x = Math.random() * this.W;

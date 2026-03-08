@@ -27,19 +27,19 @@ test.describe('Neon Invaders - Core Gameplay', () => {
         
         // Move Right
         await page.keyboard.down('ArrowRight');
-        await page.waitForTimeout(200); 
+        await page.waitForTimeout(300); // 300ms @ 60fps = 18 frames
         await page.keyboard.up('ArrowRight');
         
         const afterMoveRight = await page.evaluate(() => window.game.player.x);
-        expect(afterMoveRight).toBeGreaterThan(initialX);
+        expect(afterMoveRight).toBeGreaterThan(initialX + 10); // Ensure significant move
 
         // Move Left
         await page.keyboard.down('ArrowLeft');
-        await page.waitForTimeout(200);
+        await page.waitForTimeout(300);
         await page.keyboard.up('ArrowLeft');
         
         const afterMoveLeft = await page.evaluate(() => window.game.player.x);
-        expect(afterMoveLeft).toBeLessThan(afterMoveRight);
+        expect(afterMoveLeft).toBeLessThan(afterMoveRight - 10);
     });
 
     test('Combat: Space should create bullets', async ({ page }) => {

@@ -285,15 +285,15 @@ export class ParticleSystem {
     return parseInt(color.replace('#', '0x'));
   }
 
-  update() {
+  update(dt = 1) {
     for (let i = this.activeIndices.length - 1; i >= 0; i--) {
       const idx = this.activeIndices[i];
       const p = this.pool[idx];
       
-      p.x += p.vx;
+      p.x += p.vx * dt;
       // Scale vertical movement by height factor
-      p.y += p.vy * this.game.heightFactor;
-      p.life++;
+      p.y += p.vy * this.game.heightFactor * dt;
+      p.life += 1 * dt;
       const t = p.life / p.maxLife;
       
       if (p.isText) {

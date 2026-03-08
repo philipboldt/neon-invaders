@@ -16,6 +16,10 @@ This document tracks identified areas for future enhancement, UX refinement, and
 *   **Gamepad Support:** Implement the standard Web Gamepad API for controller support.
 *   **Key Customization:** Allow players to rebind keys.
 
+### 4. Technical / Engine
+*   **Physics Sub-stepping:** For even higher precision on high-refresh monitors (144Hz+), implement sub-stepping where logic runs multiple times per frame if the delta is large, rather than just scaling by a single delta factor.
+*   **State Interpolation:** Decouple rendering from logic completely by interpolating between the "previous" and "current" physics state for ultra-smooth visuals.
+
 ---
 
 ## 🛠️ Implementation Notes

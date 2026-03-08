@@ -12,9 +12,9 @@ export class BaseEntity {
   }
 
   // Update logic - to be overridden
-  update(now) {
-    this.x += this.vx;
-    this.y += this.vy;
+  update(dt = 1) {
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
     this.syncSprite();
   }
 

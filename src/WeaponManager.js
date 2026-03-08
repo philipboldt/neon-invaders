@@ -236,8 +236,9 @@ export class WeaponManager {
     this.lightningGraphics.lineTo(tx, ty);
   }
 
-  updateRockets(now) {
+  updateRockets(dt = 1) {
     this.markerGraphics.clear();
+    const now = performance.now();
     const currentLowest = this.game.getLowestRowInvaders();
     
     if (this.game.rocketLevel > 0 && currentLowest.length > 0 && now - this.game.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
@@ -258,7 +259,7 @@ export class WeaponManager {
 
     for (let j = this.game.rockets.length - 1; j >= 0; j--) {
       const r = this.game.rockets[j];
-      r.update(now);
+      r.update(dt);
       
       if (r.toDestroy) {
         this.game.rockets.splice(j, 1);

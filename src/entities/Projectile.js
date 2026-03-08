@@ -54,25 +54,25 @@ export class Projectile extends BaseEntity {
     }
   }
 
-  update(now) {
-    this.x += this.vx;
-    this.y += this.vy;
+  update(dt = 1) {
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
     
     if (this.type === 'rocket') {
-      this.updateRocketLogic();
+      this.updateRocketLogic(dt);
     }
 
     this.syncSprite();
     if (this.type === 'rocket') {
       this.sprite.rotation = Math.atan2(this.vy, this.vx) + Math.PI / 2;
       this.game.particles.spawnRocketTrail(this.x + this.w / 2, this.y + this.h / 2, this.vx, this.vy);
-      this.distanceTraveled += Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+      this.distanceTraveled += Math.sqrt(this.vx * this.vx + this.vy * this.vy) * dt;
     }
 
     this.checkBounds();
   }
 
-  updateRocketLogic() {
+  updateRocketLogic(dt = 1) {
     const cx = this.x + this.w / 2;
     const cy = this.y + this.h / 2;
     
@@ -97,14 +97,14 @@ export class Projectile extends BaseEntity {
     const dist = Math.sqrt(distSq);
 
     const maxSpeed = CONSTANTS.ROCKET_MAX_SPEED * this.game.heightFactor;
-    const thrust = CONSTANTS.ROCKET_THRUST * this.game.heightFactor;
+    const thrust = CONSTANTS.ROCKET_THRUST * this.game.heightFactor * dt;
     const verticalPhaseLimit = CONSTANTS.ROCKET_VERTICAL_PHASE * this.game.heightFactor;
 
     if (dist > 0 && this.distanceTraveled >= verticalPhaseLimit) {
       const desiredDx = (dx / dist) * maxSpeed;
       const desiredDy = (dy / dist) * maxSpeed;
-      this.vx += (desiredDx - this.vx) * CONSTANTS.ROCKET_STEER_STRENGTH;
-      this.vy += (desiredDy - this.vy) * CONSTANTS.ROCKET_STEER_STRENGTH;
+      this.vx += (desiredDx - this.vx) * CONSTANTS.ROCKET_STEER_STRENGTH * dt;
+      this.vy += (desiredDy - this.vy) * CONSTANTS.ROCKET_STEER_STRENGTH * dt;
     }
 
     const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
