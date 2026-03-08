@@ -12,6 +12,7 @@ export class InputManager {
 
     // 1. Unified Pointer Router (Zone Based)
     this.game.canvas.addEventListener('pointerdown', (e) => {
+      this.game.ui.resetIdleTimer();
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       this.game.canvas.setPointerCapture(e.pointerId);
       
@@ -21,6 +22,7 @@ export class InputManager {
     });
 
     this.game.canvas.addEventListener('pointermove', (e) => {
+      this.game.ui.resetIdleTimer();
       if (!this.activePointers.has(e.pointerId)) return;
       
       const newCoords = this.getLogicalCoords(e);
@@ -37,6 +39,7 @@ export class InputManager {
     });
 
     this.game.canvas.addEventListener('pointerup', (e) => {
+      this.game.ui.resetIdleTimer();
       if (!this.activePointers.has(e.pointerId)) return;
       const coords = this.activePointers.get(e.pointerId);
       this.handlePointerAction(coords, false);
@@ -44,6 +47,7 @@ export class InputManager {
     });
 
     this.game.canvas.addEventListener('pointercancel', (e) => {
+      this.game.ui.resetIdleTimer();
       if (!this.activePointers.has(e.pointerId)) return;
       const coords = this.activePointers.get(e.pointerId);
       this.handlePointerAction(coords, false);
@@ -52,6 +56,7 @@ export class InputManager {
 
     // 2. Keyboard Router (Unified with State)
     document.addEventListener('keydown', (e) => {
+      this.game.ui.resetIdleTimer();
       const { state } = this.game;
       
       // H Key is Universal Pause Toggle
@@ -63,6 +68,10 @@ export class InputManager {
       }
 
       switch(state) {
+        case GAME_STATES.CREDITS:
+          this.game.state = GAME_STATES.START;
+          this.game.ui.handleStateChange(this.game.state);
+          break;
         case GAME_STATES.START:
           if (e.code === 'Space' || e.code === 'Enter') this.game.startGame();
           break;

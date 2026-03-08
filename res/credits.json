@@ -1,0 +1,17 @@
+[
+  { "type": "header", "text": "NEON INVADERS", "color": "player" },
+  { "type": "quote", "text": "MADE WITH ❤️ BY PHILIP BOLDT", "color": "text" },
+  { "type": "spacer", "size": 80 },
+  { "type": "role", "text": "CO-PILOT & ARCHITECT", "color": "invader3" },
+  { "type": "name", "text": "GOOGLE GEMINI (AI)", "color": "player" },
+  { "type": "spacer", "size": 40 },
+  { "type": "role", "text": "SONIC LANDSCAPES", "color": "invader3" },
+  { "type": "name", "text": "ERIC MATYAS", "color": "text" },
+  { "type": "link", "text": "WWW.SOUNDIMAGE.ORG", "color": "invader2" },
+  { "type": "spacer", "size": 80 },
+  { "type": "header", "text": "GLOBAL INTEL", "color": "invader2" },
+  { "type": "role", "text": "MISSION STATUS", "color": "invader3" },
+  { "type": "name", "text": "ACTIVE", "color": "text" },
+  { "type": "spacer", "size": 80 },
+  { "type": "footer", "text": "THANKS FOR PLAYING", "color": "player" }
+]

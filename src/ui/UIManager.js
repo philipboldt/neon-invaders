@@ -7,6 +7,7 @@ import { BossClearView } from './BossClearView.js';
 import { NameEntryView } from './NameEntryView.js';
 import { ControlOverlayView } from './ControlOverlayView.js';
 import { QuitConfirmView } from './QuitConfirmView.js';
+import { CreditsView } from './CreditsView.js';
 
 export class UIManager {
   constructor() {
@@ -14,6 +15,8 @@ export class UIManager {
     this.bossClearActive = false;
     this.pendingScore = 0;
     this.views = {};
+    this.lastInputTime = performance.now();
+    this.attractModeActive = false;
   }
 
   initPixiHUD(game) {
@@ -55,6 +58,7 @@ export class UIManager {
     this.views.bossClear = new BossClearView(game);
     this.views.nameEntry = new NameEntryView(game);
     this.views.quitConfirm = new QuitConfirmView(game);
+    this.views.credits = new CreditsView(game);
 
     // In-Canvas Border & Global Instructions
     this.borderGraphics = new PIXI.Graphics();
@@ -71,6 +75,16 @@ export class UIManager {
 
   parseHexColor(hex) {
     return parseInt(hex.replace('#', '0x'));
+  }
+
+  resetIdleTimer() {
+    this.lastInputTime = performance.now();
+    if (this.attractModeActive) {
+      this.attractModeActive = false;
+      if (this.game.state === CONSTANTS.GAME_STATES.START) {
+        this.handleStateChange(CONSTANTS.GAME_STATES.START);
+      }
+    }
   }
 
   handleStateChange(newState) {
@@ -97,7 +111,7 @@ export class UIManager {
 
     // Highscore board visibility
     if (this.views.start.highscoreContainer) {
-      this.views.start.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.START);
+      this.views.start.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.START) && !this.attractModeActive;
     }
     if (this.views.gameOver.highscoreContainer) {
       this.views.gameOver.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.GAMEOVER);
@@ -109,7 +123,12 @@ export class UIManager {
     // Show specific view
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
-        this.views.start.show();
+        if (this.attractModeActive) {
+          this.views.start.highscoreContainer.visible = false;
+          this.views.credits.show();
+        } else {
+          this.views.start.show();
+        }
         break;
       case CONSTANTS.GAME_STATES.PAUSED:
         this.views.help.show();
@@ -125,6 +144,9 @@ export class UIManager {
         break;
       case CONSTANTS.GAME_STATES.QUIT_CONFIRM:
         this.views.quitConfirm.show();
+        break;
+      case CONSTANTS.GAME_STATES.CREDITS:
+        this.views.credits.show();
         break;
     }
   }
@@ -254,6 +276,15 @@ export class UIManager {
       const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
       this.marqueeContainer.scale.set(scale);
     }
+
+    // Attract Mode Logic
+    if (this.game.state === CONSTANTS.GAME_STATES.START && !this.attractModeActive) {
+      if (now - this.lastInputTime > 15000) { // 15 seconds
+        this.attractModeActive = true;
+        this.handleStateChange(CONSTANTS.GAME_STATES.START);
+      }
+    }
+
     Object.values(this.views).forEach(v => {
       if (v.update) v.update(now);
     });

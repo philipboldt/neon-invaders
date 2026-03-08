@@ -66,8 +66,20 @@ export class HelpView extends BaseView {
     });
     footer.anchor.set(0.5, 0);
     footer.position.set(0, 320);
-    this.content.addChild(footer);
 
+    this.creditsButton = new PIXI.Text('[ VIEW CREDITS ]', {
+      fontFamily: 'Orbitron', fontSize: 14, fontWeight: '900', fill: this.parseHexColor(COLORS.invader2), letterSpacing: 2
+    });
+    this.creditsButton.anchor.set(0.5, 0);
+    this.creditsButton.position.set(0, 360);
+    this.creditsButton.eventMode = 'static';
+    this.creditsButton.cursor = 'pointer';
+    this.creditsButton.on('pointertap', () => {
+      this.game.state = CONSTANTS.GAME_STATES.CREDITS;
+      this.game.ui.handleStateChange(this.game.state);
+    });
+
+    this.content.addChild(controlsHeader, controlsText, footer, this.creditsButton);
     this.container.addChild(this.content);
   }
 
