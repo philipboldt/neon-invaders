@@ -43,7 +43,7 @@ export class UIManager {
     this.borderGraphics = new PIXI.Graphics();
     this.game.uiLayer.addChild(this.borderGraphics);
 
-    this.controlsText = new PIXI.Text('← → move · SPACE shoot · H help · ESC end', {
+    this.controlsText = new PIXI.Text(CONSTANTS.UI_CONTROLS_TEXT, {
       fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.4
     });
     this.controlsText.anchor.set(0.5, 1);

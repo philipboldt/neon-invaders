@@ -59,6 +59,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Configuration Cleanup:** Centralized the desktop controls instruction text into `src/constants.js` (`UI_CONTROLS_TEXT`), maintaining the clean separation of concerns. **[CLEANUP]**
 - **Desktop Controls Restoration:** Restored the in-canvas controls explanation text for desktop players. It dynamically hides on touch devices to favor the new zone-based overlay, keeping the UI clean and context-aware. **[FIX]**
 - **Touch Overlay Optimization:** Updated the `ControlOverlayView` to dynamically detect device capabilities. The touch grid visual guides are now only shown on devices with touch screens (coarse pointers), ensuring a cleaner UI for desktop players. **[FIX]**
 - **State Syncing Refactor:** Updated `UIManager` to be the authority for state transitions when dismissing overlays (Boss Clear, Name Entry). This ensures that `game.state` is always in sync with the visible UI, fixing a bug where the Boss Clear screen would get stuck. **[FIX]**
