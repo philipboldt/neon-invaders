@@ -28,8 +28,6 @@ export class UIManager {
       rocket: document.getElementById('rocket')
     };
     this.charEls = Array.from(document.querySelectorAll('.arcade-input .char'));
-    this.nameInputActive = false;
-    this.bossClearActive = false;
     this.currentCharIndex = 0;
     this.chars = ['A', 'A', 'A'];
     this.pendingScore = 0;
@@ -56,55 +54,29 @@ export class UIManager {
 
     // 1. Big Main Title (For Menus)
     this.mainTitleContainer = new PIXI.Container();
-    
     this.mainTitleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron',
-      fontSize: 48,
-      fontWeight: 900,
-      fill: this.parseHexColor(COLORS.text),
-      letterSpacing: 8,
-      dropShadow: true,
-      dropShadowColor: this.parseHexColor(COLORS.text),
-      dropShadowBlur: 15,
-      dropShadowDistance: 0
+      fontFamily: 'Orbitron', fontSize: 48, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
+      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
     });
     this.mainTitleText.anchor.set(0.5, 0);
-    
     this.versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron',
-      fontSize: 14,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.text),
-      alpha: 0.6
+      fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
     });
     this.versionText.anchor.set(0.5, 0);
     this.versionText.position.set(0, 55);
-
     this.mainTitleContainer.addChild(this.mainTitleText, this.versionText);
     this.game.uiLayer.addChild(this.mainTitleContainer);
 
     // 2. Background Watermark (For Gameplay)
     this.watermarkContainer = new PIXI.Container();
-    
     const waterTitle = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron',
-      fontSize: 20,
-      fontWeight: 900,
-      fill: this.parseHexColor(COLORS.text),
-      letterSpacing: 2
+      fontFamily: 'Orbitron', fontSize: 20, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 2
     });
-    
     const waterVer = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron',
-      fontSize: 10,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.text),
-      alpha: 0.5
+      fontFamily: 'Orbitron', fontSize: 10, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.5
     });
     waterVer.position.set(0, 22);
-
     this.watermarkContainer.addChild(waterTitle, waterVer);
-    this.watermarkContainer.alpha = 1.0;
     this.watermarkContainer.visible = false;
     this.game.bgLayer.addChild(this.watermarkContainer);
 
@@ -115,12 +87,8 @@ export class UIManager {
 
     // 4. Start Prompt (Pixi)
     this.startPromptText = new PIXI.Text('Press SPACE or Tap to start', {
-      fontFamily: 'Orbitron',
-      fontSize: 20,
-      fill: this.parseHexColor(COLORS.text),
-      dropShadow: true,
-      dropShadowColor: this.parseHexColor(COLORS.text),
-      dropShadowBlur: 10
+      fontFamily: 'Orbitron', fontSize: 20, fill: this.parseHexColor(COLORS.text),
+      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 10
     });
     this.startPromptText.anchor.set(0.5, 0);
     this.startPromptText.visible = false;
@@ -133,13 +101,8 @@ export class UIManager {
     this.createPixiHelp();
 
     this.debugText = new PIXI.Text('DEBUG MODE', {
-      fontFamily: 'Orbitron',
-      fontSize: 56,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.boss),
-      dropShadow: true,
-      dropShadowColor: this.parseHexColor(COLORS.boss),
-      dropShadowBlur: 20
+      fontFamily: 'Orbitron', fontSize: 56, fontWeight: 'bold', fill: this.parseHexColor(COLORS.boss),
+      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.boss), dropShadowBlur: 20
     });
     this.debugText.anchor.set(0.5);
     this.debugText.position.set(this.game.W / 2, 160);
@@ -151,15 +114,10 @@ export class UIManager {
 
   createPixiHelp() {
     const header = new PIXI.Text('UPGRADES', {
-      fontFamily: 'Orbitron',
-      fontSize: 24,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.text),
-      letterSpacing: 4
+      fontFamily: 'Orbitron', fontSize: 24, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
     });
     header.anchor.set(0.5, 0);
     this.helpPixiContainer.addChild(header);
-
     const upgrades = [
       { name: 'Shield', color: COLORS.shield, desc: 'Permanent recharge system' },
       { name: 'Double', color: COLORS.double, desc: 'Add projectile (max 4), then +1 damage' },
@@ -168,44 +126,24 @@ export class UIManager {
       { name: 'Heal', color: COLORS.heal, desc: 'Restores 1 life' },
       { name: 'Points', color: COLORS.points, desc: 'Gives Level x 100 Bonus Points' }
     ];
-
     upgrades.forEach((u, i) => {
       const row = new PIXI.Container();
       row.position.set(-180, 45 + i * 30);
-
       const dot = new PIXI.Graphics();
       dot.beginFill(this.parseHexColor(u.color));
       dot.drawCircle(0, 8, 6);
       dot.endFill();
-      
-      const label = new PIXI.Text(u.name + ':', {
-        fontFamily: 'Orbitron',
-        fontSize: 14,
-        fontWeight: 'bold',
-        fill: this.parseHexColor(u.color)
-      });
+      const label = new PIXI.Text(u.name + ':', { fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(u.color) });
       label.position.set(20, 0);
-
-      const desc = new PIXI.Text(u.desc, {
-        fontFamily: 'Orbitron',
-        fontSize: 12,
-        fill: 0xFFFFFF,
-        alpha: 0.8
-      });
+      const desc = new PIXI.Text(u.desc, { fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.8 });
       desc.position.set(100, 2);
-
       row.addChild(dot, label, desc);
       this.helpPixiContainer.addChild(row);
     });
-
     const footer = new PIXI.Text('ESC: End Game · H or Tap to continue', {
-      fontFamily: 'Orbitron',
-      fontSize: 12,
-      fill: this.parseHexColor(COLORS.text),
-      alpha: 0.7
+      fontFamily: 'Orbitron', fontSize: 12, fill: this.parseHexColor(COLORS.text), alpha: 0.7
     });
-    footer.anchor.set(0.5, 0);
-    footer.position.set(0, 240);
+    footer.anchor.set(0.5, 0); footer.position.set(0, 240);
     this.helpPixiContainer.addChild(footer);
   }
 
@@ -218,20 +156,10 @@ export class UIManager {
     container.position.set(x, y);
     const labelStr = text.split(': ')[0] + ': ';
     const valStr = text.split(': ')[1];
-    const label = new PIXI.Text(labelStr, {
-      fontFamily: 'Orbitron',
-      fontSize: 16,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.text)
-    });
+    const label = new PIXI.Text(labelStr, { fontFamily: 'Orbitron', fontSize: 16, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text) });
     const value = new PIXI.Text(valStr, {
-      fontFamily: 'Orbitron',
-      fontSize: 16,
-      fontWeight: 'bold',
-      fill: valueColor,
-      dropShadow: true,
-      dropShadowColor: valueColor,
-      dropShadowBlur: 8
+      fontFamily: 'Orbitron', fontSize: 16, fontWeight: 'bold', fill: valueColor,
+      dropShadow: true, dropShadowColor: valueColor, dropShadowBlur: 8
     });
     value.x = label.width;
     container.addChild(label, value);
@@ -251,7 +179,7 @@ export class UIManager {
     });
     if (this.els.saveNameBtn) {
       this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
-        if (!this.nameInputActive) return;
+        if (this.game.state !== CONSTANTS.GAME_STATES.HIGHSCORE) return;
         e.preventDefault(); e.stopPropagation();
         this.saveHighscore();
       });
@@ -330,11 +258,12 @@ export class UIManager {
   }
 
   showStartScreen() {
-    if (this.mainTitleContainer) { this.mainTitleContainer.alpha = 1.0; this.mainTitleText.style.dropShadow = true; }
-    if (this.watermarkContainer) this.watermarkContainer.visible = false;
-    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
-    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
-    if (this.startPromptText) this.startPromptText.visible = true;
+    this.mainTitleContainer.alpha = 1.0;
+    this.mainTitleText.style.dropShadow = true;
+    this.watermarkContainer.visible = false;
+    this.highscorePixiContainer.visible = true;
+    this.helpPixiContainer.visible = false;
+    this.startPromptText.visible = true;
     this.els.startScreen.classList.remove('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -342,34 +271,33 @@ export class UIManager {
   }
 
   hideScreens() {
-    if (this.mainTitleContainer) this.mainTitleContainer.alpha = 0;
-    if (this.watermarkContainer) this.watermarkContainer.visible = true;
-    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
-    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
-    if (this.startPromptText) this.startPromptText.visible = false;
+    this.mainTitleContainer.alpha = 0;
+    this.watermarkContainer.visible = true;
+    this.highscorePixiContainer.visible = false;
+    this.helpPixiContainer.visible = false;
+    this.startPromptText.visible = false;
     this.els.startScreen.classList.add('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
     this.els.bossClearScreen.classList.add('hidden');
-    this.bossClearActive = false;
   }
 
   showGameOver(won) {
-    if (this.mainTitleContainer) { this.mainTitleContainer.alpha = 1.0; this.mainTitleText.style.dropShadow = true; }
-    if (this.watermarkContainer) this.watermarkContainer.visible = false;
-    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
-    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
+    this.mainTitleContainer.alpha = 1.0;
+    this.mainTitleText.style.dropShadow = true;
+    this.watermarkContainer.visible = false;
+    this.highscorePixiContainer.visible = true;
+    this.helpPixiContainer.visible = false;
+    this.startPromptText.visible = false;
     this.els.overlay.classList.remove('hidden');
     this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     this.els.overlayText.classList.toggle('win', won);
-    this.nameInputActive = false; this.bossClearActive = false;
     this.els.nameInputContainer.classList.add('hidden');
     this.els.bossClearScreen.classList.add('hidden');
     this.updateHighScores();
   }
 
   showBossClear(level, rewards) {
-    this.bossClearActive = true;
     this.els.bossLevelText.textContent = `LEVEL ${level} COMPLETE`;
     this.els.rewardList.innerHTML = '';
     rewards.forEach(r => {
@@ -380,17 +308,16 @@ export class UIManager {
   }
 
   hideBossClear() {
-    this.bossClearActive = false;
     this.els.bossClearScreen.classList.add('hidden');
   }
 
   showNameInput(score) {
-    if (this.mainTitleContainer) { this.mainTitleContainer.alpha = 1.0; this.mainTitleText.style.dropShadow = true; }
-    if (this.watermarkContainer) this.watermarkContainer.visible = false;
-    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
-    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
+    this.mainTitleContainer.alpha = 1.0;
+    this.watermarkContainer.visible = false;
+    this.highscorePixiContainer.visible = false;
+    this.helpPixiContainer.visible = false;
+    this.startPromptText.visible = false;
     this.pendingScore = score;
-    this.nameInputActive = true;
     this.currentCharIndex = 0;
     this.chars = ['A', 'A', 'A'];
     this.updateCharDisplay();
@@ -407,7 +334,7 @@ export class UIManager {
   }
 
   handleNameInputKey(e) {
-    if (!this.nameInputActive) return;
+    if (this.game.state !== CONSTANTS.GAME_STATES.HIGHSCORE) return;
     if (e.code === 'ArrowLeft') this.currentCharIndex = (this.currentCharIndex - 1 + 3) % 3;
     else if (e.code === 'ArrowRight') this.currentCharIndex = (this.currentCharIndex + 1) % 3;
     else if (e.code === 'ArrowUp') this.changeChar(this.currentCharIndex, 1);
@@ -418,20 +345,19 @@ export class UIManager {
   }
 
   saveHighscore() {
-    if (!this.nameInputActive) return;
     const name = this.chars.join('');
     this.updateHighScores({ name, score: this.pendingScore });
-    this.nameInputActive = false;
     this.els.nameInputContainer.classList.add('hidden');
     this.els.overlayText.textContent = 'SCORE SAVED!';
-    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
+    this.highscorePixiContainer.visible = true;
+    this.game.state = CONSTANTS.GAME_STATES.GAMEOVER;
   }
 
   toggleHelp(isVisible) {
-    if (this.mainTitleContainer) this.mainTitleContainer.alpha = isVisible ? 1.0 : 0;
-    if (this.watermarkContainer) this.watermarkContainer.visible = !isVisible;
-    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
-    if (this.helpPixiContainer) this.helpPixiContainer.visible = isVisible;
+    this.mainTitleContainer.alpha = isVisible ? 1.0 : 0;
+    this.watermarkContainer.visible = !isVisible;
+    this.highscorePixiContainer.visible = false;
+    this.helpPixiContainer.visible = isVisible;
     this.els.helpScreen.classList.toggle('hidden', !isVisible);
   }
 
