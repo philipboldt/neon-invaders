@@ -14,5 +14,10 @@ This document tracks identified bugs that need to be addressed.
 *   **Fix:** Used `100dvh` for body height and `100%` for wrapper height, ensuring the entire UI stays within the visible area.
 *   **Status:** Resolved
 
+### 3. Border Scaling
+*   **Description:** The game frame/border thickness was fixed at 2px and did not scale with the game world or high-resolution displays.
+*   **Fix:** Centralized `UI_BORDER_THICKNESS` in constants and implemented dynamic scaling based on the game's `heightFactor` in `UIManager`.
+*   **Status:** Resolved
+
 ## 🐛 Reported Bugs
 *(No active bugs reported)*

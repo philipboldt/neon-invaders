@@ -59,6 +59,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Dynamic Border Scaling:** Refactored the UI border to use a centralized constant (`UI_BORDER_THICKNESS`) that dynamically scales with the game's `heightFactor`. This ensures the border thickness remains proportional to other game entities across different aspect ratios and screen sizes. **[FIX]**
 - **Mobile Viewport & UI Fixes:** Migrated to `100dvh` (Dynamic Viewport Height) in CSS. This ensures the canvas and touch controls are 100% visible on mobile devices, even when browser navigation bars (top or bottom) are present. **[FIX]**
 - **Bug Tracking Initialized:** Created `bugs.md` to formally track viewport and mobile UI issues. **[NEW]**
 - **Full PixiJS Migration (100%):** Successfully completed the transition to PixiJS. Removed all legacy 2D Canvas `draw` methods and coordinate syncing. The engine now uses a unified `PIXI.Ticker` loop and in-place sprite updates for maximum efficiency. **[DONE]**

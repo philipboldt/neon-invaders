@@ -102,7 +102,8 @@ export class UIManager {
     
     if (this.borderGraphics) {
       this.borderGraphics.clear();
-      this.borderGraphics.lineStyle(2, this.parseHexColor(COLORS.player), 1);
+      const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
+      this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
       this.borderGraphics.drawRect(0, 0, game.W, game.H);
     }
 
