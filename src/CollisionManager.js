@@ -116,7 +116,7 @@ export class CollisionManager {
       case 'heal': this.game.lives = Math.min(this.game.maxLives, this.game.lives + 1); text = "HEALED"; break;
       case 'points':
         const gain = level * CONSTANTS.POINTS_MULTIPLIER;
-        this.game.score += gain; text = `+${gain} BONUS`; break;
+        this.game.score += gain; text = `${gain} BONUS`; break;
     }
     this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, text);
     this.game.ui.updateStats(this.game);
