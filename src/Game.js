@@ -15,6 +15,7 @@ export class Game {
   constructor(canvas) {
     this.canvas = canvas;
     this.state = CONSTANTS.GAME_STATES.START;
+    this.previousState = null;
     
     // Initial dimensions
     this.updateDimensions();
@@ -206,6 +207,17 @@ export class Game {
   startGame() {
     this.state = CONSTANTS.GAME_STATES.PLAYING;
     this.ui.hideScreens();
+  }
+
+  togglePause() {
+    if (this.state === CONSTANTS.GAME_STATES.PAUSED) {
+      this.state = this.previousState || CONSTANTS.GAME_STATES.PLAYING;
+      this.ui.toggleHelp(false);
+    } else {
+      this.previousState = this.state;
+      this.state = CONSTANTS.GAME_STATES.PAUSED;
+      this.ui.toggleHelp(true);
+    }
   }
 
   endGame(won) {

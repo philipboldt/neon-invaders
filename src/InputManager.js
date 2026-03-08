@@ -52,13 +52,7 @@ export class InputManager {
 
       // Toggle Help (Pause)
       if (e.code === 'KeyH') {
-        if (this.game.state === 'PLAYING') {
-          this.game.state = 'PAUSED';
-          this.game.ui.toggleHelp(true);
-        } else if (this.game.state === 'PAUSED') {
-          this.game.state = 'PLAYING';
-          this.game.ui.toggleHelp(false);
-        }
+        this.game.togglePause();
         return;
       }
       
