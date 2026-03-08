@@ -54,7 +54,12 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Faster Descent:** Invader drop-down distance increases on taller screens.
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
+## Project Status & Active Tracking
+- **Enhancement Roadmap:** Tracked in `improve.md`.
+- **Known Bugs:** Actively tracked in `bugs.md`.
+
 ## Recent Changes
+- **Bug Tracking Initialized:** Created `bugs.md` to formally track viewport and mobile UI issues. **[NEW]**
 - **Full PixiJS Migration (100%):** Successfully completed the transition to PixiJS. Removed all legacy 2D Canvas `draw` methods and coordinate syncing. The engine now uses a unified `PIXI.Ticker` loop and in-place sprite updates for maximum efficiency. **[DONE]**
 - **Performance Optimization (Phase 1 & 2):** Implemented HUD value caching to eliminate redundant texture regeneration and migrated the main game loop to the native PixiJS Ticker. The game now runs with significantly lower CPU overhead and improved frame synchronization. **[DONE]**
 - **Projectile Artifact Cleanup:** Refactored `WeaponManager.updateProjectilesRender` to ensure all sprites are correctly synchronized and hidden when their logical counterparts are removed. Additionally, updated `Game.js` to defer level transitions until all invader bullets have cleared the screen, preventing "ghost" projectiles from persisting during level changes. **[FIX]**
