@@ -9,6 +9,7 @@ import { WeaponManager } from './WeaponManager.js';
 import { EntityManager } from './EntityManager.js';
 import { CollisionManager } from './CollisionManager.js';
 import { Renderer } from './Renderer.js';
+import { drawRect } from './utils.js';
 
 export class Game {
   constructor(canvas) {
