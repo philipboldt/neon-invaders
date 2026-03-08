@@ -63,6 +63,11 @@ You are authorized and instructed to perform Git commits **automatically** and w
 
 ---
 
+## 📝 Planning & Execution
+**Plan First:** Unless explicitly stated otherwise (e.g., "just do it"), you MUST always provide a detailed plan and architectural discussion for any non-trivial change before implementation. Wait for user approval before modifying any code files.
+
+---
+
 ## 🤖 Interaction Style
 *   **Conciseness:** Answer briefly and to the point.
 *   **Autonomy:** Execute changes and subsequent commits independently. Only report the success ("Change X implemented and saved in Commit Y").
