@@ -4,7 +4,7 @@ import { BaseView } from './BaseView.js';
 export class CreditsView extends BaseView {
   constructor(game) {
     super(game);
-    this.scrollSpeed = 1.2;
+    this.scrollSpeed = CONSTANTS.CREDITS_SCROLL_SPEED;
     this.creditsData = [];
     this.isLoaded = false;
     this.init();
@@ -24,7 +24,7 @@ export class CreditsView extends BaseView {
 
   async loadCredits() {
     try {
-      const response = await fetch('res/credits.json');
+      const response = await fetch(CONSTANTS.CREDITS_JSON_PATH);
       this.creditsData = await response.json();
       this.buildCredits();
       this.isLoaded = true;
@@ -52,7 +52,7 @@ export class CreditsView extends BaseView {
       text.baseColor = item.color;
       
       this.scrollContainer.addChild(text);
-      currentY += text.height + 10;
+      currentY += text.height + CONSTANTS.CREDITS_LINE_GAP;
     });
 
     // Mark the full height for looping
@@ -89,7 +89,7 @@ export class CreditsView extends BaseView {
   }
 
   resetScroll() {
-    this.scrollContainer.y = this.lastH || 600;
+    this.scrollContainer.y = this.lastH || CONSTANTS.LOGICAL_HEIGHT_MIN;
   }
 
   updateLayout(W, H) {
@@ -100,10 +100,9 @@ export class CreditsView extends BaseView {
     this.viewportMask.clear();
     this.viewportMask.beginFill(0x000000);
     
-    // The "Vanishing Point": Start the mask 180px down to clear the Marquee title
-    // and stop 100px from the bottom to clear the footer prompt.
-    const maskTop = 180;
-    const maskBottom = H - 100;
+    // The "Vanishing Point": Start the mask from constants to clear the Marquee title
+    const maskTop = CONSTANTS.CREDITS_MASK_TOP;
+    const maskBottom = H - CONSTANTS.CREDITS_MASK_BOTTOM_OFFSET;
     this.viewportMask.drawRect(0, maskTop, W, maskBottom - maskTop);
     this.viewportMask.endFill();
 

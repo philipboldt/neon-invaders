@@ -81,6 +81,7 @@ export class HelpView extends BaseView {
     
     this.creditsButton.on('pointertap', (e) => {
       e.stopPropagation(); // Prevent Pixi bubbling
+      this.game.ui.creditsReturnState = CONSTANTS.GAME_STATES.PAUSED;
       this.game.state = CONSTANTS.GAME_STATES.CREDITS;
       this.game.ui.handleStateChange(this.game.state);
     });
@@ -93,7 +94,7 @@ export class HelpView extends BaseView {
     this.content.position.set(W / 2, CONSTANTS.UI_HIGHSCORE_Y);
     // Position button at the very bottom of the logical inner canvas
     // This puts it in the InputManager's "BOTTOM" zone which is safe from pause-toggling
-    this.creditsButton.position.set(0, H - CONSTANTS.UI_HIGHSCORE_Y - 40);
+    this.creditsButton.position.set(0, H - CONSTANTS.UI_HIGHSCORE_Y - CONSTANTS.CREDITS_BUTTON_BOTTOM_OFFSET);
   }
 
   update(now) {

@@ -17,6 +17,7 @@ export class UIManager {
     this.views = {};
     this.lastInputTime = performance.now();
     this.attractModeActive = false;
+    this.creditsReturnState = null;
   }
 
   initPixiHUD(game) {
@@ -192,10 +193,10 @@ export class UIManager {
         CONSTANTS.GAME_STATES.BOSSKILLED
       ].includes(game.state);
 
-      if (game.gameOffsetY > 100) {
+      if (game.gameOffsetY > CONSTANTS.UI_MARQUEE_RESPONSIVE_THRESHOLD) {
         // Space available: Show permanently in the letterbox above the game
         this.marqueeContainer.visible = true;
-        this.marqueeContainer.position.set(game.appW / 2, game.gameOffsetY / 2 - 30);
+        this.marqueeContainer.position.set(game.appW / 2, game.gameOffsetY / 2 - CONSTANTS.UI_MARQUEE_Y_OFFSET);
       } else {
         // No space: Only show during specific menus inside the active game area
         this.marqueeContainer.visible = isMenuState;
@@ -283,8 +284,9 @@ export class UIManager {
     // Attract Mode Logic
     const isAttractEligible = this.game.state === CONSTANTS.GAME_STATES.START || this.game.state === CONSTANTS.GAME_STATES.GAMEOVER;
     if (isAttractEligible && !this.attractModeActive) {
-      if (now - this.lastInputTime > 15000) { // 15 seconds
+      if (now - this.lastInputTime > CONSTANTS.UI_IDLE_TIMER_MS) { 
         this.attractModeActive = true;
+        this.creditsReturnState = this.game.state;
         this.handleStateChange(this.game.state);
       }
     }
