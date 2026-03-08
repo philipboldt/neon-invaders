@@ -215,9 +215,7 @@ export const CONSTANTS = {
   BOSS_UNLOCK_LEFT: 5,
   BOSS_UNLOCK_RIGHT: 10,
 
-  // --- DOM ELEMENT IDS ---
-  ID_BTN_LEFT: 'btn-left',
-  ID_BTN_RIGHT: 'btn-right',
-  ID_BTN_SHOOT: 'btn-shoot',
-  ID_BTN_PAUSE: 'btn-pause'
+  // --- TOUCH SYSTEM ---
+  TOUCH_DOUBLE_TAP_MS: 300,
+  TOUCH_LABEL_ALPHA: 0.15
 };

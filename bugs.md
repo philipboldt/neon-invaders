@@ -11,7 +11,7 @@ This document tracks identified bugs that need to be addressed.
 
 ### 2. UI Obstruction (Mobile)
 *   **Description:** Play buttons and touch controls are partially or fully hidden behind the browser's bottom navigation bar.
-*   **Fix:** Used `100dvh` for body height and `100%` for wrapper height, ensuring the entire UI stays within the visible area.
+*   **Fix:** Removed all HTML/DOM touch controls. Implemented a 100% canvas-based touch zone system (Top: Exit, Mid: Pause, Bottom: Move/Shoot).
 *   **Status:** Resolved
 
 ### 3. Border Scaling

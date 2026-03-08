@@ -59,6 +59,11 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Pure Canvas Touch System:** Completely removed all HTML/DOM touch buttons. Implemented a 3-tier vertical touch zone system directly in PixiJS. 
+  - **Top 1/3:** Double-tap to exit.
+  - **Middle 1/3:** Single-tap to pause/help.
+  - **Bottom 1/3:** Split horizontally into Left, Auto-Shoot (toggle), and Right zones.
+  - **Visual Guides:** Added subtle neon grid lines and labels to guide the player without obstructing the view. **[NEW]**
 - **Test Suite Refactor (Playwright CLI):** Completely rewrote the testing infrastructure from scratch to align with the PixiJS architecture. Migrated to a modular structure (`core`, `visual`, `responsive`) and replaced brittle HTML-based checks with robust internal state inspection via `page.evaluate`. Added comprehensive tests for Pause/Resume, Escape-to-End, and dynamic Boss reward summaries. **[DONE]**
 - **Dynamic Border Scaling:** Refactored the UI border to use a centralized constant (`UI_BORDER_THICKNESS`) that dynamically scales with the game's `heightFactor`. This ensures the border thickness remains proportional to other game entities across different aspect ratios and screen sizes. **[FIX]**
 - **Mobile Viewport & UI Fixes:** Migrated to `100dvh` (Dynamic Viewport Height) in CSS. This ensures the canvas and touch controls are 100% visible on mobile devices, even when browser navigation bars (top or bottom) are present. **[FIX]**

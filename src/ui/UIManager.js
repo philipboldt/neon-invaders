@@ -5,6 +5,7 @@ import { HelpView } from './HelpView.js';
 import { GameOverView } from './GameOverView.js';
 import { BossClearView } from './BossClearView.js';
 import { NameEntryView } from './NameEntryView.js';
+import { ControlOverlayView } from './ControlOverlayView.js';
 
 export class UIManager {
   constructor() {
@@ -30,6 +31,7 @@ export class UIManager {
     this.game.bgLayer.addChild(this.watermarkContainer);
 
     // Initialize View Modules
+    this.views.overlay = new ControlOverlayView(game);
     this.views.hud = new HudView(game);
     this.views.start = new StartView(game);
     this.views.help = new HelpView(game);
@@ -41,12 +43,6 @@ export class UIManager {
     this.borderGraphics = new PIXI.Graphics();
     this.game.uiLayer.addChild(this.borderGraphics);
 
-    this.controlsText = new PIXI.Text('← → move · SPACE shoot · H help · ESC end', {
-      fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.4
-    });
-    this.controlsText.anchor.set(0.5, 1);
-    this.game.uiLayer.addChild(this.controlsText);
-
     this.updateHighScores();
   }
 
@@ -56,7 +52,9 @@ export class UIManager {
 
   handleStateChange(newState) {
     // Hide all menu views by default
-    Object.values(this.views).forEach(v => v.hide());
+    Object.values(this.views).forEach(v => {
+      if (v !== this.views.overlay) v.hide();
+    });
     
     // HUD visibility
     if (newState === CONSTANTS.GAME_STATES.START) {
@@ -67,6 +65,9 @@ export class UIManager {
 
     // Watermark visibility
     this.watermarkContainer.visible = (newState === CONSTANTS.GAME_STATES.PLAYING);
+
+    // Control Overlay visibility & state
+    this.views.overlay.update(newState);
 
     // Highscore board visibility
     if (this.views.start.highscoreContainer) {
@@ -105,10 +106,6 @@ export class UIManager {
       const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
       this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
       this.borderGraphics.drawRect(0, 0, game.W, game.H);
-    }
-
-    if (this.controlsText) {
-      this.controlsText.position.set(game.W / 2, game.H - 10);
     }
   }
 
@@ -197,8 +194,7 @@ export class UIManager {
   }
 
   setShootActive(isActive) {
-    const btn = document.getElementById('btn-shoot');
-    if (btn) btn.classList.toggle('active', isActive);
+    // No-op: Visual feedback now handled via overlay/labels or internally
   }
 
   isHighscore(score) {
