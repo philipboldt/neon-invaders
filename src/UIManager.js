@@ -153,18 +153,36 @@ export class UIManager {
   updateStats(gameState) {
     if (!this.hudTexts.score) return;
 
-    this.hudTexts.score.value.text = gameState.score;
-    this.hudTexts.level.value.text = gameState.level;
-    this.hudTexts.lives.value.text = gameState.lives;
-    this.hudTexts.damage.value.text = gameState.playerDamage;
+    // Helper to update text only if changed
+    const updateIfChanged = (key, newVal) => {
+      if (this.lastStats[key] !== newVal) {
+        this.hudTexts[key].value.text = newVal;
+        this.lastStats[key] = newVal;
+      }
+    };
+
+    updateIfChanged('score', gameState.score);
+    updateIfChanged('level', gameState.level);
+    updateIfChanged('lives', gameState.lives);
+    updateIfChanged('damage', gameState.playerDamage);
     
-    this.hudTexts.shield.value.text = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
-    this.hudTexts.pierce.value.text = gameState.hasPierce ? 'YES' : 'NONE';
-    this.hudTexts.rocket.value.text = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
+    const shieldStatus = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
+    updateIfChanged('shield', shieldStatus);
+
+    const pierceStatus = gameState.hasPierce ? 'YES' : 'NONE';
+    updateIfChanged('pierce', pierceStatus);
+
+    const rocketStatus = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
+    updateIfChanged('rocket', rocketStatus);
     
     if (this.debugText) {
-      this.debugText.visible = gameState.debugMode;
-      this.debugText.position.set(gameState.W / 2, 72);
+      if (this.lastStats.debugVisible !== gameState.debugMode) {
+        this.debugText.visible = gameState.debugMode;
+        this.lastStats.debugVisible = gameState.debugMode;
+      }
+      if (gameState.debugMode) {
+        this.debugText.position.set(gameState.W / 2, 72);
+      }
     }
   }
 
