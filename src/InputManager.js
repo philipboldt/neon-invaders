@@ -13,6 +13,7 @@ export class InputManager {
     // 1. Unified Pointer Router (Zone Based)
     this.game.canvas.addEventListener('pointerdown', (e) => {
       this.game.ui.resetIdleTimer();
+      if (this.game.audio) this.game.audio.resumeContext();
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       this.game.canvas.setPointerCapture(e.pointerId);
       
@@ -57,6 +58,7 @@ export class InputManager {
     // 2. Keyboard Router (Unified with State)
     document.addEventListener('keydown', (e) => {
       this.game.ui.resetIdleTimer();
+      if (this.game.audio) this.game.audio.resumeContext();
       const { state } = this.game;
       
       // H Key is Universal Pause Toggle

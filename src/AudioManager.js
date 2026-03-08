@@ -25,6 +25,14 @@ export class AudioManager {
     });
   }
 
+  resumeContext() {
+    if (typeof PIXI.sound !== 'undefined' && PIXI.sound.context && PIXI.sound.context.audioContext) {
+      if (PIXI.sound.context.audioContext.state === 'suspended') {
+        PIXI.sound.context.audioContext.resume();
+      }
+    }
+  }
+
   playBGM() {
     if (typeof PIXI.sound === 'undefined') return;
     
