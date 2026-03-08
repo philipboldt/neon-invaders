@@ -190,6 +190,14 @@ export const CONSTANTS = {
   ANIM_BREATH_STRENGTH: 0.03,
   ANIM_BLINK_SPEED: 300,
   
+  // --- Z-INDEX LAYERING ---
+  Z_BG: 0,
+  Z_WORLD: 10,
+  Z_ENTITIES: 20,
+  Z_PROJECTILES: 30,
+  Z_EFFECTS: 40,
+  Z_UI: 100,
+  
   // --- STARFIELD ---
   STAR_LAYERS: [
     { size: 1, speed: 2.5, count: 50 }, 

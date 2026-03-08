@@ -40,20 +40,32 @@ export class Game {
       throw err;
     }
 
-    // Create Layers (Containers)
+    // Create Layers (Containers) with explicit Z-Index sorting
     this.stage = this.app.stage;
+    this.stage.sortableChildren = true;
     
     // 1. Game World (The Dimmer Layer)
     this.gameWorld = new PIXI.Container();
+    this.gameWorld.zIndex = CONSTANTS.Z_WORLD;
+    this.gameWorld.sortableChildren = true;
+
     this.bgLayer = new PIXI.Container();
+    this.bgLayer.zIndex = CONSTANTS.Z_BG;
+
     this.entityLayer = new PIXI.Container();
+    this.entityLayer.zIndex = CONSTANTS.Z_ENTITIES;
+
     this.projectileLayer = new PIXI.Container();
+    this.projectileLayer.zIndex = CONSTANTS.Z_PROJECTILES;
+
     this.effectLayer = new PIXI.Container();
+    this.effectLayer.zIndex = CONSTANTS.Z_EFFECTS;
     
     this.gameWorld.addChild(this.bgLayer, this.entityLayer, this.projectileLayer, this.effectLayer);
     
     // 2. UI Layer (Always full brightness)
     this.uiLayer = new PIXI.Container();
+    this.uiLayer.zIndex = CONSTANTS.Z_UI;
 
     this.stage.addChild(this.gameWorld, this.uiLayer);
 
