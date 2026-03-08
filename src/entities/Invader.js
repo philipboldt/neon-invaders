@@ -19,11 +19,8 @@ export class Invader extends BaseEntity {
     this.sprite.anchor.set(0.5);
     
     if (this.isBoss) {
-      this.sprite.width = this.w + 40;
-      this.sprite.height = this.h + 40;
-    } else {
-      this.sprite.width = this.w;
-      this.sprite.height = this.h;
+      // Scale based on logical size relative to standard invader
+      this.sprite.scale.set(this.w / CONSTANTS.INVADER_W);
     }
 
     this.game.entityLayer.addChild(this.sprite);
