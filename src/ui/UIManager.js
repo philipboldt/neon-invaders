@@ -43,6 +43,12 @@ export class UIManager {
     this.borderGraphics = new PIXI.Graphics();
     this.game.uiLayer.addChild(this.borderGraphics);
 
+    this.controlsText = new PIXI.Text('← → move · SPACE shoot · H help · ESC end', {
+      fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.4
+    });
+    this.controlsText.anchor.set(0.5, 1);
+    this.game.uiLayer.addChild(this.controlsText);
+
     this.updateHighScores();
   }
 
@@ -68,6 +74,12 @@ export class UIManager {
 
     // Control Overlay visibility & state
     this.views.overlay.update(newState);
+
+    // Desktop Controls Text visibility
+    if (this.controlsText) {
+      const isTouch = window.matchMedia('(pointer: coarse)').matches;
+      this.controlsText.visible = !isTouch && (newState === CONSTANTS.GAME_STATES.START || newState === CONSTANTS.GAME_STATES.PLAYING || newState === CONSTANTS.GAME_STATES.PAUSED);
+    }
 
     // Highscore board visibility
     if (this.views.start.highscoreContainer) {
@@ -106,6 +118,10 @@ export class UIManager {
       const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
       this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
       this.borderGraphics.drawRect(0, 0, game.W, game.H);
+    }
+
+    if (this.controlsText) {
+      this.controlsText.position.set(game.W / 2, game.H - 10);
     }
   }
 
