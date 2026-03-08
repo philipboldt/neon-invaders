@@ -4,158 +4,144 @@ export class InputManager {
   }
 
   bindInputs() {
-    const handleStart = (e) => {
-      if (this.game.ui.nameInputActive) return;
-      if (this.game.state === 'PLAYING') return;
-      
-      if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
-        if (e && e.type.startsWith('pointer') && e.pointerType === 'mouse' && e.button !== 0) return;
-        this.game.startGame();
-        if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      }
-    };
-
-    // Global pointerdown listener to catch start on any canvas tap
+    // 1. Unified Pointer/Tap Router
     this.game.canvas.addEventListener('pointerdown', (e) => {
-      if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
-        handleStart(e);
-      } else if (this.game.state === 'PAUSED') {
-        this.game.state = 'PLAYING';
-        this.game.ui.toggleHelp(false);
-      } else if (this.game.ui.bossClearActive) {
-        this.game.ui.hideBossClear();
-        this.game.state = 'PLAYING';
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      
+      switch(this.game.state) {
+        case 'START':
+        case 'GAMEOVER':
+          this.game.startGame();
+          break;
+        case 'PAUSED':
+          this.game.togglePause();
+          break;
+        case 'BOSSKILLED':
+          this.game.ui.hideBossClear();
+          break;
+        case 'HIGHSCORE':
+          // HIGHSCORE clicks could be handled inside NameEntryView if we add buttons later
+          break;
       }
     }, { capture: true });
 
+    // 2. Unified Key Router
     document.addEventListener('keydown', (e) => {
-      // Space to Start logic - highest priority
-      if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
-        if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
-          handleStart(e);
-          return;
-        }
-      }
+      const { state } = this.game;
 
-      if (this.game.ui.nameInputActive) {
-        this.game.ui.handleNameInputKey(e);
-        return;
-      }
-      
-      if (this.game.ui.bossClearActive) {
-        if (e.code === 'Space' || e.code === 'Enter') {
-          this.game.ui.hideBossClear();
-          this.game.state = 'PLAYING';
-        }
-        return;
-      }
-
-      // Toggle Help (Pause)
+      // Global Keys (Working in multiple states)
       if (e.code === 'KeyH') {
-        this.game.togglePause();
-        return;
-      }
-      
-      // End Game
-      if (e.code === 'Escape' && this.game.state === 'PLAYING') {
-        this.game.endGame(false);
-        return;
-      }
-      
-      if (this.game.state !== 'PLAYING') return;
-
-      if (e.code === 'KeyD') {
-        this.game.debugMode = !this.game.debugMode;
-        if (this.game.debugMode) {
-          this.game.shieldHits = 0; this.game.shotCount = 1; this.game.rocketLevel = 0; this.game.hasPierce = false;
-          this.game.ui.updateStats(this.game);
+        if (state === 'PLAYING' || state === 'PAUSED' || state === 'START') {
+          this.game.togglePause();
         }
         return;
       }
-      if (e.code === 'KeyA' && this.game.debugMode) {
-        this.game.invaders = [];
-        return;
-      }
 
-      if (e.code === 'ArrowLeft') this.game.player.dir = -1;
-      if (e.code === 'ArrowRight') this.game.player.dir = 1;
-      if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
-        this.game.spacePressed = true;
-        this.game.ui.setShootActive(true);
-        e.preventDefault();
+      // State-Specific Routing
+      switch(state) {
+        case 'START':
+        case 'GAMEOVER':
+          if (e.code === 'Space' || e.code === 'Enter') {
+            this.game.startGame();
+          }
+          break;
+
+        case 'PLAYING':
+          if (e.code === 'ArrowLeft') this.game.player.dir = -1;
+          if (e.code === 'ArrowRight') this.game.player.dir = 1;
+          if (e.code === 'Space') {
+            this.game.spacePressed = true;
+            this.game.ui.setShootActive(true);
+            e.preventDefault();
+          }
+          if (e.code === 'Escape') {
+            this.game.endGame(false);
+          }
+          if (e.code === 'KeyD') {
+            this.game.debugMode = !this.game.debugMode;
+            this.game.ui.updateStats(this.game);
+          }
+          break;
+
+        case 'PAUSED':
+          if (e.code === 'Space' || e.code === 'KeyH' || e.code === 'Escape') {
+            this.game.togglePause();
+          }
+          break;
+
+        case 'HIGHSCORE':
+          this.game.ui.handleNameInputKey(e);
+          break;
+
+        case 'BOSSKILLED':
+          if (e.code === 'Space' || e.code === 'Enter') {
+            this.game.ui.hideBossClear();
+          }
+          break;
       }
     });
 
     document.addEventListener('keyup', (e) => {
+      if (this.game.state !== 'PLAYING') return;
+      
       if (e.code === 'ArrowLeft' && this.game.player.dir === -1) this.game.player.dir = 0;
       if (e.code === 'ArrowRight' && this.game.player.dir === 1) this.game.player.dir = 0;
-      if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
+      if (e.code === 'Space') {
         this.game.spacePressed = false;
         this.game.ui.setShootActive(false);
       }
     });
 
-    if (this.game.ui.els.restartBtn) {
-      this.game.ui.els.restartBtn.addEventListener('click', () => {
-        if (this.game.state === 'GAMEOVER') this.game.startGame();
-      });
-    }
-
-    const handlePointerDown = (btn, action) => {
-      if(!btn) return;
+    // Touch Button Handlers (Maintain HTML buttons for reliability)
+    const handleTouch = (id, action) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      
       btn.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         e.preventDefault();
         btn.setPointerCapture(e.pointerId);
-        action(true);
+        action(true, e);
       });
-    };
-
-    const handlePointerUp = (btn, action) => {
-      if(!btn) return;
       btn.addEventListener('pointerup', (e) => {
         e.preventDefault();
         btn.releasePointerCapture(e.pointerId);
-        action(false);
-      });
-      btn.addEventListener('pointercancel', (e) => {
-        e.preventDefault();
-        action(false);
+        action(false, e);
       });
     };
 
-    handlePointerDown(this.game.ui.els.btnLeft, (active) => { if (active) this.game.player.dir = -1; });
-    handlePointerUp(this.game.ui.els.btnLeft, (active) => { if (!active && this.game.player.dir === -1) this.game.player.dir = 0; });
-
-    handlePointerDown(this.game.ui.els.btnRight, (active) => { if (active) this.game.player.dir = 1; });
-    handlePointerUp(this.game.ui.els.btnRight, (active) => { if (!active && this.game.player.dir === 1) this.game.player.dir = 0; });
-
-    handlePointerDown(this.game.ui.els.btnShoot, (e) => {
-      if (this.game.ui.bossClearActive) {
-        this.game.ui.hideBossClear();
-        this.game.state = 'PLAYING';
-        return;
-      }
-      if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
-        handleStart(e);
-        this.game.spacePressed = true;
-        this.game.ui.setShootActive(true);
-        return;
-      } else if (this.game.state === 'PAUSED') {
-        this.game.state = 'PLAYING';
-        this.game.ui.toggleHelp(false);
-        this.game.spacePressed = true;
-        this.game.ui.setShootActive(true);
-        return;
-      }
-      this.game.spacePressed = !this.game.spacePressed;
-      this.game.ui.setShootActive(this.game.spacePressed);
+    handleTouch('btn-left', (active) => {
+      if (this.game.state === 'PLAYING') this.game.player.dir = active ? -1 : 0;
     });
 
-    handlePointerDown(this.game.ui.els.btnPause, (active) => {
+    handleTouch('btn-right', (active) => {
+      if (this.game.state === 'PLAYING') this.game.player.dir = active ? 1 : 0;
+    });
+
+    handleTouch('btn-shoot', (active, e) => {
+      if (!active) return; // Only trigger on down
+      
+      switch(this.game.state) {
+        case 'START':
+        case 'GAMEOVER':
+          this.game.startGame();
+          break;
+        case 'PLAYING':
+          this.game.spacePressed = !this.game.spacePressed;
+          this.game.ui.setShootActive(this.game.spacePressed);
+          break;
+        case 'PAUSED':
+          this.game.togglePause();
+          break;
+        case 'BOSSKILLED':
+          this.game.ui.hideBossClear();
+          break;
+      }
+    });
+
+    handleTouch('btn-pause', (active) => {
       if (active && this.game.state === 'PLAYING') {
-        this.game.state = 'PAUSED';
-        this.game.ui.toggleHelp(true);
+        this.game.togglePause();
       }
     });
   }

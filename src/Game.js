@@ -206,6 +206,7 @@ export class Game {
 
   startGame() {
     this.state = CONSTANTS.GAME_STATES.PLAYING;
+    this.isPaused = false;
     this.ui.hideScreens();
   }
 
