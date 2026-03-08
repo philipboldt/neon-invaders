@@ -1,3 +1,5 @@
+import { CONSTANTS } from './constants.js';
+
 export class Renderer {
   constructor(game) {
     this.game = game;
