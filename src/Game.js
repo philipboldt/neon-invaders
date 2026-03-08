@@ -259,7 +259,6 @@ export class Game {
     this.isPaused = false;
     this.spacePressed = false;
     this.ui.setShootActive(false);
-    this.audio.stopBGM();
     
     if (this.ui.isHighscore(this.score)) {
       this.state = CONSTANTS.GAME_STATES.HIGHSCORE;
