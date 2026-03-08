@@ -397,6 +397,7 @@ export class WeaponManager {
       }
 
       // Draw Target Marker
+      const rocketColor = this.parseColor(COLORS.rocket);
       this.markerGraphics.lineStyle(2, rocketColor, 0.6);
       const size = 15;
       this.markerGraphics.drawCircle(r.targetX, r.targetY, size);
