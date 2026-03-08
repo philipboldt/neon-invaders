@@ -68,13 +68,19 @@ export class HelpView extends BaseView {
     footer.position.set(0, 320);
 
     this.creditsButton = new PIXI.Text('[ VIEW CREDITS ]', {
-      fontFamily: 'Orbitron', fontSize: 14, fontWeight: '900', fill: this.parseHexColor(COLORS.invader2), letterSpacing: 2
+      fontFamily: 'Orbitron', fontSize: 14, fontWeight: '900', fill: this.parseHexColor(COLORS.invader2), letterSpacing: 2,
+      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.invader2), dropShadowBlur: 5, dropShadowDistance: 0
     });
     this.creditsButton.anchor.set(0.5, 0);
-    this.creditsButton.position.set(0, 360);
     this.creditsButton.eventMode = 'static';
     this.creditsButton.cursor = 'pointer';
-    this.creditsButton.on('pointertap', () => {
+    
+    // Visual feedback for interaction
+    this.creditsButton.on('pointerover', () => { this.creditsButton.style.fill = 0xFFFFFF; this.creditsButton.style.dropShadowBlur = 15; });
+    this.creditsButton.on('pointerout', () => { this.creditsButton.style.fill = this.parseHexColor(COLORS.invader2); this.creditsButton.style.dropShadowBlur = 5; });
+    
+    this.creditsButton.on('pointertap', (e) => {
+      e.stopPropagation(); // Prevent Pixi bubbling
       this.game.state = CONSTANTS.GAME_STATES.CREDITS;
       this.game.ui.handleStateChange(this.game.state);
     });
@@ -85,6 +91,9 @@ export class HelpView extends BaseView {
 
   updateLayout(W, H) {
     this.content.position.set(W / 2, CONSTANTS.UI_HIGHSCORE_Y);
+    // Position button at the very bottom of the logical inner canvas
+    // This puts it in the InputManager's "BOTTOM" zone which is safe from pause-toggling
+    this.creditsButton.position.set(0, H - CONSTANTS.UI_HIGHSCORE_Y - 40);
   }
 
   update(now) {
