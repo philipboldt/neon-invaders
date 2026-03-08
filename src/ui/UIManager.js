@@ -33,7 +33,6 @@ export class UIManager {
   initPixiHUD(game) {
     this.game = game;
     
-    // Background Watermark (Persistent across all states but visible only in PLAYING)
     this.watermarkContainer = new PIXI.Container();
     const waterTitle = new PIXI.Text(CONSTANTS.TITLE, {
       fontFamily: 'Orbitron', fontSize: 20, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 2
@@ -45,7 +44,6 @@ export class UIManager {
     this.watermarkContainer.addChild(waterTitle, waterVer);
     this.game.bgLayer.addChild(this.watermarkContainer);
 
-    // Initialize View Modules
     this.views.hud = new HudView(game);
     this.views.start = new StartView(game);
     this.views.help = new HelpView(game);
@@ -64,11 +62,14 @@ export class UIManager {
     // Hide all menu views by default
     Object.values(this.views).forEach(v => v.hide());
     
-    // Persistent HUD is always visible unless in START
-    this.views.hud.show();
-    if (newState === CONSTANTS.GAME_STATES.START) this.views.hud.hide();
+    // Persistent HUD visibility
+    if (newState === CONSTANTS.GAME_STATES.START) {
+      this.views.hud.hide();
+    } else {
+      this.views.hud.show();
+    }
 
-    // Show specific view
+    // Show specific view based on state
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
         this.views.start.show();
@@ -142,8 +143,15 @@ export class UIManager {
   }
 
   toggleHelp(isVisible) {
-    if (isVisible) this.handleStateChange(CONSTANTS.GAME_STATES.PAUSED);
-    else this.handleStateChange(CONSTANTS.GAME_STATES.PLAYING);
+    // UI simply reacts to the game state
+    this.handleStateChange(this.game.state);
+    
+    // Manage HTML pointer-sink overlay
+    if (isVisible) {
+      this.els.helpScreen.classList.remove('hidden');
+    } else {
+      this.els.helpScreen.classList.add('hidden');
+    }
   }
 
   updateHighScores(newEntry) {
@@ -152,7 +160,6 @@ export class UIManager {
       const saved = localStorage.getItem('neonInvadersHighScores');
       if (saved) {
         scores = JSON.parse(saved);
-        // Migration: ensure every entry is an object with a score property
         scores = scores.map(s => {
           if (typeof s === 'number') return { name: '???' , score: s };
           if (s && typeof s.score === 'number') return s;
@@ -180,7 +187,6 @@ export class UIManager {
     });
   }
 
-  // Common UI logic preserved from old manager
   bindNameInputTouch() {
     this.els.touchArrows.forEach(arrow => {
       arrow.addEventListener('pointerdown', (e) => {
@@ -193,7 +199,7 @@ export class UIManager {
     });
     if (this.els.saveNameBtn) {
       this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
-        if (!this.nameInputActive) return;
+        if (this.game.state !== CONSTANTS.GAME_STATES.HIGHSCORE) return;
         e.preventDefault(); e.stopPropagation();
         this.saveHighscore();
       });
