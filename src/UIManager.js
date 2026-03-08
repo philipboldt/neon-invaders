@@ -106,7 +106,7 @@ export class UIManager {
     waterVer.position.set(0, 22);
 
     this.watermarkContainer.addChild(waterTitle, waterVer);
-    this.watermarkContainer.alpha = 0.15;
+    this.watermarkContainer.alpha = 1.0;
     this.watermarkContainer.visible = false;
     this.game.bgLayer.addChild(this.watermarkContainer);
 
