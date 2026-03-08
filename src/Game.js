@@ -360,7 +360,7 @@ export class Game {
 
       if (isBossOrMiniBoss) {
         this.ui.showBossClear(this.level, rewards);
-        this.state = CONSTANTS.GAME_STATES.PAUSED;
+        this.state = CONSTANTS.GAME_STATES.BOSSKILLED;
       }
       this.level++; this.ui.updateStats(this);
       this.clearAllEntities();

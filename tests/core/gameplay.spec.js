@@ -108,7 +108,7 @@ test.describe('Neon Invaders - Core Gameplay', () => {
         // Wait for BOSSKILLED state
         await expect.poll(async () => {
             return await page.evaluate(() => window.game.state);
-        }, { timeout: 5000 }).toBe('PAUSED'); // PAUSED is used during boss clear display
+        }, { timeout: 5000 }).toBe('BOSSKILLED'); 
         
         const bossClearVisible = await page.evaluate(() => window.game.ui.views.bossClear.container.visible);
         expect(bossClearVisible).toBe(true);

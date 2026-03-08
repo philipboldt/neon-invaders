@@ -19,5 +19,10 @@ This document tracks identified bugs that need to be addressed.
 *   **Fix:** Centralized `UI_BORDER_THICKNESS` in constants and implemented dynamic scaling based on the game's `heightFactor` in `UIManager`.
 *   **Status:** Resolved
 
+### 4. Boss Clear State Stuck
+*   **Description:** Tapping or pressing space on the Boss Clear screen didn't always resume the game.
+*   **Fix:** Refactored `UIManager` to explicitly update `game.state` during state transitions, resolving a conflict where `Game.js` was overwriting the state with `PAUSED`.
+*   **Status:** Resolved
+
 ## 🐛 Reported Bugs
 *(No active bugs reported)*

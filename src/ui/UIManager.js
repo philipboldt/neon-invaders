@@ -123,19 +123,22 @@ export class UIManager {
   showBossClear(level, rewards) {
     this.views.bossClear.setData(level, rewards);
     this.bossClearActive = true;
-    this.handleStateChange(CONSTANTS.GAME_STATES.BOSSKILLED);
+    this.game.state = CONSTANTS.GAME_STATES.BOSSKILLED;
+    this.handleStateChange(this.game.state);
   }
 
   hideBossClear() {
     this.bossClearActive = false;
-    this.handleStateChange(CONSTANTS.GAME_STATES.PLAYING);
+    this.game.state = CONSTANTS.GAME_STATES.PLAYING;
+    this.handleStateChange(this.game.state);
   }
 
   showNameInput(score) {
     this.pendingScore = score;
     this.nameInputActive = true;
     this.views.nameEntry.reset();
-    this.handleStateChange(CONSTANTS.GAME_STATES.HIGHSCORE);
+    this.game.state = CONSTANTS.GAME_STATES.HIGHSCORE;
+    this.handleStateChange(this.game.state);
   }
 
   saveHighscore() {

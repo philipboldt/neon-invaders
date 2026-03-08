@@ -59,6 +59,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **State Syncing Refactor:** Updated `UIManager` to be the authority for state transitions when dismissing overlays (Boss Clear, Name Entry). This ensures that `game.state` is always in sync with the visible UI, fixing a bug where the Boss Clear screen would get stuck. **[FIX]**
 - **Pure Canvas Touch System:** Completely removed all HTML/DOM touch buttons. Implemented a 3-tier vertical touch zone system directly in PixiJS. 
   - **Top 1/3:** Double-tap to exit.
   - **Middle 1/3:** Single-tap to pause/help.

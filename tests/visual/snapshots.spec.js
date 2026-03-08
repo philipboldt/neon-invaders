@@ -73,7 +73,7 @@ test.describe('Neon Invaders - Visual Snapshots', () => {
 
         await expect.poll(async () => {
             return await page.evaluate(() => window.game.state);
-        }, { timeout: 5000 }).toBe('PAUSED');
+        }, { timeout: 5000 }).toBe('BOSSKILLED');
 
         await page.evaluate(() => {
             window.game.app.ticker.stop();
