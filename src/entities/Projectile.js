@@ -14,11 +14,28 @@ export class Projectile extends BaseEntity {
   init(x, y, config) {
     this.x = x;
     this.y = y;
-    this.vx = config.vx || 0;
-    this.vy = config.vy || 0;
     this.w = config.w || this.w;
     this.h = config.h || this.h;
     this.toDestroy = false;
+    
+    // Default speeds based on type if not provided
+    if (config.vx !== undefined) {
+      this.vx = config.vx;
+    } else {
+      this.vx = 0;
+    }
+
+    if (config.vy !== undefined) {
+      this.vy = config.vy;
+    } else {
+      if (this.type === 'bullet') {
+        this.vy = CONSTANTS.BULLET_SPEED * this.game.heightFactor;
+      } else if (this.type === 'invaderBullet') {
+        this.vy = CONSTANTS.INVADER_BULLET_SPEED * this.game.heightFactor;
+      } else {
+        this.vy = 0;
+      }
+    }
     
     // Unique data for rockets
     this.targetX = config.targetX || 0;
