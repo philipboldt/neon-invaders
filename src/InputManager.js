@@ -97,7 +97,7 @@ export class InputManager {
 
     if (this.game.ui.els.restartBtn) {
       this.game.ui.els.restartBtn.addEventListener('click', () => {
-        this.game.startGame();
+        if (this.game.state === 'GAMEOVER') this.game.startGame();
       });
     }
 

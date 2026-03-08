@@ -14,25 +14,20 @@
     <div class="canvas-container">
       <canvas id="game"></canvas>
       
-      <!-- Only keeping minimal interactive HTML elements that require complex DOM input -->
-      <div id="help-screen" class="overlay hidden">
-        <!-- Kept as pointer-event sink, content is now in Pixi -->
-      </div>
+      <!-- Minimal HTML Overlays for complex input -->
+      <div id="help-screen" class="overlay hidden"></div>
 
       <div id="boss-clear-screen" class="overlay hidden">
         <h2 class="win">BOSS DEFEATED!</h2>
         <div class="reward-container">
           <p id="boss-level-text">LEVEL 10 COMPLETE</p>
-          <ul id="reward-list">
-            <li>+2 Max Health</li>
-            <li>+2 Max Damage</li>
-            <li>Right Pod Unlocked: Lightning</li>
-          </ul>
+          <ul id="reward-list"></ul>
         </div>
-        <p class="blink">Press SPACE or Tap to continue</p>
+        <p>Press SPACE or Tap to continue</p>
       </div>
 
       <div id="overlay" class="overlay hidden">
+        <!-- Name Input is kept in HTML for standard OS keyboard support -->
         <div id="name-input-container" class="hidden">
           <h3>NEW HIGH SCORE!</h3>
           <div class="arcade-input">
@@ -55,14 +50,9 @@
           <button id="save-name" class="touch-btn shoot">SAVE NAME</button>
           <p class="small">ARROWS to change · ENTER to save</p>
         </div>
-        
-        <p id="overlay-text">GAME OVER</p>
-        <button id="restart">Play again</button>
       </div>
 
-      <div id="start-screen" class="overlay" tabindex="0">
-        <!-- Content now in Pixi -->
-      </div>
+      <div id="start-screen" class="overlay"></div>
     </div>
 
     <div id="touch-controls" class="touch-controls">

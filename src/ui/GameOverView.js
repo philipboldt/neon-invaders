@@ -29,7 +29,12 @@ export class GameOverView extends BaseView {
 
     this.highscoreContainer = new PIXI.Container();
 
-    this.container.addChild(this.titleContainer, this.statusText, this.highscoreContainer);
+    this.restartPrompt = new PIXI.Text('Tap or SPACE to Play Again', {
+      fontFamily: 'Orbitron', fontSize: 18, fill: 0xFFFFFF, alpha: 0.8
+    });
+    this.restartPrompt.anchor.set(0.5, 0);
+
+    this.container.addChild(this.titleContainer, this.statusText, this.highscoreContainer, this.restartPrompt);
   }
 
   setResult(won) {
@@ -41,9 +46,16 @@ export class GameOverView extends BaseView {
 
   updateHighScores(scores) {
     this.highscoreContainer.removeChildren();
+    
+    const header = new PIXI.Text('HIGH SCORES', {
+      fontFamily: 'Orbitron', fontSize: 24, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
+    });
+    header.anchor.set(0.5, 0);
+    this.highscoreContainer.addChild(header);
+
     scores.forEach((entry, i) => {
       const entryContainer = new PIXI.Container();
-      entryContainer.position.set(0, i * 35);
+      entryContainer.position.set(0, 45 + i * 35);
       const color = i === 0 ? COLORS.invader2 : (i === 1 ? COLORS.text : COLORS.invader3);
       const style = {
         fontFamily: 'Orbitron', fontSize: 20, fontWeight: 'bold', fill: this.parseHexColor(color),
@@ -61,12 +73,14 @@ export class GameOverView extends BaseView {
     this.titleContainer.position.set(W / 2, 80);
     this.statusText.position.set(W / 2, 180);
     this.highscoreContainer.position.set(W / 2, 260);
+    this.restartPrompt.position.set(W / 2, H - 80);
   }
 
   update(now) {
     if (this.container.visible) {
       const scale = 1 + Math.sin(now / 500) * 0.03;
       this.titleContainer.scale.set(scale);
+      this.restartPrompt.alpha = 0.5 + Math.sin(now / 300) * 0.5;
     }
   }
 }
