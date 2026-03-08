@@ -113,11 +113,14 @@ export class UIManager {
   }
 
   createPixiHelp() {
+    this.helpPixiContainer.removeChildren();
+    
     const header = new PIXI.Text('UPGRADES', {
       fontFamily: 'Orbitron', fontSize: 24, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
     });
     header.anchor.set(0.5, 0);
     this.helpPixiContainer.addChild(header);
+
     const upgrades = [
       { name: 'Shield', color: COLORS.shield, desc: 'Permanent recharge system' },
       { name: 'Double', color: COLORS.double, desc: 'Add projectile (max 4), then +1 damage' },
@@ -126,24 +129,45 @@ export class UIManager {
       { name: 'Heal', color: COLORS.heal, desc: 'Restores 1 life' },
       { name: 'Points', color: COLORS.points, desc: 'Gives Level x 100 Bonus Points' }
     ];
+
     upgrades.forEach((u, i) => {
       const row = new PIXI.Container();
       row.position.set(-180, 45 + i * 30);
+
       const dot = new PIXI.Graphics();
       dot.beginFill(this.parseHexColor(u.color));
       dot.drawCircle(0, 8, 6);
       dot.endFill();
+      
       const label = new PIXI.Text(u.name + ':', { fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(u.color) });
       label.position.set(20, 0);
+
       const desc = new PIXI.Text(u.desc, { fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.8 });
       desc.position.set(100, 2);
+
       row.addChild(dot, label, desc);
       this.helpPixiContainer.addChild(row);
     });
-    const footer = new PIXI.Text('ESC: End Game · H or Tap to continue', {
-      fontFamily: 'Orbitron', fontSize: 12, fill: this.parseHexColor(COLORS.text), alpha: 0.7
+
+    const controlsHeader = new PIXI.Text('CONTROLS', {
+      fontFamily: 'Orbitron', fontSize: 18, fontWeight: 'bold', fill: this.parseHexColor(COLORS.invader3), letterSpacing: 2
     });
-    footer.anchor.set(0.5, 0); footer.position.set(0, 240);
+    controlsHeader.anchor.set(0.5, 0);
+    controlsHeader.position.set(0, 240);
+    this.helpPixiContainer.addChild(controlsHeader);
+
+    const controlsText = new PIXI.Text('ARROWS: Move · SPACE: Shoot\nH: Toggle Help · ESC: End Game', {
+      fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, align: 'center', alpha: 0.8, lineHeight: 20
+    });
+    controlsText.anchor.set(0.5, 0);
+    controlsText.position.set(0, 270);
+    this.helpPixiContainer.addChild(controlsText);
+
+    const footer = new PIXI.Text('Tap screen or Press H to continue', {
+      fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.9
+    });
+    footer.anchor.set(0.5, 0);
+    footer.position.set(0, 320);
     this.helpPixiContainer.addChild(footer);
   }
 
@@ -251,7 +275,6 @@ export class UIManager {
     if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
     if (this.helpPixiContainer) this.helpPixiContainer.position.set(game.W / 2, 220);
     if (this.startPromptText) {
-      // Position about 60 pixels above the player ship
       const playerY = game.H - 80;
       this.startPromptText.position.set(game.W / 2, playerY - 60);
     }

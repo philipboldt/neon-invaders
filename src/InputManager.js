@@ -54,16 +54,25 @@ export class InputManager {
         }
         return;
       }
-      if (e.code === 'KeyH' && this.game.gameRunning && this.game.ui.els.overlay.classList.contains('hidden')) {
-        this.game.isPaused = !this.game.isPaused;
-        this.game.ui.toggleHelp(this.game.isPaused);
+      // Toggle Help (Pause)
+      if (e.code === 'KeyH') {
+        if (this.game.state === CONSTANTS.GAME_STATES.PLAYING) {
+          this.game.state = CONSTANTS.GAME_STATES.PAUSED;
+          this.game.ui.toggleHelp(true);
+        } else if (this.game.state === CONSTANTS.GAME_STATES.PAUSED) {
+          this.game.state = CONSTANTS.GAME_STATES.PLAYING;
+          this.game.ui.toggleHelp(false);
+        }
         return;
       }
-      if (e.code === 'Escape' && this.game.gameRunning) {
+      
+      // End Game
+      if (e.code === 'Escape' && this.game.state === CONSTANTS.GAME_STATES.PLAYING) {
         this.game.endGame(false);
         return;
       }
-      if (this.game.isPaused) return;
+      
+      if (this.game.state !== CONSTANTS.GAME_STATES.PLAYING) return;
 
       if (e.code === 'KeyD' && this.game.gameRunning) {
         this.game.debugMode = !this.game.debugMode;
