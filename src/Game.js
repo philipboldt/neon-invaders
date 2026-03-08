@@ -81,14 +81,39 @@ export class Game {
   }
 
   updateDimensions() {
-    const rect = this.canvas.getBoundingClientRect();
-    const aspect = rect.height / rect.width;
+    // Get available space from the container
+    const container = this.canvas.parentElement;
+    const availW = container.clientWidth;
+    const availH = container.clientHeight;
     
-    this.W = 800; // Fixed logical width
-    // Logical height based on aspect ratio, clamped between 600 and 1400
-    this.H = Math.max(600, Math.min(1400, Math.floor(800 * aspect)));
+    // Base logical dimensions
+    this.W = 800;
     
-    // Multipliers for balancing
+    // Calculate the scale needed to fit a 4:3 box (800x600) into available space
+    const scale = Math.min(availW / 800, availH / 600);
+    
+    if (availW / 800 < availH / 600) {
+        // PORTRAIT (or very narrow): Width is the bottleneck
+        // Use full width, grow logical height to fill physical space
+        this.H = Math.floor(800 * (availH / availW));
+        // Clamp logical height to avoid extreme values
+        this.H = Math.min(1400, Math.max(600, this.H));
+        
+        // Physical size fills the width
+        this.canvas.style.width = `${availW}px`;
+        this.canvas.style.height = `${availH}px`;
+    } else {
+        // LANDSCAPE: Height is the bottleneck (letterbox case)
+        // Keep perfect 4:3 logical resolution
+        this.H = 600;
+        
+        // Physical width is proportional to height to keep 4:3
+        const physW = Math.floor(availH * (800 / 600));
+        this.canvas.style.width = `${physW}px`;
+        this.canvas.style.height = `${availH}px`;
+    }
+    
+    // Multiplier for balancing speeds based on how "tall" the screen is vs the 4:3 base
     this.heightFactor = this.H / 600;
   }
 

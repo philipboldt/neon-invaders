@@ -55,6 +55,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **Proportional 4:3 Scaling:** Implemented a new scaling strategy that ensures the game always uses the maximum possible height. In landscape mode, it fits a proportional 4:3 block into the viewport width (letterboxed on wide screens). In portrait mode, it fills the width and extends the vertical field of view, maintaining a consistent logical density. **[ENHANCED]**
 - **Test Suite Verification:** Verified the entire test suite using the `playwright-cli` skill. Resolved a flaky visual regression in the "Boss Destruction" test by increasing the `maxDiffPixelRatio` tolerance to 0.5, accounting for the inherent randomness of the particle-based stunning explosion effect. All 20 tests now pass consistently. **[FIX]**
 - **Agent Skill Migration:** Migrated the `playwright-cli` skill from the `.claude` directory to the workspace `.gemini/skills/` directory and removed the legacy `.claude` folder. **[CLEANUP]**
 - **MCP Configuration Update:** Removed the Playwright MCP server from the `.gemini/settings.json` configuration. **[CLEANUP]**
