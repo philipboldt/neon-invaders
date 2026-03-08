@@ -163,10 +163,14 @@ export class WeaponManager {
       if (Math.random() < CONSTANTS.PDC_CHANCE) {
         const bIdx = this.game.invaderBullets.indexOf(this.game.pdcTarget);
         if (bIdx > -1) {
+          if (this.game.pdcTarget.sprite) this.returnSprite('invaderBullet', this.game.pdcTarget.sprite);
           this.game.invaderBullets.splice(bIdx, 1);
         } else {
           const mIdx = this.game.bossMissiles.indexOf(this.game.pdcTarget);
-          if (mIdx > -1) this.game.bossMissiles.splice(mIdx, 1);
+          if (mIdx > -1) {
+            if (this.game.pdcTarget.sprite) this.returnSprite('bossMissile', this.game.pdcTarget.sprite);
+            this.game.bossMissiles.splice(mIdx, 1);
+          }
         }
         
         const hitX = this.game.pdcTarget.x + this.game.pdcTarget.w / 2;
