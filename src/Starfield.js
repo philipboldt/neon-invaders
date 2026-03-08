@@ -46,8 +46,4 @@ export class Starfield {
       });
     });
   }
-
-  draw(ctx) {
-    // Legacy draw, no longer needed
-  }
 }

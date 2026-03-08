@@ -324,8 +324,4 @@ export class ParticleSystem {
       }
     }
   }
-
-  draw(ctx) {
-    // Legacy draw, no longer needed
-  }
 }

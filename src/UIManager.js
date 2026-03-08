@@ -211,10 +211,6 @@ export class UIManager {
     if (this.debugText) this.debugText.position.set(game.W / 2, 72);
   }
 
-  drawHUD(ctx, gameState) {
-    // Legacy draw, no longer needed
-  }
-
   setShootActive(isActive) {
     if (this.els.btnShoot) this.els.btnShoot.classList.toggle('active', isActive);
   }
