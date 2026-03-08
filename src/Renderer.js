@@ -12,15 +12,18 @@ export class Renderer {
       this.game.gameWorld.alpha = isMenu ? 0.3 : 1.0;
     }
 
-    // Screen Shake via Pixi Stage offset
+    // Screen Shake via GameWorld offset (keeps UI stable)
     if (this.game.shake > 0) {
-      this.game.stage.position.set(
+      this.game.gameWorld.position.set(
         (Math.random() - 0.5) * this.game.shake * 2,
         (Math.random() - 0.5) * this.game.shake * 2
       );
     } else {
-      this.game.stage.position.set(0, 0);
+      this.game.gameWorld.position.set(0, 0);
     }
+
+    // Ensure stage is always at zero
+    this.game.stage.position.set(0, 0);
 
     // Logic-to-UI sync (dirty checks inside updateStats)
     this.game.ui.updateStats(this.game);
