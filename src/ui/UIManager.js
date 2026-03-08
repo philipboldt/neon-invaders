@@ -152,6 +152,12 @@ export class UIManager {
       const saved = localStorage.getItem('neonInvadersHighScores');
       if (saved) {
         scores = JSON.parse(saved);
+        // Migration: ensure every entry is an object with a score property
+        scores = scores.map(s => {
+          if (typeof s === 'number') return { name: '???' , score: s };
+          if (s && typeof s.score === 'number') return s;
+          return { name: '???' , score: 0 };
+        });
       } else {
         scores = [{ name: 'NEO', score: 1000 }, { name: 'TRN', score: 500 }, { name: 'FLY', score: 250 }];
       }
