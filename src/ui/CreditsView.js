@@ -99,8 +99,12 @@ export class CreditsView extends BaseView {
     // Update mask to match current viewport bounds
     this.viewportMask.clear();
     this.viewportMask.beginFill(0x000000);
-    // Draw mask from just below the marquee to just above the footer
-    this.viewportMask.drawRect(0, 80, W, H - 160);
+    
+    // The "Vanishing Point": Start the mask 180px down to clear the Marquee title
+    // and stop 100px from the bottom to clear the footer prompt.
+    const maskTop = 180;
+    const maskBottom = H - 100;
+    this.viewportMask.drawRect(0, maskTop, W, maskBottom - maskTop);
     this.viewportMask.endFill();
 
     if (!this.isLoaded) this.resetScroll();
