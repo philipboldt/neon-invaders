@@ -13,7 +13,7 @@ export class InputManager {
           this.game.startGame();
           break;
         case 'GAMEOVER':
-          this.game.resetState();
+          this.game.restartGame();
           break;
         case 'PAUSED':
           this.game.togglePause();
@@ -46,7 +46,7 @@ export class InputManager {
 
         case 'GAMEOVER':
           if (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape') {
-            this.game.resetState();
+            this.game.restartGame();
           }
           break;
 
@@ -132,7 +132,7 @@ export class InputManager {
           this.game.startGame();
           break;
         case 'GAMEOVER':
-          this.game.resetState();
+          this.game.restartGame();
           break;
         case 'PLAYING':
           this.game.spacePressed = !this.game.spacePressed;

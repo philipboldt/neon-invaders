@@ -210,6 +210,11 @@ export class Game {
     this.ui.hideScreens();
   }
 
+  restartGame() {
+    this.resetState();
+    this.startGame();
+  }
+
   togglePause() {
     if (this.state === CONSTANTS.GAME_STATES.PAUSED) {
       this.state = this.previousState || CONSTANTS.GAME_STATES.PLAYING;
