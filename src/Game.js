@@ -10,6 +10,7 @@ import { EntityManager } from './EntityManager.js';
 import { CollisionManager } from './CollisionManager.js';
 import { Renderer } from './Renderer.js';
 import { drawRect } from './utils.js';
+import { Upgrade } from './entities/Upgrade.js';
 
 export class Game {
   constructor(canvas) {
@@ -252,23 +253,9 @@ export class Game {
     });
     if (availableTypes.length === 0) return;
     const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-    const u = {
-      x: x + CONSTANTS.INVADER_W / 2 - CONSTANTS.UPGRADE_W / 2, y: y,
-      w: CONSTANTS.UPGRADE_W, h: CONSTANTS.UPGRADE_H, type, level: this.level 
-    };
-    u.sprite = new PIXI.Sprite(this.sprites.getTexture(`upg_${type}`));
-    u.sprite.anchor.set(0.5);
-    u.sprite.position.set(u.x + u.w / 2, u.y + u.h / 2);
-    this.entityLayer.addChild(u.sprite);
-    if (type === 'points') this.addPointsTextToUpgrade(u);
-    this.upgrades.push(u);
-  }
-
-  addPointsTextToUpgrade(u) {
-    const amount = u.level * CONSTANTS.POINTS_MULTIPLIER;
-    const textStr = amount >= 1000 ? (amount / 1000).toFixed(1) + 'k' : amount;
-    const text = new PIXI.Text(textStr, { fontFamily: 'Orbitron', fontSize: 10, fontWeight: 'bold', fill: 0x000000, align: 'center' });
-    text.anchor.set(0.5); text.position.set(0, 1); u.sprite.addChild(text);
+    
+    const upgrade = new Upgrade(this, x, y, type, this.level);
+    this.upgrades.push(upgrade);
   }
 
   updateEntities(now) {
