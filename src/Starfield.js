@@ -7,7 +7,7 @@ export class Starfield {
     this.game = game;
     this.layers = CONSTANTS.STAR_LAYERS.map(l => ({ ...l, stars: [] }));
     this.container = new PIXI.Container();
-    this.game.bgLayer.addChild(this.container);
+    this.game.fullScreenBgLayer.addChild(this.container);
     this.init();
   }
 

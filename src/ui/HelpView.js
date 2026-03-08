@@ -8,19 +8,6 @@ export class HelpView extends BaseView {
   }
 
   init() {
-    this.titleContainer = new PIXI.Container();
-    const titleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
-      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
-    });
-    titleText.anchor.set(0.5, 0);
-    const versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
-    });
-    versionText.anchor.set(0.5, 0);
-    versionText.position.set(0, 55);
-    this.titleContainer.addChild(titleText, versionText);
-
     this.content = new PIXI.Container();
     const header = new PIXI.Text('UPGRADES', {
       fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_HEADER, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
@@ -30,7 +17,7 @@ export class HelpView extends BaseView {
 
     const upgrades = [
       { name: 'Shield', color: COLORS.shield, desc: 'Permanent recharge system' },
-      { name: 'Double', color: COLORS.double, desc: 'Add projectile (max 4), then +1 damage' },
+      { name: 'Damage', color: COLORS.double, desc: 'Add projectile (max 4), then +1 damage' },
       { name: 'Rocket', color: COLORS.rocket, desc: 'Auto-targeting missile' },
       { name: 'Pierce', color: COLORS.pierce, desc: 'Shot passes through 1 enemy on kill' },
       { name: 'Heal', color: COLORS.heal, desc: 'Restores 1 life' },
@@ -81,18 +68,14 @@ export class HelpView extends BaseView {
     footer.position.set(0, 320);
     this.content.addChild(footer);
 
-    this.container.addChild(this.titleContainer, this.content);
+    this.container.addChild(this.content);
   }
 
   updateLayout(W, H) {
-    this.titleContainer.position.set(W / 2, CONSTANTS.UI_HEADER_Y);
     this.content.position.set(W / 2, CONSTANTS.UI_HIGHSCORE_Y);
   }
 
   update(now) {
-    if (this.container.visible) {
-      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
-      this.titleContainer.scale.set(scale);
-    }
+    // Title animation moved to global marquee
   }
 }

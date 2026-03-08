@@ -31,6 +31,8 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Dynamic Arcade Marquee:** On tall mobile screens, the game's title now acts as a permanent, glowing "arcade marquee" resting in the top letterbox space. The inner game border is removed to seamlessly blend the gameplay area into the full-screen animated starfield.
+- **"Canvas in Canvas" Responsive Layout:** Overhauled the screen scaling logic. Implemented a nested viewport system to flawlessly handle ultra-tall mobile screens. The game area is mathematically capped and centered to preserve gameplay balance, while a full-screen background layer handles the animated starfield and touch inputs without letterboxing. **[NEW]**
 - **Refined Pierce Logic:** Overhauled the "Pierce" upgrade. Shots now only pass through standard invaders if the hit is fatal. Bosses/Mini-Bosses remain solid targets. Includes visual feedback via a light-purple bullet tint. **[BALANCED]**
 - **Vulnerable Sidepods:** Implemented full collision detection for sidepods. Pods now have individual hitboxes and 3 HP, protected by the player's shield. **[NEW]**
 - **PixiJS Stabilization:** Reverted to stable defaults for resolution and density, resolving "Postage Stamp" rendering and auto-detection errors on high-DPI monitors. **[FIX]**

@@ -4,6 +4,8 @@ import { BaseView } from './BaseView.js';
 export class ControlOverlayView extends BaseView {
   constructor(game) {
     super(game);
+    this.game.uiLayer.removeChild(this.container);
+    this.game.fullScreenBgLayer.addChild(this.container);
     this.init();
   }
 

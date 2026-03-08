@@ -8,19 +8,6 @@ export class BossClearView extends BaseView {
   }
 
   init() {
-    this.titleContainer = new PIXI.Container();
-    const titleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
-      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
-    });
-    titleText.anchor.set(0.5, 0);
-    const versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
-    });
-    versionText.anchor.set(0.5, 0);
-    versionText.position.set(0, 55);
-    this.titleContainer.addChild(titleText, versionText);
-
     this.content = new PIXI.Container();
     this.header = new PIXI.Text('BOSS DEFEATED!', {
       fontFamily: 'Orbitron', fontSize: 32, fontWeight: 'bold', fill: this.parseHexColor(COLORS.invader2),
@@ -44,7 +31,7 @@ export class BossClearView extends BaseView {
     this.prompt.position.set(0, 240);
 
     this.content.addChild(this.header, this.levelText, this.rewardContainer, this.prompt);
-    this.container.addChild(this.titleContainer, this.content);
+    this.container.addChild(this.content);
   }
 
   setData(level, rewards) {
@@ -62,14 +49,11 @@ export class BossClearView extends BaseView {
   }
 
   updateLayout(W, H) {
-    this.titleContainer.position.set(W / 2, 80);
     this.content.position.set(W / 2, 180);
   }
 
   update(now) {
     if (this.container.visible) {
-      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
-      this.titleContainer.scale.set(scale);
       this.prompt.alpha = 0.5 + Math.sin(now / CONSTANTS.ANIM_BLINK_SPEED) * 0.5;
     }
   }

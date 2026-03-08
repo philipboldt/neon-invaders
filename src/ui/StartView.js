@@ -8,19 +8,6 @@ export class StartView extends BaseView {
   }
 
   init() {
-    this.titleContainer = new PIXI.Container();
-    this.titleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
-      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
-    });
-    this.titleText.anchor.set(0.5, 0);
-    this.versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
-    });
-    this.versionText.anchor.set(0.5, 0);
-    this.versionText.position.set(0, 55);
-    this.titleContainer.addChild(this.titleText, this.versionText);
-
     this.highscoreContainer = new PIXI.Container();
     this.startPrompt = new PIXI.Text('Press SPACE or Tap to start', {
       fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_PROMPT, fill: this.parseHexColor(COLORS.text),
@@ -28,7 +15,7 @@ export class StartView extends BaseView {
     });
     this.startPrompt.anchor.set(0.5, 0);
 
-    this.container.addChild(this.titleContainer, this.highscoreContainer, this.startPrompt);
+    this.container.addChild(this.highscoreContainer, this.startPrompt);
   }
 
   updateHighScores(scores) {
@@ -56,7 +43,6 @@ export class StartView extends BaseView {
   }
 
   updateLayout(W, H) {
-    this.titleContainer.position.set(W / 2, CONSTANTS.UI_HEADER_Y);
     this.highscoreContainer.position.set(W / 2, CONSTANTS.UI_HIGHSCORE_Y);
     const playerY = H - CONSTANTS.PLAYER_Y_OFFSET;
     this.startPrompt.position.set(W / 2, playerY - CONSTANTS.UI_PROMPT_Y_OFFSET);
@@ -64,9 +50,6 @@ export class StartView extends BaseView {
 
   update(now) {
     if (this.container.visible) {
-      // Breathing title
-      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
-      this.titleContainer.scale.set(scale);
       // Blinking prompt
       this.startPrompt.alpha = 0.5 + Math.sin(now / CONSTANTS.ANIM_BLINK_SPEED) * 0.5;
     }

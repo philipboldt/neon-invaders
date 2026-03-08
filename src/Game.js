@@ -28,8 +28,8 @@ export class Game {
     try {
       this.app = new PIXI.Application({
         view: canvas,
-        width: this.W,
-        height: this.H,
+        width: this.appW,
+        height: this.appH,
         background: CONSTANTS.BG_COLOR,
         antialias: true,
         resolution: 1, 
@@ -43,6 +43,17 @@ export class Game {
     // Create Layers (Containers) with explicit Z-Index sorting
     this.stage = this.app.stage;
     this.stage.sortableChildren = true;
+
+    // Full Screen Background Layer (for Starfield & Controls)
+    this.fullScreenBgLayer = new PIXI.Container();
+    this.fullScreenBgLayer.zIndex = CONSTANTS.Z_BG;
+    this.stage.addChild(this.fullScreenBgLayer);
+    
+    // Game Container (The inner viewport)
+    this.gameContainer = new PIXI.Container();
+    this.gameContainer.y = this.gameOffsetY;
+    this.gameContainer.sortableChildren = true;
+    this.stage.addChild(this.gameContainer);
     
     // 1. Game World (The Dimmer Layer)
     this.gameWorld = new PIXI.Container();
@@ -67,7 +78,7 @@ export class Game {
     this.uiLayer = new PIXI.Container();
     this.uiLayer.zIndex = CONSTANTS.Z_UI;
 
-    this.stage.addChild(this.gameWorld, this.uiLayer);
+    this.gameContainer.addChild(this.gameWorld, this.uiLayer);
 
     this.invaders = [];
     this.bullets = [];
@@ -80,7 +91,7 @@ export class Game {
     this.particles = new ParticleSystem(this);
     this.player = new Player(this.W, this.H, this);
     this.sprites = new SpriteManager(this.app); 
-    this.starfield = new Starfield(this.W, this.H, this);
+    this.starfield = new Starfield(this.appW, this.appH, this);
     this.inputs = new InputManager(this);
     this.weapons = new WeaponManager(this);
     this.entities = new EntityManager(this);
@@ -103,26 +114,27 @@ export class Game {
     const container = this.canvas.parentElement;
     const availW = container.clientWidth;
     const availH = container.clientHeight;
-    this.W = CONSTANTS.LOGICAL_WIDTH;
-    const scale = Math.min(availW / CONSTANTS.LOGICAL_WIDTH, availH / CONSTANTS.LOGICAL_HEIGHT_MIN);
     
-    if (availW / CONSTANTS.LOGICAL_WIDTH < availH / CONSTANTS.LOGICAL_HEIGHT_MIN) {
-        this.H = Math.floor(CONSTANTS.LOGICAL_WIDTH * (availH / availW));
-        this.H = Math.min(CONSTANTS.LOGICAL_HEIGHT_MAX, Math.max(CONSTANTS.LOGICAL_HEIGHT_MIN, this.H));
-        this.canvas.style.width = `${availW}px`;
-        this.canvas.style.height = `${availH}px`;
-    } else {
-        this.H = CONSTANTS.LOGICAL_HEIGHT_MIN;
-        const physW = Math.floor(availH * CONSTANTS.ASPECT_RATIO_BASE);
-        this.canvas.style.width = `${physW}px`;
-        this.canvas.style.height = `${availH}px`;
-    }
+    const scale = availW / CONSTANTS.LOGICAL_WIDTH;
+    
+    this.appW = CONSTANTS.LOGICAL_WIDTH;
+    this.appH = availH / scale;
+    
+    this.W = CONSTANTS.LOGICAL_WIDTH;
+    this.H = Math.min(this.appH, CONSTANTS.LOGICAL_HEIGHT_MAX);
+    this.H = Math.max(this.H, CONSTANTS.LOGICAL_HEIGHT_MIN);
+    
+    this.gameOffsetY = (this.appH - this.H) / 2;
     this.heightFactor = this.H / CONSTANTS.LOGICAL_HEIGHT_MIN;
+
+    this.canvas.style.width = `${availW}px`;
+    this.canvas.style.height = `${availH}px`;
   }
 
   handleResize() {
     this.updateDimensions();
-    if (this.app) this.app.renderer.resize(this.W, this.H);
+    if (this.app) this.app.renderer.resize(this.appW, this.appH);
+    if (this.gameContainer) this.gameContainer.y = this.gameOffsetY;
     if (this.player) {
       this.player.W = this.W;
       this.player.H = this.H;
@@ -130,8 +142,8 @@ export class Game {
       this.player.updateSpritePositions();
     }
     if (this.starfield) {
-      this.starfield.W = this.W;
-      this.starfield.H = this.H;
+      this.starfield.W = this.appW;
+      this.starfield.H = this.appH;
     }
     if (this.ui) this.ui.updateLayout(this);
   }

@@ -121,21 +121,21 @@ export class InputManager {
     const px = e.clientX - rect.left;
     const py = e.clientY - rect.top;
     // Map to logical system
-    const lx = (px / rect.width) * this.game.W;
-    const ly = (py / rect.height) * this.game.H;
+    const lx = (px / rect.width) * this.game.appW;
+    const ly = (py / rect.height) * this.game.appH;
     return { lx, ly };
   }
 
   getZone(coords) {
     const { lx, ly } = coords;
-    const { H, W } = this.game;
+    const { appH, appW } = this.game;
     
-    if (ly < H * 0.33) return 'TOP';
-    if (ly < H * 0.66) return 'MIDDLE';
+    if (ly < appH * 0.33) return 'TOP';
+    if (ly < appH * 0.66) return 'MIDDLE';
     
     // Bottom 1/3
-    if (lx < W * 0.33) return 'BOTTOM_LEFT';
-    if (lx < W * 0.66) return 'BOTTOM_CENTER';
+    if (lx < appW * 0.33) return 'BOTTOM_LEFT';
+    if (lx < appW * 0.66) return 'BOTTOM_CENTER';
     return 'BOTTOM_RIGHT';
   }
 

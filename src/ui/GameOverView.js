@@ -8,19 +8,6 @@ export class GameOverView extends BaseView {
   }
 
   init() {
-    this.titleContainer = new PIXI.Container();
-    const titleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
-      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
-    });
-    titleText.anchor.set(0.5, 0);
-    const versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
-    });
-    versionText.anchor.set(0.5, 0);
-    versionText.position.set(0, 55);
-    this.titleContainer.addChild(titleText, versionText);
-
     this.statusText = new PIXI.Text('GAME OVER', {
       fontFamily: 'Orbitron', fontSize: 40, fontWeight: 'bold', fill: this.parseHexColor(COLORS.textRed),
       dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.textRed), dropShadowBlur: 10
@@ -34,7 +21,7 @@ export class GameOverView extends BaseView {
     });
     this.restartPrompt.anchor.set(0.5, 0);
 
-    this.container.addChild(this.titleContainer, this.statusText, this.highscoreContainer, this.restartPrompt);
+    this.container.addChild(this.statusText, this.highscoreContainer, this.restartPrompt);
   }
 
   setResult(won) {
@@ -70,7 +57,6 @@ export class GameOverView extends BaseView {
   }
 
   updateLayout(W, H) {
-    this.titleContainer.position.set(W / 2, 80);
     this.statusText.position.set(W / 2, 180);
     this.highscoreContainer.position.set(W / 2, 260);
     this.restartPrompt.position.set(W / 2, H - 80);
@@ -78,8 +64,6 @@ export class GameOverView extends BaseView {
 
   update(now) {
     if (this.container.visible) {
-      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
-      this.titleContainer.scale.set(scale);
       this.restartPrompt.alpha = 0.5 + Math.sin(now / CONSTANTS.ANIM_BLINK_SPEED) * 0.5;
     }
   }

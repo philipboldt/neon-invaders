@@ -31,6 +31,21 @@ export class UIManager {
     this.watermarkContainer.addChild(waterTitle, waterVer);
     this.game.bgLayer.addChild(this.watermarkContainer);
 
+    // Global Marquee (Title & Version)
+    this.marqueeContainer = new PIXI.Container();
+    const marqueeTitle = new PIXI.Text(CONSTANTS.TITLE, {
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
+      dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: CONSTANTS.GLOW_BLUR, dropShadowDistance: 0
+    });
+    marqueeTitle.anchor.set(0.5, 0);
+    const marqueeVer = new PIXI.Text(CONSTANTS.VERSION, {
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
+    });
+    marqueeVer.anchor.set(0.5, 0);
+    marqueeVer.position.set(0, CONSTANTS.FONT_SIZE_TITLE + 5);
+    this.marqueeContainer.addChild(marqueeTitle, marqueeVer);
+    this.game.fullScreenBgLayer.addChild(this.marqueeContainer);
+
     // Initialize View Modules
     this.views.overlay = new ControlOverlayView(game);
     this.views.hud = new HudView(game);
@@ -71,9 +86,6 @@ export class UIManager {
       this.views.hud.show();
     }
 
-    // Watermark visibility
-    this.watermarkContainer.visible = (newState === CONSTANTS.GAME_STATES.PLAYING);
-
     // Control Overlay visibility & state
     this.views.overlay.update(newState);
 
@@ -90,6 +102,9 @@ export class UIManager {
     if (this.views.gameOver.highscoreContainer) {
       this.views.gameOver.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.GAMEOVER);
     }
+
+    // Update global marquee visibility and layout whenever state changes
+    this.updateLayout(this.game);
 
     // Show specific view
     switch(newState) {
@@ -115,18 +130,52 @@ export class UIManager {
   }
 
   updateLayout(game) {
-    Object.values(this.views).forEach(v => v.updateLayout(game.W, game.H));
-    if (this.watermarkContainer) this.watermarkContainer.position.set(CONSTANTS.UI_WATERMARK_X, game.H - CONSTANTS.UI_WATERMARK_Y_OFFSET);
+    Object.values(this.views).forEach(v => {
+      if (v === this.views.overlay) {
+        v.updateLayout(game.appW, game.appH);
+      } else {
+        v.updateLayout(game.W, game.H);
+      }
+    });
+
+    if (this.watermarkContainer) {
+      this.watermarkContainer.position.set(CONSTANTS.UI_WATERMARK_X, game.H - CONSTANTS.UI_WATERMARK_Y_OFFSET);
+      // Hide watermark in letterbox mode (since we have the global marquee)
+      this.watermarkContainer.visible = (game.state === CONSTANTS.GAME_STATES.PLAYING) && (game.gameOffsetY <= 100);
+    }
     
     if (this.borderGraphics) {
       this.borderGraphics.clear();
-      const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
-      this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
-      this.borderGraphics.drawRect(0, 0, game.W, game.H);
+      // Only draw the border if we are NOT in letterboxed mode
+      if (game.gameOffsetY === 0) {
+        const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
+        this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
+        this.borderGraphics.drawRect(0, 0, game.W, game.H);
+      }
     }
 
     if (this.controlsText) {
       this.controlsText.position.set(game.W / 2, game.H - 10);
+    }
+
+    // Global Marquee positioning and visibility logic
+    if (this.marqueeContainer) {
+      const isMenuState = [
+        CONSTANTS.GAME_STATES.START, 
+        CONSTANTS.GAME_STATES.PAUSED, 
+        CONSTANTS.GAME_STATES.GAMEOVER, 
+        CONSTANTS.GAME_STATES.BOSSKILLED
+      ].includes(game.state);
+
+      if (game.gameOffsetY > 100) {
+        // Space available: Show permanently in the letterbox above the game
+        this.marqueeContainer.visible = true;
+        this.marqueeContainer.position.set(game.appW / 2, game.gameOffsetY / 2 - 30);
+      } else {
+        // No space: Only show during specific menus inside the active game area
+        this.marqueeContainer.visible = isMenuState;
+        this.marqueeContainer.position.set(game.appW / 2, game.gameOffsetY + CONSTANTS.UI_HEADER_Y);
+      }
     }
   }
 
@@ -201,6 +250,10 @@ export class UIManager {
   }
 
   update(now) {
+    if (this.marqueeContainer && this.marqueeContainer.visible) {
+      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
+      this.marqueeContainer.scale.set(scale);
+    }
     Object.values(this.views).forEach(v => {
       if (v.update) v.update(now);
     });
