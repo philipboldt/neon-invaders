@@ -10,17 +10,16 @@ export class InputManager {
       
       switch(this.game.state) {
         case 'START':
-        case 'GAMEOVER':
           this.game.startGame();
+          break;
+        case 'GAMEOVER':
+          this.game.resetState();
           break;
         case 'PAUSED':
           this.game.togglePause();
           break;
         case 'BOSSKILLED':
           this.game.ui.hideBossClear();
-          break;
-        case 'HIGHSCORE':
-          // HIGHSCORE clicks could be handled inside NameEntryView if we add buttons later
           break;
       }
     }, { capture: true });
@@ -29,7 +28,7 @@ export class InputManager {
     document.addEventListener('keydown', (e) => {
       const { state } = this.game;
 
-      // Global Keys (Working in multiple states)
+      // H Key is the universal Help toggle
       if (e.code === 'KeyH') {
         if (state === 'PLAYING' || state === 'PAUSED' || state === 'START') {
           this.game.togglePause();
@@ -40,9 +39,14 @@ export class InputManager {
       // State-Specific Routing
       switch(state) {
         case 'START':
-        case 'GAMEOVER':
           if (e.code === 'Space' || e.code === 'Enter') {
             this.game.startGame();
+          }
+          break;
+
+        case 'GAMEOVER':
+          if (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape') {
+            this.game.resetState();
           }
           break;
 
@@ -64,8 +68,10 @@ export class InputManager {
           break;
 
         case 'PAUSED':
-          if (e.code === 'Space' || e.code === 'KeyH' || e.code === 'Escape') {
-            this.game.togglePause();
+          if (e.code === 'Space' || e.code === 'Enter') {
+            this.game.togglePause(); // Resume
+          } else if (e.code === 'Escape') {
+            this.game.endGame(false); // Quit from pause
           }
           break;
 
@@ -92,7 +98,7 @@ export class InputManager {
       }
     });
 
-    // Touch Button Handlers (Maintain HTML buttons for reliability)
+    // Touch Button Handlers
     const handleTouch = (id, action) => {
       const btn = document.getElementById(id);
       if (!btn) return;
@@ -119,12 +125,14 @@ export class InputManager {
     });
 
     handleTouch('btn-shoot', (active, e) => {
-      if (!active) return; // Only trigger on down
+      if (!active) return;
       
       switch(this.game.state) {
         case 'START':
-        case 'GAMEOVER':
           this.game.startGame();
+          break;
+        case 'GAMEOVER':
+          this.game.resetState();
           break;
         case 'PLAYING':
           this.game.spacePressed = !this.game.spacePressed;
@@ -140,7 +148,7 @@ export class InputManager {
     });
 
     handleTouch('btn-pause', (active) => {
-      if (active && this.game.state === 'PLAYING') {
+      if (active && (this.game.state === 'PLAYING' || this.game.state === 'PAUSED')) {
         this.game.togglePause();
       }
     });

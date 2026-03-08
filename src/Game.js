@@ -222,6 +222,7 @@ export class Game {
   }
 
   endGame(won) {
+    this.isPaused = false;
     this.spacePressed = false;
     this.ui.setShootActive(false);
     
