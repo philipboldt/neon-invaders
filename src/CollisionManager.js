@@ -15,11 +15,26 @@ export class CollisionManager {
         if (this.rectIntersect(b, inv)) {
           this.game.particles.spawnDamageText(inv.x + inv.w / 2, inv.y + inv.h / 2, this.game.playerDamage);
           
-          if (inv.takeDamage(this.game.playerDamage)) {
+          const isFatal = inv.takeDamage(this.game.playerDamage);
+          if (isFatal) {
             this.handleInvaderDeath(inv, i);
           }
           
-          if (!this.game.hasPierce) {
+          // PIERCE LOGIC:
+          // 1. Never pierce bosses
+          // 2. Only pierce if hit was fatal
+          // 3. Only pierce if bullet has pierce capability remaining
+          let shouldDeactivate = true;
+          if (this.game.hasPierce && b.pierceCount > 0 && isFatal && !inv.isBoss) {
+            b.pierceCount--;
+            shouldDeactivate = false;
+            // Update visual if pierce is spent
+            if (b.pierceCount === 0 && b.sprite) {
+              b.sprite.tint = 0xFFFFFF;
+            }
+          }
+
+          if (shouldDeactivate) {
             b.deactivate();
             this.game.bullets.splice(j, 1);
           }

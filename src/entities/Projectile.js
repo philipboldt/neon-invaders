@@ -14,8 +14,8 @@ export class Projectile extends BaseEntity {
   init(x, y, config) {
     this.x = x;
     this.y = y;
-    this.w = config.w || this.w;
-    this.h = config.h || this.h;
+    this.w = config.w || (this.type === 'bullet' ? CONSTANTS.BULLET_W : 0);
+    this.h = config.h || (this.type === 'bullet' ? CONSTANTS.BULLET_H : 0);
     this.toDestroy = false;
     
     // Default speeds based on type if not provided
@@ -37,10 +37,10 @@ export class Projectile extends BaseEntity {
       }
     }
     
-    // Unique data for rockets
     this.targetX = config.targetX || 0;
     this.targetY = config.targetY || 0;
     this.distanceTraveled = 0;
+    this.pierceCount = config.pierceCount || 0;
 
     // Get/Reset sprite from pool
     if (!this.sprite) {
@@ -49,9 +49,18 @@ export class Projectile extends BaseEntity {
     this.sprite.visible = true;
     this.syncSprite();
     
+    // Visual feedback for piercing bullets
+    if (this.type === 'bullet') {
+      this.sprite.tint = (this.pierceCount > 0) ? this.parseColor(COLORS.pierceBullet) : 0xFFFFFF;
+    }
+
     if (this.type === 'bossMissile') {
       this.sprite.rotation = (config.angle || 0) - Math.PI / 2;
     }
+  }
+
+  parseColor(hex) {
+    return parseInt(hex.replace('#', '0x'));
   }
 
   update(dt = 1) {

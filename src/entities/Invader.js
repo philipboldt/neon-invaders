@@ -3,7 +3,9 @@ import { COLORS, CONSTANTS } from '../constants.js';
 
 export class Invader extends BaseEntity {
   constructor(game, x, y, config) {
-    super(game, x, y, config.w, config.h);
+    const w = config.w || CONSTANTS.INVADER_W;
+    const h = config.h || CONSTANTS.INVADER_H;
+    super(game, x, y, w, h);
     this.color = config.color;
     this.maxHp = config.maxHp;
     this.hp = config.hp;

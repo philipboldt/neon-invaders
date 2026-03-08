@@ -57,7 +57,7 @@ export class WeaponManager {
         this.game.bullets.push(new Projectile(this.game, 
           startX + i * spread, this.game.player.y, 
           'bullet', 
-          { w: CONSTANTS.BULLET_W, h: CONSTANTS.BULLET_H }
+          { w: CONSTANTS.BULLET_W, h: CONSTANTS.BULLET_H, pierceCount: this.game.hasPierce ? 1 : 0 }
         ));
       }
     }

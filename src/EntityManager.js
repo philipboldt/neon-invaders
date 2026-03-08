@@ -5,6 +5,14 @@ import { Projectile } from './entities/Projectile.js';
 export class EntityManager {
   constructor(game) {
     this.game = game;
+    this.Projectile = Projectile;
+    this.Invader = Invader;
+  }
+
+  spawnInvader(x, y, config) {
+    const inv = new Invader(this.game, x, y, config);
+    this.game.invaders.push(inv);
+    return inv;
   }
 
   initInvaders() {

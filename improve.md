@@ -11,6 +11,7 @@ This document tracks identified areas for future enhancement, UX refinement, and
 ### 2. Gameplay Tuning
 *   **Difficulty Scaling:** Refine the invader speed and fire rate curves for a smoother difficulty increase.
 *   **Boss Patterns:** Add more varied attack patterns for Level 10+ bosses.
+*   **Stackable Pierce:** Allow players to collect multiple Pierce upgrades to increase the number of enemies a single fatal shot can pass through (e.g., Pierce Level 1 = 1 enemy, Level 2 = 2 enemies).
 
 ### 3. Input & Controls
 *   **Gamepad Support:** Implement the standard Web Gamepad API for controller support.

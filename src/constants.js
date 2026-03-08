@@ -10,6 +10,7 @@ export const COLORS = {
   rocket: '#ff6600',
   heal: '#ff3366',
   pierce: '#bc13fe',
+  pierceBullet: '#e0aaff',
   points: '#ffff00',
   boss: '#ff0844',
   bg: '#0d0d14',
