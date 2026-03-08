@@ -6,6 +6,7 @@ import { GameOverView } from './GameOverView.js';
 import { BossClearView } from './BossClearView.js';
 import { NameEntryView } from './NameEntryView.js';
 import { ControlOverlayView } from './ControlOverlayView.js';
+import { QuitConfirmView } from './QuitConfirmView.js';
 
 export class UIManager {
   constructor() {
@@ -38,6 +39,7 @@ export class UIManager {
     this.views.gameOver = new GameOverView(game);
     this.views.bossClear = new BossClearView(game);
     this.views.nameEntry = new NameEntryView(game);
+    this.views.quitConfirm = new QuitConfirmView(game);
 
     // In-Canvas Border & Global Instructions
     this.borderGraphics = new PIXI.Graphics();
@@ -105,6 +107,9 @@ export class UIManager {
         break;
       case CONSTANTS.GAME_STATES.HIGHSCORE:
         this.views.nameEntry.show();
+        break;
+      case CONSTANTS.GAME_STATES.QUIT_CONFIRM:
+        this.views.quitConfirm.show();
         break;
     }
   }

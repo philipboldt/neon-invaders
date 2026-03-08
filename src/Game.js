@@ -336,8 +336,7 @@ export class Game {
       this.entities.bossShoot(now);
       this.collisions.checkCollisions(now);
       this.particles.update(dt);
-    } else if (this.state === CONSTANTS.GAME_STATES.GAMEOVER || this.state === CONSTANTS.GAME_STATES.PAUSED || this.state === CONSTANTS.GAME_STATES.START) {
-      // Just keep things visually synced
+    } else if (this.state === CONSTANTS.GAME_STATES.GAMEOVER || this.state === CONSTANTS.GAME_STATES.PAUSED || this.state === CONSTANTS.GAME_STATES.START || this.state === CONSTANTS.GAME_STATES.QUIT_CONFIRM) {
       this.player.updateSpritePositions();
     }
     

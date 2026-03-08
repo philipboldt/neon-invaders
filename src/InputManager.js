@@ -53,6 +53,8 @@ export class InputManager {
     // 2. Keyboard Router (Unified with State)
     document.addEventListener('keydown', (e) => {
       const { state } = this.game;
+      
+      // H Key is Universal Pause Toggle
       if (e.code === 'KeyH') {
         if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED || state === GAME_STATES.START) {
           this.game.togglePause();
@@ -71,12 +73,28 @@ export class InputManager {
           if (e.code === 'ArrowLeft') this.game.player.dir = -1;
           if (e.code === 'ArrowRight') this.game.player.dir = 1;
           if (e.code === 'Space') { this.game.spacePressed = true; this.game.ui.setShootActive(true); e.preventDefault(); }
-          if (e.code === 'Escape') this.game.endGame(false);
+          if (e.code === 'Escape') {
+            this.game.previousState = GAME_STATES.PLAYING;
+            this.game.state = GAME_STATES.QUIT_CONFIRM;
+            this.game.ui.handleStateChange(this.game.state);
+          }
           if (e.code === 'KeyD') { this.game.debugMode = !this.game.debugMode; this.game.ui.updateStats(this.game); }
           break;
         case GAME_STATES.PAUSED:
           if (e.code === 'Space' || e.code === 'Enter') this.game.togglePause();
-          else if (e.code === 'Escape') this.game.endGame(false);
+          else if (e.code === 'Escape') {
+            this.game.previousState = GAME_STATES.PAUSED;
+            this.game.state = GAME_STATES.QUIT_CONFIRM;
+            this.game.ui.handleStateChange(this.game.state);
+          }
+          break;
+        case GAME_STATES.QUIT_CONFIRM:
+          if (e.code === 'Escape') {
+            this.game.endGame(false);
+          } else if (e.code === 'Space' || e.code === 'Enter') {
+            this.game.state = this.game.previousState || GAME_STATES.PLAYING;
+            this.game.ui.handleStateChange(this.game.state);
+          }
           break;
         case GAME_STATES.HIGHSCORE:
           this.game.ui.handleNameInputKey(e);
@@ -128,6 +146,20 @@ export class InputManager {
       if (state === GAME_STATES.START) { this.game.startGame(); return; }
       if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
       if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
+      if (state === GAME_STATES.QUIT_CONFIRM) {
+        if (zone === 'TOP') {
+          const now = performance.now();
+          if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
+            this.game.endGame(false);
+          }
+          this.lastTopTap = now;
+        } else {
+          // Tap anywhere else to resume
+          this.game.state = this.game.previousState || GAME_STATES.PLAYING;
+          this.game.ui.handleStateChange(this.game.state);
+        }
+        return;
+      }
     }
 
     // 2. Playing/Paused Interactions
@@ -136,7 +168,11 @@ export class InputManager {
         if (isActive) {
           const now = performance.now();
           if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
-            this.game.endGame(false);
+            if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED) {
+              this.game.previousState = state;
+              this.game.state = GAME_STATES.QUIT_CONFIRM;
+              this.game.ui.handleStateChange(this.game.state);
+            }
           }
           this.lastTopTap = now;
         }
