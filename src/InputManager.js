@@ -57,8 +57,8 @@ export class InputManager {
 
     // 2. Keyboard Router (Unified with State)
     document.addEventListener('keydown', (e) => {
-      this.game.ui.resetIdleTimer();
       if (this.game.audio) this.game.audio.resumeContext();
+      this.game.ui.resetIdleTimer();
       const { state } = this.game;
       
       // H Key is Universal Pause Toggle
@@ -71,7 +71,7 @@ export class InputManager {
 
       switch(state) {
         case GAME_STATES.CREDITS:
-          this.game.state = GAME_STATES.START;
+          this.game.state = this.game.ui.creditsReturnState || GAME_STATES.START;
           this.game.ui.handleStateChange(this.game.state);
           break;
         case GAME_STATES.START:
@@ -157,6 +157,11 @@ export class InputManager {
 
     // 1. Menu Interactions (Always Single Taps)
     if (isActive) {
+      if (state === GAME_STATES.CREDITS) {
+        this.game.state = this.game.ui.creditsReturnState || GAME_STATES.START;
+        this.game.ui.handleStateChange(this.game.state);
+        return;
+      }
       if (state === GAME_STATES.START) { this.game.startGame(); return; }
       if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
       if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
