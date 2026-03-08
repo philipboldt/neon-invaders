@@ -14,8 +14,7 @@ export class Renderer {
       this.game.stage.position.set(0, 0);
     }
 
-    // Final HUD/Projectiles sync that might happen every frame
-    this.game.weapons.updateProjectilesRender();
+    // Logic-to-UI sync (dirty checks inside updateStats)
     this.game.ui.updateStats(this.game);
     
     // Explicitly clear transient effects if they were reset

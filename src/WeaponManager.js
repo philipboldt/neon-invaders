@@ -41,46 +41,6 @@ export class WeaponManager {
     }
   }
 
-  updateProjectilesRender() {
-    // 1. Sync Bullets
-    this.game.bullets.forEach(b => {
-      if (!b.sprite) b.sprite = this.getSprite('bullet');
-      b.sprite.position.set(b.x + b.w / 2, b.y + b.h / 2);
-    });
-
-    // 2. Sync Invader Bullets
-    this.game.invaderBullets.forEach(b => {
-      if (!b.sprite) b.sprite = this.getSprite('invaderBullet');
-      b.sprite.position.set(b.x + b.w / 2, b.y + b.h / 2);
-    });
-
-    // 3. Sync Boss Missiles
-    this.game.bossMissiles.forEach(m => {
-      if (!m.sprite) m.sprite = this.getSprite('bossMissile');
-      m.sprite.position.set(m.x + m.w / 2, m.y + m.h / 2);
-      m.sprite.rotation = m.angle - Math.PI / 2;
-    });
-
-    // 4. Sync Rockets & Target Markers
-    this.markerGraphics.clear();
-    const rocketColor = this.parseColor(COLORS.rocket);
-    
-    this.game.rockets.forEach(r => {
-      if (!r.sprite) r.sprite = this.getSprite('rocket');
-      r.sprite.position.set(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
-      r.sprite.rotation = Math.atan2(r.vy, r.vx) + Math.PI / 2;
-
-      // Draw Target Marker
-      this.markerGraphics.lineStyle(2, rocketColor, 0.6);
-      const size = 15;
-      this.markerGraphics.drawCircle(r.targetX, r.targetY, size);
-      this.markerGraphics.moveTo(r.targetX - size, r.targetY);
-      this.markerGraphics.lineTo(r.targetX + size, r.targetY);
-      this.markerGraphics.moveTo(r.targetX, r.targetY - size);
-      this.markerGraphics.lineTo(r.targetX, r.targetY + size);
-    });
-  }
-
   parseColor(hex) {
     return parseInt(hex.replace('#', '0x'));
   }
@@ -94,7 +54,11 @@ export class WeaponManager {
       const spread = 14;
       const startX = this.game.player.x + this.game.player.w / 2 - CONSTANTS.BULLET_W / 2 - (this.game.shotCount - 1) * (spread / 2);
       for (let i = 0; i < this.game.shotCount; i++) {
-        this.game.bullets.push({ x: startX + i * spread, y: this.game.player.y, w: CONSTANTS.BULLET_W, h: CONSTANTS.BULLET_H });
+        const bullet = { x: startX + i * spread, y: this.game.player.y, w: CONSTANTS.BULLET_W, h: CONSTANTS.BULLET_H };
+        // In-place sprite assignment
+        bullet.sprite = this.getSprite('bullet');
+        bullet.sprite.position.set(bullet.x + bullet.w / 2, bullet.y + bullet.h / 2);
+        this.game.bullets.push(bullet);
       }
     }
   }
@@ -179,7 +143,6 @@ export class WeaponManager {
       }
     }
 
-    // Dynamic redrawing for the lifetime of the tracer
     if (this.game.activePDCTracer) {
       const tracer = this.game.activePDCTracer;
       const endX = tracer.destroyed ? tracer.frozenX : (tracer.target.x + tracer.target.w / 2);
@@ -304,7 +267,8 @@ export class WeaponManager {
     if (this.game.rocketLevel > 0 && currentLowest.length > 0 && now - this.game.lastRocketTime >= CONSTANTS.ROCKET_INTERVAL_MS) {
       this.game.lastRocketTime = now;
       const targetInv = currentLowest[Math.floor(Math.random() * currentLowest.length)];
-      this.game.rockets.push({
+      
+      const rocket = {
         x: this.game.player.x + this.game.player.w / 2 - CONSTANTS.ROCKET_W / 2,
         y: this.game.player.y,
         targetX: targetInv.x + targetInv.w / 2,
@@ -312,7 +276,12 @@ export class WeaponManager {
         vx: 0, 
         vy: -CONSTANTS.ROCKET_INITIAL_SPEED * this.game.heightFactor,
         distanceTraveled: 0,
-      });
+      };
+      // In-place sprite assignment
+      rocket.sprite = this.getSprite('rocket');
+      rocket.sprite.position.set(rocket.x + CONSTANTS.ROCKET_W / 2, rocket.y + CONSTANTS.ROCKET_H / 2);
+      
+      this.game.rockets.push(rocket);
     }
 
     for (let j = this.game.rockets.length - 1; j >= 0; j--) {
@@ -421,6 +390,20 @@ export class WeaponManager {
       }
       r.x += r.vx;
       r.y += r.vy;
+
+      if (r.sprite) {
+        r.sprite.position.set(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2);
+        r.sprite.rotation = Math.atan2(r.vy, r.vx) + Math.PI / 2;
+      }
+
+      // Draw Target Marker
+      this.markerGraphics.lineStyle(2, rocketColor, 0.6);
+      const size = 15;
+      this.markerGraphics.drawCircle(r.targetX, r.targetY, size);
+      this.markerGraphics.moveTo(r.targetX - size, r.targetY);
+      this.markerGraphics.lineTo(r.targetX + size, r.targetY);
+      this.markerGraphics.moveTo(r.targetX, r.targetY - size);
+      this.markerGraphics.lineTo(r.targetX, r.targetY + size);
 
       this.game.particles.spawnRocketTrail(r.x + CONSTANTS.ROCKET_W / 2, r.y + CONSTANTS.ROCKET_H / 2, r.vx, r.vy);
       r.distanceTraveled += Math.sqrt(r.vx * r.vx + r.vy * r.vy);

@@ -77,7 +77,7 @@ export class Game {
     
     console.log('Neon Invaders Initialized with PixiJS');
     this.gameLoop = this.gameLoop.bind(this);
-    requestAnimationFrame(this.gameLoop);
+    this.app.ticker.add(this.gameLoop);
   }
 
   updateDimensions() {
@@ -364,18 +364,10 @@ export class Game {
     return this.lives <= 0;
   }
 
-  gameLoop(now) {
-    requestAnimationFrame(this.gameLoop);
-
-    // FPS Calculation
-    this.frameCount++;
-    if (now - this.lastFpsUpdate >= 1000) {
-      this.fps = (this.frameCount * 1000) / (now - this.lastFpsUpdate);
-      this.frameCount = 0;
-      this.lastFpsUpdate = now;
-      this.ui.updateFPS(this.fps);
-    }
-
+  gameLoop() {
+    // PIXI.Ticker handles 'now' via performance.now() internally
+    const now = performance.now();
+    
     this.starfield.update();
     if (this.gameRunning && !this.isPaused) {
       this.updateEntities(now);
@@ -385,7 +377,16 @@ export class Game {
       this.collisions.checkCollisions(now);
       this.particles.update();
     }
+    
+    // Smooth Renderer updates (Screen shake, HUD dirty checks)
     this.renderer.draw();
+
+    // Update FPS once per second
+    if (now - this.lastFpsUpdate >= 1000) {
+      this.ui.updateFPS(this.app.ticker.FPS);
+      this.lastFpsUpdate = now;
+    }
+
     if (!this.gameRunning || this.isPaused) return;
     if (this.invaders.length === 0 && this.invaderBullets.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0 && this.upgrades.length === 0 && this.activeLightning === null) {
       const isBossOrMiniBoss = this.level % 5 === 0;
