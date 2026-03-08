@@ -3,7 +3,13 @@ export class Renderer {
     this.game = game;
   }
 
-  update() {
+  update(state) {
+    // 1. Global World Dimming
+    if (this.game.gameWorld) {
+      const isMenu = state !== CONSTANTS.GAME_STATES.PLAYING;
+      this.game.gameWorld.alpha = isMenu ? 0.3 : 1.0;
+    }
+
     // Screen Shake via Pixi Stage offset
     if (this.game.shake > 0) {
       this.game.stage.position.set(
