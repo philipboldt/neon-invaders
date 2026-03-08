@@ -166,18 +166,26 @@ body::before {
 }
 
 .overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 15, 0.9);
+  background: transparent;
   color: #00f5ff;
   cursor: pointer;
   touch-action: none;
   z-index: 100;
   pointer-events: auto;
+}
+
+#overlay {
+  background: rgba(10, 10, 15, 0.85);
+}
+
+#boss-clear-screen {
+  background: rgba(10, 10, 15, 0.85);
 }
 
 .overlay.hidden {
