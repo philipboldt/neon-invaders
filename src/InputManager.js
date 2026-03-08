@@ -6,38 +6,32 @@ export class InputManager {
   bindInputs() {
     const handleStart = (e) => {
       if (this.game.ui.nameInputActive) return;
-      if (this.game.gameRunning && !this.game.isPaused) return;
+      if (this.game.state === 'PLAYING') return;
       
-      const isStartVisible = !this.game.ui.els.startScreen.classList.contains('hidden');
-      const isOverlayVisible = !this.game.ui.els.overlay.classList.contains('hidden');
-
-      if (isStartVisible || isOverlayVisible) {
+      if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
         if (e && e.type.startsWith('pointer') && e.pointerType === 'mouse' && e.button !== 0) return;
-        
-        this.game.ui.hideScreens();
         this.game.startGame();
         if (e && typeof e.preventDefault === 'function') e.preventDefault();
       }
     };
 
-    // Global pointerdown listener to catch start on any mobile tap
-    window.addEventListener('pointerdown', (e) => {
-      if (!this.game.gameRunning && !this.game.ui.els.startScreen.classList.contains('hidden')) {
+    // Global pointerdown listener to catch start on any canvas tap
+    this.game.canvas.addEventListener('pointerdown', (e) => {
+      if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
         handleStart(e);
-      }
-    }, { capture: true });
-
-    // Support generic click as well
-    window.addEventListener('click', (e) => {
-      if (!this.game.gameRunning && !this.game.ui.els.startScreen.classList.contains('hidden')) {
-        handleStart(e);
+      } else if (this.game.state === 'PAUSED') {
+        this.game.state = 'PLAYING';
+        this.game.ui.toggleHelp(false);
+      } else if (this.game.ui.bossClearActive) {
+        this.game.ui.hideBossClear();
+        this.game.state = 'PLAYING';
       }
     }, { capture: true });
 
     document.addEventListener('keydown', (e) => {
       // Space to Start logic - highest priority
       if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
-        if (!this.game.gameRunning && !this.game.ui.els.startScreen.classList.contains('hidden')) {
+        if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
           handleStart(e);
           return;
         }
@@ -47,45 +41,44 @@ export class InputManager {
         this.game.ui.handleNameInputKey(e);
         return;
       }
+      
       if (this.game.ui.bossClearActive) {
         if (e.code === 'Space' || e.code === 'Enter') {
           this.game.ui.hideBossClear();
-          this.game.isPaused = false;
+          this.game.state = 'PLAYING';
         }
         return;
       }
+
       // Toggle Help (Pause)
       if (e.code === 'KeyH') {
-        if (this.game.state === CONSTANTS.GAME_STATES.PLAYING) {
-          this.game.state = CONSTANTS.GAME_STATES.PAUSED;
+        if (this.game.state === 'PLAYING') {
+          this.game.state = 'PAUSED';
           this.game.ui.toggleHelp(true);
-        } else if (this.game.state === CONSTANTS.GAME_STATES.PAUSED) {
-          this.game.state = CONSTANTS.GAME_STATES.PLAYING;
+        } else if (this.game.state === 'PAUSED') {
+          this.game.state = 'PLAYING';
           this.game.ui.toggleHelp(false);
         }
         return;
       }
       
       // End Game
-      if (e.code === 'Escape' && this.game.state === CONSTANTS.GAME_STATES.PLAYING) {
+      if (e.code === 'Escape' && this.game.state === 'PLAYING') {
         this.game.endGame(false);
         return;
       }
       
-      if (this.game.state !== CONSTANTS.GAME_STATES.PLAYING) return;
+      if (this.game.state !== 'PLAYING') return;
 
-      if (e.code === 'KeyD' && this.game.gameRunning) {
+      if (e.code === 'KeyD') {
         this.game.debugMode = !this.game.debugMode;
         if (this.game.debugMode) {
-          this.game.shieldHits = 0; 
-          this.game.shotCount = 1; 
-          this.game.rocketLevel = 0; 
-          this.game.hasPierce = false;
+          this.game.shieldHits = 0; this.game.shotCount = 1; this.game.rocketLevel = 0; this.game.hasPierce = false;
           this.game.ui.updateStats(this.game);
         }
         return;
       }
-      if (e.code === 'KeyA' && this.game.gameRunning && this.game.debugMode) {
+      if (e.code === 'KeyA' && this.game.debugMode) {
         this.game.invaders = [];
         return;
       }
@@ -95,11 +88,7 @@ export class InputManager {
       if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
         this.game.spacePressed = true;
         this.game.ui.setShootActive(true);
-        if (!this.game.gameRunning && !this.game.ui.els.startScreen.classList.contains('hidden')) {
-          handleStart(e);
-        } else {
-          e.preventDefault();
-        }
+        e.preventDefault();
       }
     });
 
@@ -114,11 +103,6 @@ export class InputManager {
 
     if (this.game.ui.els.restartBtn) {
       this.game.ui.els.restartBtn.addEventListener('click', () => {
-        this.game.startGame();
-      });
-      this.game.ui.els.restartBtn.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        e.preventDefault();
         this.game.startGame();
       });
     }
@@ -155,16 +139,17 @@ export class InputManager {
     handlePointerDown(this.game.ui.els.btnShoot, (e) => {
       if (this.game.ui.bossClearActive) {
         this.game.ui.hideBossClear();
-        this.game.isPaused = false;
+        this.game.state = 'PLAYING';
         return;
       }
-      if (!this.game.gameRunning || this.game.isPaused) {
-        if (!this.game.ui.els.startScreen.classList.contains('hidden')) {
-          handleStart(e);
-        } else if (this.game.isPaused) {
-          this.game.isPaused = false;
-          this.game.ui.toggleHelp(false);
-        }
+      if (this.game.state === 'START' || this.game.state === 'GAMEOVER') {
+        handleStart(e);
+        this.game.spacePressed = true;
+        this.game.ui.setShootActive(true);
+        return;
+      } else if (this.game.state === 'PAUSED') {
+        this.game.state = 'PLAYING';
+        this.game.ui.toggleHelp(false);
         this.game.spacePressed = true;
         this.game.ui.setShootActive(true);
         return;
@@ -174,43 +159,9 @@ export class InputManager {
     });
 
     handlePointerDown(this.game.ui.els.btnPause, (active) => {
-      if (active && this.game.gameRunning && this.game.ui.els.overlay.classList.contains('hidden')) {
-        this.game.isPaused = !this.game.isPaused;
-        this.game.ui.toggleHelp(this.game.isPaused);
-      }
-    });
-
-    this.game.ui.els.startScreen.addEventListener('pointerdown', handleStart);
-
-    this.game.ui.els.helpScreen.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      e.preventDefault();
-      if (this.game.isPaused) {
-        this.game.isPaused = false;
-        this.game.ui.toggleHelp(false);
-      }
-    });
-
-    this.game.ui.els.bossClearScreen.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      e.preventDefault();
-      if (this.game.ui.bossClearActive) {
-        this.game.ui.hideBossClear();
-        this.game.isPaused = false;
-      }
-    });
-
-    this.game.ui.els.overlay.addEventListener('pointerdown', (e) => {
-      if (this.game.ui.nameInputActive) return;
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      if (!this.game.ui.els.overlay.classList.contains('hidden')) {
-        if (e.target.id !== 'restart') {
-          e.preventDefault();
-          this.game.ui.els.startScreen.classList.add('hidden');
-          if (!this.game.gameRunning) {
-            this.game.startGame();
-          }
-        }
+      if (active && this.game.state === 'PLAYING') {
+        this.game.state = 'PAUSED';
+        this.game.ui.toggleHelp(true);
       }
     });
   }
