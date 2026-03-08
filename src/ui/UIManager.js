@@ -18,11 +18,11 @@ export class UIManager {
       btnLeft: document.getElementById('btn-left'),
       btnRight: document.getElementById('btn-right'),
       btnPause: document.getElementById('btn-pause'),
-      restartBtn: document.getElementById('restart')
+      restartBtn: document.getElementById('restart'),
+      helpScreen: document.getElementById('help-screen')
     };
     
     this.nameInputActive = false;
-    this.bossClearActive = false;
     this.currentCharIndex = 0;
     this.chars = ['A', 'A', 'A'];
     this.pendingScore = 0;
@@ -62,36 +62,38 @@ export class UIManager {
     // Hide all menu views by default
     Object.values(this.views).forEach(v => v.hide());
     
-    // Persistent HUD visibility
+    // HUD visibility
     if (newState === CONSTANTS.GAME_STATES.START) {
       this.views.hud.hide();
     } else {
       this.views.hud.show();
     }
 
-    // Show specific view based on state
+    // Watermark visibility
+    this.watermarkContainer.visible = (newState === CONSTANTS.GAME_STATES.PLAYING);
+
+    // Highscore board visibility
+    if (this.highscorePixiContainer) {
+      this.highscorePixiContainer.visible = (newState === CONSTANTS.GAME_STATES.START || newState === CONSTANTS.GAME_STATES.GAMEOVER);
+    }
+
+    // Show specific view
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
         this.views.start.show();
-        this.watermarkContainer.visible = false;
-        break;
-      case CONSTANTS.GAME_STATES.PLAYING:
-        this.watermarkContainer.visible = true;
         break;
       case CONSTANTS.GAME_STATES.PAUSED:
         this.views.help.show();
-        this.watermarkContainer.visible = false;
         break;
       case CONSTANTS.GAME_STATES.GAMEOVER:
         this.views.gameOver.show();
-        this.watermarkContainer.visible = false;
         break;
       case CONSTANTS.GAME_STATES.BOSSKILLED:
         this.views.bossClear.show();
-        this.watermarkContainer.visible = false;
         break;
       case CONSTANTS.GAME_STATES.HIGHSCORE:
-        this.watermarkContainer.visible = false;
+        // Shows only Big Title (handled by handleStateChange calling hide on all views)
+        // and we show the HTML Name Input via showNameInput
         break;
     }
   }
@@ -99,6 +101,7 @@ export class UIManager {
   updateLayout(game) {
     Object.values(this.views).forEach(v => v.updateLayout(game.W, game.H));
     if (this.watermarkContainer) this.watermarkContainer.position.set(20, game.H - 45);
+    if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
   }
 
   updateStats(gameState) { this.views.hud.updateStats(gameState); }
@@ -139,20 +142,14 @@ export class UIManager {
     this.nameInputActive = false;
     this.els.nameInputContainer.classList.add('hidden');
     this.els.overlayText.textContent = 'SCORE SAVED!';
-    this.handleStateChange(CONSTANTS.GAME_STATES.GAMEOVER);
+    this.game.state = CONSTANTS.GAME_STATES.GAMEOVER;
+    this.handleStateChange(this.game.state);
   }
 
   toggleHelp(isVisible) {
-    // UI simply reacts to the game state
     this.handleStateChange(this.game.state);
-    
-    // Manage HTML pointer-sink overlay (if it still exists)
     if (this.els.helpScreen) {
-      if (isVisible) {
-        this.els.helpScreen.classList.remove('hidden');
-      } else {
-        this.els.helpScreen.classList.add('hidden');
-      }
+      this.els.helpScreen.classList.toggle('hidden', !isVisible);
     }
   }
 
@@ -181,6 +178,9 @@ export class UIManager {
 
     if (this.views.start) this.views.start.updateHighScores(scores);
     if (this.views.gameOver) this.views.gameOver.updateHighScores(scores);
+    
+    // Alias highscorePixiContainer to StartView's one for layout management
+    this.highscorePixiContainer = this.views.start.highscoreContainer;
   }
 
   update(now) {
@@ -201,7 +201,7 @@ export class UIManager {
     });
     if (this.els.saveNameBtn) {
       this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
-        if (this.game.state !== CONSTANTS.GAME_STATES.HIGHSCORE) return;
+        if (!this.nameInputActive) return;
         e.preventDefault(); e.stopPropagation();
         this.saveHighscore();
       });

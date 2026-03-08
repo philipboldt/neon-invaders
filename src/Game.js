@@ -221,13 +221,14 @@ export class Game {
   }
 
   endGame(won) {
-    this.state = CONSTANTS.GAME_STATES.GAMEOVER;
     this.spacePressed = false;
     this.ui.setShootActive(false);
     
     if (this.ui.isHighscore(this.score)) {
+      this.state = CONSTANTS.GAME_STATES.HIGHSCORE;
       this.ui.showNameInput(this.score);
     } else {
+      this.state = CONSTANTS.GAME_STATES.GAMEOVER;
       this.ui.showGameOver(won);
     }
   }
