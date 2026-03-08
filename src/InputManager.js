@@ -72,7 +72,11 @@ export class InputManager {
         case GAME_STATES.PLAYING:
           if (e.code === 'ArrowLeft') this.game.player.dir = -1;
           if (e.code === 'ArrowRight') this.game.player.dir = 1;
-          if (e.code === 'Space') { this.game.spacePressed = true; this.game.ui.setShootActive(true); e.preventDefault(); }
+          if (e.code === 'Space') { 
+            this.game.spacePressed = !this.game.spacePressed; 
+            this.game.ui.setShootActive(this.game.spacePressed); 
+            e.preventDefault(); 
+          }
           if (e.code === 'Escape') {
             this.game.previousState = GAME_STATES.PLAYING;
             this.game.state = GAME_STATES.QUIT_CONFIRM;
@@ -109,7 +113,6 @@ export class InputManager {
       if (this.game.state !== GAME_STATES.PLAYING) return;
       if (e.code === 'ArrowLeft' && this.game.player.dir === -1) this.game.player.dir = 0;
       if (e.code === 'ArrowRight' && this.game.player.dir === 1) this.game.player.dir = 0;
-      if (e.code === 'Space') { this.game.spacePressed = false; this.game.ui.setShootActive(false); }
     });
   }
 

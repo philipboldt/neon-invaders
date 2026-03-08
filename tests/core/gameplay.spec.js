@@ -42,12 +42,17 @@ test.describe('Neon Invaders - Core Gameplay', () => {
         expect(afterMoveLeft).toBeLessThan(afterMoveRight - 10);
     });
 
-    test('Combat: Space should create bullets', async ({ page }) => {
+    test('Combat: Space should toggle auto-shoot', async ({ page }) => {
         await page.keyboard.press('Space'); // Start
         
-        await page.keyboard.press('Space'); // Shoot
-        const bulletCount = await page.evaluate(() => window.game.bullets.length);
-        expect(bulletCount).toBeGreaterThan(0);
+        await page.keyboard.press('Space'); // Toggle ON
+        await expect.poll(async () => {
+            return await page.evaluate(() => window.game.bullets.length);
+        }, { timeout: 5000 }).toBeGreaterThan(0);
+
+        await page.keyboard.press('Space'); // Toggle OFF
+        const afterOff = await page.evaluate(() => window.game.spacePressed);
+        expect(afterOff).toBe(false);
     });
 
     test('Interaction: Pause Toggle (Key H)', async ({ page }) => {

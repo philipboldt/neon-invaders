@@ -12,7 +12,9 @@ export class HudView extends BaseView {
   init() {
     const padding = CONSTANTS.UI_PADDING;
     const y = CONSTANTS.UI_HUD_Y;
-    const colWidth = (this.game.W - padding * 2) / 4;
+    const W = this.game.W;
+    const H = this.game.H;
+    const colWidth = (W - padding * 2) / 4;
 
     this.hudTexts.score = this.createHudText('Score: 0', padding, y, this.parseHexColor(COLORS.invader2));
     this.hudTexts.level = this.createHudText('Level: 1', padding + colWidth, y, this.parseHexColor(COLORS.invader3));
