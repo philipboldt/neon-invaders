@@ -28,33 +28,64 @@ export class CollisionManager {
       }
     }
 
-    // 2. Invader Bullets vs Player
+    // 2. Invader Bullets vs Player & Pods
     this.game.invaderBullets.forEach((b, i) => {
-      if (this.rectIntersect(b, this.game.player)) {
-        this.handlePlayerHit();
+      if (this.checkPlayerComponentCollision(b)) {
         b.deactivate();
         this.game.invaderBullets.splice(i, 1);
       }
     });
 
-    // 3. Boss Missiles vs Player
+    // 3. Boss Missiles vs Player & Pods
     this.game.bossMissiles.forEach((m, i) => {
-      if (this.rectIntersect(m, this.game.player)) {
-        this.handlePlayerHit();
+      if (this.checkPlayerComponentCollision(m)) {
         m.deactivate();
         this.game.bossMissiles.splice(i, 1);
       }
     });
 
-    // 4. Upgrades vs Player
+    // 4. Upgrades vs Player & Pods
     for (let i = this.game.upgrades.length - 1; i >= 0; i--) {
       const u = this.game.upgrades[i];
-      if (this.rectIntersect(u, this.game.player)) {
+      if (this.checkPlayerComponentCollision(u, true)) { // Passing true to ignore damage logic, just collect
         this.applyUpgrade(u.type, u.level);
         u.destroy();
         this.game.upgrades.splice(i, 1);
       }
     }
+  }
+
+  // Helper to check collision with shield, player, and pods
+  checkPlayerComponentCollision(entity, isCollection = false) {
+    const player = this.game.player;
+    const lPod = player.getLeftPodBounds();
+    const rPod = player.getRightPodBounds();
+
+    // 1. Shield Check (Protects everything)
+    if (!isCollection && this.game.shieldHits > 0) {
+      if (this.rectIntersect(entity, player) || 
+          (lPod && this.rectIntersect(entity, lPod)) || 
+          (rPod && this.rectIntersect(entity, rPod))) {
+        this.handlePlayerHit(); // handlePlayerHit already manages shield reduction
+        return true;
+      }
+    }
+
+    // 2. Direct Hit Checks
+    if (this.rectIntersect(entity, player)) {
+      if (!isCollection) this.handlePlayerHit();
+      return true;
+    }
+    if (lPod && this.rectIntersect(entity, lPod)) {
+      if (!isCollection) this.handlePodHit('left');
+      return true;
+    }
+    if (rPod && this.rectIntersect(entity, rPod)) {
+      if (!isCollection) this.handlePodHit('right');
+      return true;
+    }
+
+    return false;
   }
 
   handleInvaderDeath(inv, index) {
@@ -96,6 +127,27 @@ export class CollisionManager {
       if (this.game.lives <= 0) {
         this.game.endGame(false);
       }
+    }
+    this.game.ui.updateStats(this.game);
+  }
+
+  handlePodHit(side) {
+    const pod = this.game.player.pods[side];
+    if (!pod.active) return;
+
+    pod.hp--;
+    this.game.shake = CONSTANTS.SHAKE_PLAYER_HIT;
+    
+    // Position for explosion
+    const bounds = side === 'left' ? this.game.player.getLeftPodBounds() : this.game.player.getRightPodBounds();
+    if (bounds) {
+      this.game.particles.spawnExplosion(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2, COLORS.player, 0, Math.PI * 2, 10);
+    }
+
+    if (pod.hp <= 0) {
+      pod.active = false;
+      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, `${side.toUpperCase()} POD DESTROYED!`);
+      this.game.player.updateSpritePositions();
     }
     this.game.ui.updateStats(this.game);
   }

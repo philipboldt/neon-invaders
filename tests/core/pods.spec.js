@@ -69,4 +69,34 @@ test.describe('Neon Invaders - Pod Progression', () => {
         expect(sprites.left).toBe(true);
         expect(sprites.right).toBe(true);
     });
+
+    test('Combat: Pods should take damage and deactivate', async ({ page }) => {
+        await page.keyboard.press('Space'); // Start game
+
+        // Manually activate left pod and set HP to 1
+        await page.evaluate(() => {
+            window.game.player.pods.left.active = true;
+            window.game.player.pods.left.hp = 1;
+            window.game.player.updateSpritePositions();
+        });
+
+        // Simulate a hit on the pod
+        await page.evaluate(() => {
+            const podBounds = window.game.player.getLeftPodBounds();
+            // Create a fake bullet at pod position
+            const fakeBullet = {
+                x: podBounds.x,
+                y: podBounds.y,
+                w: 10,
+                h: 10
+            };
+            window.game.collisions.handlePodHit('left');
+        });
+
+        const isLeftActive = await page.evaluate(() => window.game.player.pods.left.active);
+        expect(isLeftActive).toBe(false);
+        
+        const isSpriteVisible = await page.evaluate(() => window.game.player.leftPodSprite.visible);
+        expect(isSpriteVisible).toBe(false);
+    });
 });

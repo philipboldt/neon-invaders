@@ -130,4 +130,24 @@ export class Player {
     const val = Math.floor(255 * (0.45 + 0.55 * ratio));
     return (val << 16) | (val << 8) | val;
   }
+
+  getLeftPodBounds() {
+    if (!this.pods.left.active) return null;
+    return {
+      x: this.x - this.podGap - this.podW,
+      y: this.y + (this.h - this.podH) / 2,
+      w: this.podW,
+      h: this.podH
+    };
+  }
+
+  getRightPodBounds() {
+    if (!this.pods.right.active) return null;
+    return {
+      x: this.x + this.w + this.podGap,
+      y: this.y + (this.h - this.podH) / 2,
+      w: this.podW,
+      h: this.podH
+    };
+  }
 }

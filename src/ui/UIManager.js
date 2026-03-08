@@ -213,7 +213,6 @@ export class UIManager {
     else if (e.code === 'ArrowUp') this.views.nameEntry.changeChar(1);
     else if (e.code === 'ArrowDown') this.views.nameEntry.changeChar(-1);
     else if (e.code === 'Enter' || e.code === 'Space') { this.saveHighscore(); return; }
-    this.updateCharDisplay();
     e.preventDefault();
   }
 
