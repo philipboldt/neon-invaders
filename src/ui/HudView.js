@@ -23,7 +23,11 @@ export class HudView extends BaseView {
     this.hudTexts.pierce = this.createHudText('Pierce: NONE', padding, y2, this.parseHexColor(COLORS.pierce));
     this.hudTexts.damage = this.createHudText('Damage: 1', padding + colWidth, y2, this.parseHexColor(COLORS.invader2));
     this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, this.parseHexColor(COLORS.rocket));
-    this.hudTexts.fps = this.createHudText('FPS: 60', padding + colWidth * 3, y2, this.parseHexColor(COLORS.textYellow));
+    this.hudTexts.pods = this.createHudText('Pods: NONE', padding + colWidth * 3, y2, this.parseHexColor(COLORS.player));
+    
+    // FPS is special, separate row or position
+    this.hudTexts.fps = this.createHudText('FPS: 60', W - padding - 60, H - padding - 20, this.parseHexColor(COLORS.textYellow));
+    this.hudTexts.fps.container.alpha = 0.5;
   }
 
   createHudText(text, x, y, valueColor) {
@@ -64,6 +68,12 @@ export class HudView extends BaseView {
     updateIfChanged('pierce', pierceStatus);
     const rocketStatus = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
     updateIfChanged('rocket', rocketStatus);
+    
+    let podStatus = 'NONE';
+    if (gameState.player.pods.left.active && gameState.player.pods.right.active) podStatus = 'BOTH';
+    else if (gameState.player.pods.left.active) podStatus = 'LEFT';
+    else if (gameState.player.pods.right.active) podStatus = 'RIGHT';
+    updateIfChanged('pods', podStatus);
   }
 
   updateFPS(fps) {
@@ -83,6 +93,10 @@ export class HudView extends BaseView {
     this.hudTexts.pierce.container.position.set(padding, y2);
     this.hudTexts.damage.container.position.set(padding + colWidth, y2);
     this.hudTexts.rocket.container.position.set(padding + colWidth * 2, y2);
-    this.hudTexts.fps.container.position.set(padding + colWidth * 3, y2);
+    this.hudTexts.pods.container.position.set(padding + colWidth * 3, y2);
+    
+    if (this.hudTexts.fps) {
+      this.hudTexts.fps.container.position.set(W - padding - this.hudTexts.fps.container.width, H - padding - 15);
+    }
   }
 }

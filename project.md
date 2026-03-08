@@ -59,6 +59,9 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **HUD & Pod Status Visibility:** Added a dedicated "Pods" indicator to the in-game HUD to provide clear feedback on unlocked and active sidepods. Also restored the FPS counter to a discreet position in the bottom-right. **[ENHANCED]**
+- **Font Rendering Fix:** Migrated the game initialization to wait for `document.fonts.ready`. This ensures the custom space font ('Orbitron') is fully loaded before any PIXI Text objects are created, preventing the "oldschool" default font from appearing. **[FIX]**
+- **Pod Spawn Fix (Final):** Resolved a persistence issue where sidepods would not appear immediately after a boss kill. The game now explicitly refreshes the player's sprite positions upon unlocking a pod during level transitions. **[FIX]**
 - **Quit Confirmation Stage ("Airlock"):** Introduced a safety state (`QUIT_CONFIRM`) when pressing Escape or double-tapping the exit zone. This prevents accidental mission aborts by requiring a second confirmation while providing a clear UI prompt to either confirm the exit or resume the battle with Space. **[NEW]**
 - **Pod Reward Logic Restoration:** Fixed a critical bug where sidepods (PDC/Lightning) were not being activated in the game state after defeating bosses. Pods are now correctly unlocked at levels 5 and 10, and their health is restored upon every boss/miniboss victory. **[FIX]**
 - **Configuration Cleanup:** Centralized the desktop controls instruction text into `src/constants.js` (`UI_CONTROLS_TEXT`), maintaining the clean separation of concerns. **[CLEANUP]**

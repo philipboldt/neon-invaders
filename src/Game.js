@@ -374,6 +374,7 @@ export class Game {
       if (isBossOrMiniBoss) {
         if (this.player.pods.left.active) this.player.pods.left.hp = this.player.pods.left.maxHp;
         if (this.player.pods.right.active) this.player.pods.right.hp = this.player.pods.right.maxHp;
+        this.player.updateSpritePositions();
         this.ui.showBossClear(this.level, rewards);
         this.state = CONSTANTS.GAME_STATES.BOSSKILLED;
       }

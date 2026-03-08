@@ -11,6 +11,8 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Initialize Game
-  window.game = new Game(canvas);
+  // Wait for fonts to load before initializing the game
+  document.fonts.ready.then(() => {
+    window.game = new Game(canvas);
+  });
 });
