@@ -100,5 +100,6 @@ export const CONSTANTS = {
   PDC_CHANCE: 0.1,
   PDC_RANGE: 400,
   PDC_TRACER_LIFE: 40,
-  VERSION: 'beta 0.9'
+  VERSION: 'beta 0.9',
+  TITLE: 'NEON INVADERS'
 };

@@ -56,10 +56,10 @@ export class UIManager {
     this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, this.parseHexColor(COLORS.rocket));
     this.hudTexts.fps = this.createHudText('FPS: 60', padding + colWidth * 3, y2, this.parseHexColor(COLORS.textYellow));
 
-    // Main Title Overlay
+    // 1. Big Main Title (For Menus)
     this.mainTitleContainer = new PIXI.Container();
     
-    this.mainTitleText = new PIXI.Text('NEON INVADERS', {
+    this.mainTitleText = new PIXI.Text(CONSTANTS.TITLE, {
       fontFamily: 'Orbitron',
       fontSize: 48,
       fontWeight: 900,
@@ -85,6 +85,31 @@ export class UIManager {
     this.mainTitleContainer.addChild(this.mainTitleText, this.versionText);
     this.game.uiLayer.addChild(this.mainTitleContainer);
 
+    // 2. Background Watermark (For Gameplay)
+    this.watermarkContainer = new PIXI.Container();
+    
+    const waterTitle = new PIXI.Text(CONSTANTS.TITLE, {
+      fontFamily: 'Orbitron',
+      fontSize: 20,
+      fontWeight: 900,
+      fill: this.parseHexColor(COLORS.text),
+      letterSpacing: 2
+    });
+    
+    const waterVer = new PIXI.Text(CONSTANTS.VERSION, {
+      fontFamily: 'Orbitron',
+      fontSize: 10,
+      fontWeight: 'bold',
+      fill: this.parseHexColor(COLORS.text),
+      alpha: 0.5
+    });
+    waterVer.position.set(0, 22);
+
+    this.watermarkContainer.addChild(waterTitle, waterVer);
+    this.watermarkContainer.alpha = 0.15;
+    this.watermarkContainer.visible = false;
+    this.game.bgLayer.addChild(this.watermarkContainer);
+
     this.debugText = new PIXI.Text('DEBUG MODE', {
       fontFamily: 'Orbitron',
       fontSize: 56,
@@ -95,7 +120,7 @@ export class UIManager {
       dropShadowBlur: 20
     });
     this.debugText.anchor.set(0.5);
-    this.debugText.position.set(this.game.W / 2, 72);
+    this.debugText.position.set(this.game.W / 2, 160);
     this.debugText.visible = false;
     this.game.uiLayer.addChild(this.debugText);
   }
@@ -129,13 +154,8 @@ export class UIManager {
     });
     
     value.x = label.width;
-    // Set a minimum width for the value to prevent layout shifts
-    // but keep it dynamic enough for larger scores.
-    // We can use a container or just rely on the next field's column width.
-    
     container.addChild(label, value);
     this.game.uiLayer.addChild(container);
-    
     return { container, label, value };
   }
 
@@ -160,7 +180,6 @@ export class UIManager {
       });
     }
 
-    // Allow clicking/tapping the characters themselves to select them
     this.els.charEls.forEach((charEl, index) => {
       charEl.addEventListener('pointerdown', (e) => {
         e.preventDefault();
@@ -173,7 +192,6 @@ export class UIManager {
 
   changeChar(index, delta) {
     let charCode = this.chars[index].charCodeAt(0);
-    // A-Z is 65-90
     charCode = ((charCode - 65 + delta + 26) % 26) + 65;
     this.chars[index] = String.fromCharCode(charCode);
     this.updateCharDisplay();
@@ -181,44 +199,33 @@ export class UIManager {
 
   updateStats(gameState) {
     if (!this.hudTexts.score) return;
-
-    // Helper to update text only if changed
     const updateIfChanged = (key, newVal) => {
       if (this.lastStats[key] !== newVal) {
         this.hudTexts[key].value.text = newVal;
         this.lastStats[key] = newVal;
       }
     };
-
     updateIfChanged('score', gameState.score);
     updateIfChanged('level', gameState.level);
     updateIfChanged('lives', gameState.lives);
     updateIfChanged('damage', gameState.playerDamage);
-    
     const shieldStatus = gameState.shieldHits > 0 ? 'ON' : (gameState.hasShieldSystem ? 'OFF' : 'NONE');
     updateIfChanged('shield', shieldStatus);
-
     const pierceStatus = gameState.hasPierce ? 'YES' : 'NONE';
     updateIfChanged('pierce', pierceStatus);
-
     const rocketStatus = gameState.rocketLevel > 0 ? gameState.rocketLevel : 'NONE';
     updateIfChanged('rocket', rocketStatus);
-    
     if (this.debugText) {
       if (this.lastStats.debugVisible !== gameState.debugMode) {
         this.debugText.visible = gameState.debugMode;
         this.lastStats.debugVisible = gameState.debugMode;
       }
-      if (gameState.debugMode) {
-        this.debugText.position.set(gameState.W / 2, 72);
-      }
+      if (gameState.debugMode) this.debugText.position.set(gameState.W / 2, 160);
     }
   }
 
   updateFPS(fps) {
-    if (this.hudTexts.fps) {
-      this.hudTexts.fps.value.text = Math.round(fps || 0);
-    }
+    if (this.hudTexts.fps) this.hudTexts.fps.value.text = Math.round(fps || 0);
   }
 
   updateLayout(game) {
@@ -237,10 +244,8 @@ export class UIManager {
     if (this.hudTexts.rocket) this.hudTexts.rocket.container.position.set(padding + colWidth * 2, y2);
     if (this.hudTexts.fps) this.hudTexts.fps.container.position.set(padding + colWidth * 3, y2);
 
-    if (this.mainTitleContainer) {
-      this.mainTitleContainer.position.set(game.W / 2, 80);
-    }
-
+    if (this.mainTitleContainer) this.mainTitleContainer.position.set(game.W / 2, 100);
+    if (this.watermarkContainer) this.watermarkContainer.position.set(20, game.H - 45);
     if (this.debugText) this.debugText.position.set(game.W / 2, 160);
   }
 
@@ -253,6 +258,7 @@ export class UIManager {
       this.mainTitleContainer.alpha = 1.0;
       this.mainTitleText.style.dropShadow = true;
     }
+    if (this.watermarkContainer) this.watermarkContainer.visible = false;
     this.els.startScreen.classList.remove('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -260,10 +266,8 @@ export class UIManager {
   }
 
   hideScreens() {
-    if (this.mainTitleContainer) {
-      this.mainTitleContainer.alpha = 0.15;
-      this.mainTitleText.style.dropShadow = false;
-    }
+    if (this.mainTitleContainer) this.mainTitleContainer.alpha = 0;
+    if (this.watermarkContainer) this.watermarkContainer.visible = true;
     this.els.startScreen.classList.add('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -272,11 +276,14 @@ export class UIManager {
   }
 
   showGameOver(won) {
+    if (this.mainTitleContainer) {
+      this.mainTitleContainer.alpha = 1.0;
+      this.mainTitleText.style.dropShadow = true;
+    }
+    if (this.watermarkContainer) this.watermarkContainer.visible = false;
     this.els.overlay.classList.remove('hidden');
     this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     this.els.overlayText.classList.toggle('win', won);
-    
-    // Hide other inputs
     this.nameInputActive = false;
     this.bossClearActive = false;
     this.els.nameInputContainer.classList.add('hidden');
@@ -301,6 +308,11 @@ export class UIManager {
   }
 
   showNameInput(score) {
+    if (this.mainTitleContainer) {
+      this.mainTitleContainer.alpha = 1.0;
+      this.mainTitleText.style.dropShadow = true;
+    }
+    if (this.watermarkContainer) this.watermarkContainer.visible = false;
     this.pendingScore = score;
     this.nameInputActive = true;
     this.currentCharIndex = 0;
@@ -320,19 +332,11 @@ export class UIManager {
 
   handleNameInputKey(e) {
     if (!this.nameInputActive) return;
-
-    if (e.code === 'ArrowLeft') {
-      this.currentCharIndex = (this.currentCharIndex - 1 + 3) % 3;
-    } else if (e.code === 'ArrowRight') {
-      this.currentCharIndex = (this.currentCharIndex + 1) % 3;
-    } else if (e.code === 'ArrowUp') {
-      this.changeChar(this.currentCharIndex, 1);
-    } else if (e.code === 'ArrowDown') {
-      this.changeChar(this.currentCharIndex, -1);
-    } else if (e.code === 'Enter' || e.code === 'Space') {
-      this.saveHighscore();
-      return;
-    }
+    if (e.code === 'ArrowLeft') this.currentCharIndex = (this.currentCharIndex - 1 + 3) % 3;
+    else if (e.code === 'ArrowRight') this.currentCharIndex = (this.currentCharIndex + 1) % 3;
+    else if (e.code === 'ArrowUp') this.changeChar(this.currentCharIndex, 1);
+    else if (e.code === 'ArrowDown') this.changeChar(this.currentCharIndex, -1);
+    else if (e.code === 'Enter' || e.code === 'Space') { this.saveHighscore(); return; }
     this.updateCharDisplay();
     e.preventDefault();
   }
@@ -347,6 +351,12 @@ export class UIManager {
   }
 
   toggleHelp(isVisible) {
+    if (this.mainTitleContainer) {
+      this.mainTitleContainer.alpha = isVisible ? 1.0 : 0;
+    }
+    if (this.watermarkContainer) {
+      this.watermarkContainer.visible = !isVisible;
+    }
     this.els.helpScreen.classList.toggle('hidden', !isVisible);
   }
 
@@ -356,48 +366,26 @@ export class UIManager {
       const saved = localStorage.getItem('neonInvadersHighScores');
       if (saved) {
         scores = JSON.parse(saved);
-        // Migration: convert old number-only scores to objects
-        if (scores.length > 0 && typeof scores[0] === 'number') {
-          scores = scores.map(s => ({ name: '???' , score: s }));
-        }
+        if (scores.length > 0 && typeof scores[0] === 'number') scores = scores.map(s => ({ name: '???' , score: s }));
       } else {
-        scores = [
-          { name: 'NEO', score: 1000 },
-          { name: 'TRN', score: 500 },
-          { name: 'FLY', score: 250 }
-        ];
+        scores = [{ name: 'NEO', score: 1000 }, { name: 'TRN', score: 500 }, { name: 'FLY', score: 250 }];
       }
-    } catch (e) {
-      console.warn('LocalStorage not available', e);
-    }
-
+    } catch (e) { console.warn('LocalStorage not available', e); }
     if (newEntry !== undefined) {
       scores.push(newEntry);
       scores.sort((a, b) => b.score - a.score);
       scores = scores.slice(0, 3);
-      try {
-        localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores));
-      } catch (e) {
-        console.warn('Failed to save highscore', e);
-      }
+      try { localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores)); } catch (e) { console.warn('Failed to save highscore', e); }
     }
     const listEls = document.querySelectorAll('.highscore-list');
     listEls.forEach(listEl => {
       listEl.innerHTML = '';
       scores.forEach((entry, i) => {
         const li = document.createElement('li');
-        const rankSpan = document.createElement('span');
-        rankSpan.className = 'rank';
-        rankSpan.textContent = `${i + 1}.`;
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'name';
-        nameSpan.textContent = entry.name;
-        const scoreSpan = document.createElement('span');
-        scoreSpan.className = 'score-val';
-        scoreSpan.textContent = entry.score.toString().padStart(5, '0');
-        li.appendChild(rankSpan);
-        li.appendChild(nameSpan);
-        li.appendChild(scoreSpan);
+        const rankSpan = document.createElement('span'); rankSpan.className = 'rank'; rankSpan.textContent = `${i + 1}.`;
+        const nameSpan = document.createElement('span'); nameSpan.className = 'name'; nameSpan.textContent = entry.name;
+        const scoreSpan = document.createElement('span'); scoreSpan.className = 'score-val'; scoreSpan.textContent = entry.score.toString().padStart(5, '0');
+        li.appendChild(rankSpan); li.appendChild(nameSpan); li.appendChild(scoreSpan);
         listEl.appendChild(li);
       });
     });
@@ -409,15 +397,9 @@ export class UIManager {
       const saved = localStorage.getItem('neonInvadersHighScores');
       if (saved) {
         scores = JSON.parse(saved);
-        if (scores.length > 0 && typeof scores[0] === 'number') {
-          scores = scores.map(s => ({ name: '???' , score: s }));
-        }
-      } else {
-        scores = [{ score: 1000 }, { score: 500 }, { score: 250 }];
-      }
-    } catch (e) {
-      return false;
-    }
+        if (scores.length > 0 && typeof scores[0] === 'number') scores = scores.map(s => ({ name: '???' , score: s }));
+      } else { scores = [{ score: 1000 }, { score: 500 }, { score: 250 }]; }
+    } catch (e) { return false; }
     return scores.length < 3 || score > scores[scores.length - 1].score;
   }
 }
