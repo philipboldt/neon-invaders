@@ -55,6 +55,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **MCP Configuration Update:** Removed the Playwright MCP server from the `.gemini/settings.json` configuration. **[CLEANUP]**
 - **Universal Sprite Persistence Fix:** Implemented a centralized `clearAllEntities()` routine in `Game.js` that explicitly destroys and removes all PixiJS sprites (invaders, upgrades) and returns active projectiles (bullets, missiles, rockets) to their respective object pools. This routine is now triggered both during a Game Over reset and during Level Transitions, ensuring no "ghost" sprites from previous levels or sessions persist in the background. **[FIX]**
 - **Garbage Collection (GC) Optimization:** Refactored array management in `EntityManager.js`, `CollisionManager.js`, and `WeaponManager.js` to use in-place `.splice()` updates instead of `.filter()`. This prevents the continuous reallocation of new arrays every frame, significantly reducing GC pressure and eliminating micro-stutters during heavy gameplay. **[REFACTOR]**
 - **HUD Rendering Optimization:** Optimized `UIManager.js` to cache HUD values (`lastStats`) and only update `PIXI.Text` objects when their underlying values actually change, avoiding redundant expensive texture regeneration. **[REFACTOR]**
