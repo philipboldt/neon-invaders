@@ -55,8 +55,9 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
   - **Portrait Grid:** Dynamic invader rows/cols (e.g., 9x6) to fit narrow screens.
 
 ## Recent Changes
+- **Full PixiJS Migration (100%):** Successfully completed the transition to PixiJS. Removed all legacy 2D Canvas `draw` methods and coordinate syncing. The engine now uses a unified `PIXI.Ticker` loop and in-place sprite updates for maximum efficiency. **[DONE]**
+- **Performance Optimization (Phase 1 & 2):** Implemented HUD value caching to eliminate redundant texture regeneration and migrated the main game loop to the native PixiJS Ticker. The game now runs with significantly lower CPU overhead and improved frame synchronization. **[DONE]**
 - **Projectile Artifact Cleanup:** Refactored `WeaponManager.updateProjectilesRender` to ensure all sprites are correctly synchronized and hidden when their logical counterparts are removed. Additionally, updated `Game.js` to defer level transitions until all invader bullets have cleared the screen, preventing "ghost" projectiles from persisting during level changes. **[FIX]**
-- **Proportional 4:3 Scaling:** Implemented a new scaling strategy that ensures the game always uses the maximum possible height. In landscape mode, it fits a proportional 4:3 block into the viewport width (letterboxed on wide screens). In portrait mode, it fills the width and extends the vertical field of view, maintaining a consistent logical density. **[ENHANCED]**
 - **Test Suite Verification:** Verified the entire test suite using the `playwright-cli` skill. Resolved a flaky visual regression in the "Boss Destruction" test by increasing the `maxDiffPixelRatio` tolerance to 0.5, accounting for the inherent randomness of the particle-based stunning explosion effect. All 20 tests now pass consistently. **[FIX]**
 - **Agent Skill Migration:** Migrated the `playwright-cli` skill from the `.claude` directory to the workspace `.gemini/skills/` directory and removed the legacy `.claude` folder. **[CLEANUP]**
 - **MCP Configuration Update:** Removed the Playwright MCP server from the `.gemini/settings.json` configuration. **[CLEANUP]**
