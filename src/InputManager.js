@@ -6,11 +6,18 @@ export class InputManager {
   }
 
   bindInputs() {
+    // Safety check for canvas
+    if (!this.game.canvas) {
+      console.error('InputManager: Canvas not found, cannot bind inputs.');
+      return;
+    }
+
+    const { GAME_STATES } = CONSTANTS;
+
     // 1. Unified Pointer/Tap Router
     this.game.canvas.addEventListener('pointerdown', (e) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       
-      const { GAME_STATES } = CONSTANTS;
       switch(this.game.state) {
         case GAME_STATES.START:
           this.game.startGame();
@@ -30,7 +37,6 @@ export class InputManager {
     // 2. Unified Key Router
     document.addEventListener('keydown', (e) => {
       const { state } = this.game;
-      const { GAME_STATES } = CONSTANTS;
 
       // H Key is the universal Help toggle
       if (e.code === 'KeyH') {
@@ -92,7 +98,7 @@ export class InputManager {
     });
 
     document.addEventListener('keyup', (e) => {
-      if (this.game.state !== CONSTANTS.GAME_STATES.PLAYING) return;
+      if (this.game.state !== GAME_STATES.PLAYING) return;
       
       if (e.code === 'ArrowLeft' && this.game.player.dir === -1) this.game.player.dir = 0;
       if (e.code === 'ArrowRight' && this.game.player.dir === 1) this.game.player.dir = 0;
@@ -121,17 +127,16 @@ export class InputManager {
     };
 
     handleTouch(CONSTANTS.ID_BTN_LEFT, (active) => {
-      if (this.game.state === CONSTANTS.GAME_STATES.PLAYING) this.game.player.dir = active ? -1 : 0;
+      if (this.game.state === GAME_STATES.PLAYING) this.game.player.dir = active ? -1 : 0;
     });
 
     handleTouch(CONSTANTS.ID_BTN_RIGHT, (active) => {
-      if (this.game.state === CONSTANTS.GAME_STATES.PLAYING) this.game.player.dir = active ? 1 : 0;
+      if (this.game.state === GAME_STATES.PLAYING) this.game.player.dir = active ? 1 : 0;
     });
 
     handleTouch(CONSTANTS.ID_BTN_SHOOT, (active, e) => {
       if (!active) return;
       const { state } = this.game;
-      const { GAME_STATES } = CONSTANTS;
       
       switch(state) {
         case GAME_STATES.START:
@@ -154,7 +159,7 @@ export class InputManager {
     });
 
     handleTouch(CONSTANTS.ID_BTN_PAUSE, (active) => {
-      if (active && (this.game.state === CONSTANTS.GAME_STATES.PLAYING || this.game.state === CONSTANTS.GAME_STATES.PAUSED)) {
+      if (active && (this.game.state === GAME_STATES.PLAYING || this.game.state === GAME_STATES.PAUSED)) {
         this.game.togglePause();
       }
     });
