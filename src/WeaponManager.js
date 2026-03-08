@@ -48,7 +48,7 @@ export class WeaponManager {
   playerShoot(now) {
     if (!this.game.spacePressed || now - this.game.lastPlayerShot < CONSTANTS.PLAYER_SHOOT_COOLDOWN) return;
     this.game.lastPlayerShot = now;
-    const maxBullets = 15; 
+    const maxBullets = 15; // Optional: could be moved to constants if needed
     
     if (this.game.bullets.length < maxBullets) {
       const spread = 14;
@@ -272,7 +272,8 @@ export class WeaponManager {
 
       if (distSq < hitRadiusSq) {
         const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W;
-        this.game.shake = 10;
+        this.game.shake = CONSTANTS.SHAKE_POD_HIT; // Using POD_HIT as a base for rocket shake
+        
         this.game.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
         this.game.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
 

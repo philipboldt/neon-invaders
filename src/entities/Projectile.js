@@ -120,7 +120,7 @@ export class Projectile extends BaseEntity {
   }
 
   checkBounds() {
-    const buffer = 50;
+    const buffer = CONSTANTS.PROJECTILE_BOUNDS_BUFFER;
     if (this.y < -buffer || this.y > this.game.H + buffer || this.x < -buffer || this.x > this.game.W + buffer) {
       this.deactivate();
     }

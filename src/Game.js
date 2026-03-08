@@ -91,21 +91,21 @@ export class Game {
     const container = this.canvas.parentElement;
     const availW = container.clientWidth;
     const availH = container.clientHeight;
-    this.W = 800;
-    const scale = Math.min(availW / 800, availH / 600);
+    this.W = CONSTANTS.LOGICAL_WIDTH;
+    const scale = Math.min(availW / CONSTANTS.LOGICAL_WIDTH, availH / CONSTANTS.LOGICAL_HEIGHT_MIN);
     
-    if (availW / 800 < availH / 600) {
-        this.H = Math.floor(800 * (availH / availW));
-        this.H = Math.min(1400, Math.max(600, this.H));
+    if (availW / CONSTANTS.LOGICAL_WIDTH < availH / CONSTANTS.LOGICAL_HEIGHT_MIN) {
+        this.H = Math.floor(CONSTANTS.LOGICAL_WIDTH * (availH / availW));
+        this.H = Math.min(CONSTANTS.LOGICAL_HEIGHT_MAX, Math.max(CONSTANTS.LOGICAL_HEIGHT_MIN, this.H));
         this.canvas.style.width = `${availW}px`;
         this.canvas.style.height = `${availH}px`;
     } else {
-        this.H = 600;
-        const physW = Math.floor(availH * (800 / 600));
+        this.H = CONSTANTS.LOGICAL_HEIGHT_MIN;
+        const physW = Math.floor(availH * CONSTANTS.ASPECT_RATIO_BASE);
         this.canvas.style.width = `${physW}px`;
         this.canvas.style.height = `${availH}px`;
     }
-    this.heightFactor = this.H / 600;
+    this.heightFactor = this.H / CONSTANTS.LOGICAL_HEIGHT_MIN;
   }
 
   handleResize() {
@@ -114,7 +114,7 @@ export class Game {
     if (this.player) {
       this.player.W = this.W;
       this.player.H = this.H;
-      this.player.y = this.H - 80;
+      this.player.y = this.H - CONSTANTS.PLAYER_Y_OFFSET;
       this.player.updateSpritePositions();
     }
     if (this.starfield) {
@@ -280,10 +280,10 @@ export class Game {
   }
 
   updateEntities(now) {
-    if (this.shake > 0) { this.shake *= 0.9; if (this.shake < 0.1) this.shake = 0; }
+    if (this.shake > 0) { this.shake *= CONSTANTS.SHAKE_DECAY; if (this.shake < CONSTANTS.SHAKE_THRESHOLD) this.shake = 0; }
     this.player.update();
-    this.entities.updateProjectiles();
-    this.entities.updateInvaders();
+    this.entities.updateProjectiles(now);
+    this.entities.updateInvaders(now);
     this.collisions.updateUpgrades(now);
     if (this.hasShieldSystem && this.shieldHits === 0 && this.lastShieldLostTime >= 0) {
       if (now - this.lastShieldLostTime >= CONSTANTS.SHIELD_RECHARGE_MS) {

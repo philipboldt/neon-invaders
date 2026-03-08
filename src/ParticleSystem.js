@@ -68,7 +68,7 @@ export class ParticleSystem {
     if (!p.pixiText) {
       p.pixiText = new PIXI.Text('', {
         fontFamily: 'Orbitron',
-        fontSize: 20,
+        fontSize: CONSTANTS.FONT_SIZE_HUD,
         fontWeight: 'bold',
         fill: COLORS.textYellow,
         align: 'center',
@@ -109,7 +109,7 @@ export class ParticleSystem {
     if (!p.pixiText) {
       p.pixiText = new PIXI.Text('', {
         fontFamily: 'Orbitron',
-        fontSize: 20,
+        fontSize: CONSTANTS.FONT_SIZE_HUD,
         fontWeight: 'bold',
         fill: COLORS.textRed,
         align: 'center',
@@ -291,6 +291,7 @@ export class ParticleSystem {
       const p = this.pool[idx];
       
       p.x += p.vx;
+      // Scale vertical movement by height factor
       p.y += p.vy * this.game.heightFactor;
       p.life++;
       const t = p.life / p.maxLife;

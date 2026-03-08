@@ -34,7 +34,8 @@ export class Upgrade extends BaseEntity {
     this.y += this.vy;
     this.syncSprite();
     
-    if (this.y > this.game.H + 50) {
+    const buffer = CONSTANTS.UPGRADE_BOUNDS_BUFFER;
+    if (this.y > this.game.H + buffer) {
       this.deactivate();
     }
   }

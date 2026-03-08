@@ -10,12 +10,12 @@ export class HelpView extends BaseView {
   init() {
     this.titleContainer = new PIXI.Container();
     const titleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron', fontSize: 48, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
       dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
     });
     titleText.anchor.set(0.5, 0);
     const versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
     });
     versionText.anchor.set(0.5, 0);
     versionText.position.set(0, 55);
@@ -23,7 +23,7 @@ export class HelpView extends BaseView {
 
     this.content = new PIXI.Container();
     const header = new PIXI.Text('UPGRADES', {
-      fontFamily: 'Orbitron', fontSize: 24, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_HEADER, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
     });
     header.anchor.set(0.5, 0);
     this.content.addChild(header);
@@ -40,14 +40,22 @@ export class HelpView extends BaseView {
     upgrades.forEach((u, i) => {
       const row = new PIXI.Container();
       row.position.set(-180, 45 + i * 30);
+
       const dot = new PIXI.Graphics();
       dot.beginFill(this.parseHexColor(u.color));
       dot.drawCircle(0, 8, 6);
       dot.endFill();
-      const label = new PIXI.Text(u.name + ':', { fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(u.color) });
+      
+      const label = new PIXI.Text(u.name + ':', { 
+        fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_UPGRADE_LABEL, fontWeight: 'bold', fill: this.parseHexColor(u.color) 
+      });
       label.position.set(20, 0);
-      const desc = new PIXI.Text(u.desc, { fontFamily: 'Orbitron', fontSize: 12, fill: 0xFFFFFF, alpha: 0.8 });
+
+      const desc = new PIXI.Text(u.desc, { 
+        fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_UPGRADE_DESC, fill: 0xFFFFFF, alpha: 0.8 
+      });
       desc.position.set(100, 2);
+
       row.addChild(dot, label, desc);
       this.content.addChild(row);
     });
@@ -77,13 +85,13 @@ export class HelpView extends BaseView {
   }
 
   updateLayout(W, H) {
-    this.titleContainer.position.set(W / 2, 100);
-    this.content.position.set(W / 2, 220);
+    this.titleContainer.position.set(W / 2, CONSTANTS.UI_HEADER_Y);
+    this.content.position.set(W / 2, CONSTANTS.UI_HIGHSCORE_Y);
   }
 
   update(now) {
     if (this.container.visible) {
-      const scale = 1 + Math.sin(now / 500) * 0.03;
+      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
       this.titleContainer.scale.set(scale);
     }
   }

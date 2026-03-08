@@ -1,3 +1,5 @@
+import { CONSTANTS } from './constants.js';
+
 export class SpriteManager {
   constructor(app) {
     this.app = app;
@@ -12,10 +14,10 @@ export class SpriteManager {
     // We create a temporary canvas/context to reuse the existing drawFn logic
     // Pixi can't directly use 2D canvas draw functions, so we shim it
     const canvas = document.createElement('canvas');
-    canvas.width = w + 40;
-    canvas.height = h + 40;
+    canvas.width = w + CONSTANTS.SPRITE_PADDING;
+    canvas.height = h + CONSTANTS.SPRITE_PADDING;
     const ctx = canvas.getContext('2d');
-    ctx.translate(20, 20);
+    ctx.translate(CONSTANTS.SPRITE_TRANSLATE, CONSTANTS.SPRITE_TRANSLATE);
     drawFn(ctx);
 
     // 2. Generate PIXI.Texture from the canvas

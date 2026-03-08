@@ -98,7 +98,7 @@ export class UIManager {
 
   updateLayout(game) {
     Object.values(this.views).forEach(v => v.updateLayout(game.W, game.H));
-    if (this.watermarkContainer) this.watermarkContainer.position.set(20, game.H - 45);
+    if (this.watermarkContainer) this.watermarkContainer.position.set(CONSTANTS.UI_WATERMARK_X, game.H - CONSTANTS.UI_WATERMARK_Y_OFFSET);
     
     if (this.borderGraphics) {
       this.borderGraphics.clear();
@@ -191,6 +191,7 @@ export class UIManager {
     else if (e.code === 'ArrowUp') this.views.nameEntry.changeChar(1);
     else if (e.code === 'ArrowDown') this.views.nameEntry.changeChar(-1);
     else if (e.code === 'Enter' || e.code === 'Space') { this.saveHighscore(); return; }
+    this.updateCharDisplay();
     e.preventDefault();
   }
 

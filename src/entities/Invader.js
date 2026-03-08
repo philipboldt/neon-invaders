@@ -28,15 +28,13 @@ export class Invader extends BaseEntity {
     this.syncTint();
   }
 
-  // Invaders move as a grid, so x/y are updated by EntityManager
-  // but they handle their own tinting and sprite syncing
   update(now) {
     this.syncSprite();
     this.syncTint();
   }
 
   syncTint() {
-    const ratio = this.maxHp > 1 ? 0.45 + 0.55 * (this.hp / this.maxHp) : 1;
+    const ratio = this.maxHp > 1 ? CONSTANTS.INVADER_TINT_MIN + CONSTANTS.INVADER_TINT_RANGE * (this.hp / this.maxHp) : 1;
     if (ratio < 1) {
       const val = Math.floor(255 * ratio);
       const targetTint = (val << 16) | (val << 8) | val;

@@ -1,3 +1,5 @@
+import { CONSTANTS } from './constants.js';
+
 export class InputManager {
   constructor(game) {
     this.game = game;
@@ -8,17 +10,18 @@ export class InputManager {
     this.game.canvas.addEventListener('pointerdown', (e) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       
+      const { GAME_STATES } = CONSTANTS;
       switch(this.game.state) {
-        case 'START':
+        case GAME_STATES.START:
           this.game.startGame();
           break;
-        case 'GAMEOVER':
+        case GAME_STATES.GAMEOVER:
           this.game.restartGame();
           break;
-        case 'PAUSED':
+        case GAME_STATES.PAUSED:
           this.game.togglePause();
           break;
-        case 'BOSSKILLED':
+        case GAME_STATES.BOSSKILLED:
           this.game.ui.hideBossClear();
           break;
       }
@@ -27,10 +30,11 @@ export class InputManager {
     // 2. Unified Key Router
     document.addEventListener('keydown', (e) => {
       const { state } = this.game;
+      const { GAME_STATES } = CONSTANTS;
 
       // H Key is the universal Help toggle
       if (e.code === 'KeyH') {
-        if (state === 'PLAYING' || state === 'PAUSED' || state === 'START') {
+        if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED || state === GAME_STATES.START) {
           this.game.togglePause();
         }
         return;
@@ -38,19 +42,19 @@ export class InputManager {
 
       // State-Specific Routing
       switch(state) {
-        case 'START':
+        case GAME_STATES.START:
           if (e.code === 'Space' || e.code === 'Enter') {
             this.game.startGame();
           }
           break;
 
-        case 'GAMEOVER':
+        case GAME_STATES.GAMEOVER:
           if (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape') {
             this.game.restartGame();
           }
           break;
 
-        case 'PLAYING':
+        case GAME_STATES.PLAYING:
           if (e.code === 'ArrowLeft') this.game.player.dir = -1;
           if (e.code === 'ArrowRight') this.game.player.dir = 1;
           if (e.code === 'Space') {
@@ -67,7 +71,7 @@ export class InputManager {
           }
           break;
 
-        case 'PAUSED':
+        case GAME_STATES.PAUSED:
           if (e.code === 'Space' || e.code === 'Enter') {
             this.game.togglePause(); // Resume
           } else if (e.code === 'Escape') {
@@ -75,11 +79,11 @@ export class InputManager {
           }
           break;
 
-        case 'HIGHSCORE':
+        case GAME_STATES.HIGHSCORE:
           this.game.ui.handleNameInputKey(e);
           break;
 
-        case 'BOSSKILLED':
+        case GAME_STATES.BOSSKILLED:
           if (e.code === 'Space' || e.code === 'Enter') {
             this.game.ui.hideBossClear();
           }
@@ -88,7 +92,7 @@ export class InputManager {
     });
 
     document.addEventListener('keyup', (e) => {
-      if (this.game.state !== 'PLAYING') return;
+      if (this.game.state !== CONSTANTS.GAME_STATES.PLAYING) return;
       
       if (e.code === 'ArrowLeft' && this.game.player.dir === -1) this.game.player.dir = 0;
       if (e.code === 'ArrowRight' && this.game.player.dir === 1) this.game.player.dir = 0;
@@ -116,39 +120,41 @@ export class InputManager {
       });
     };
 
-    handleTouch('btn-left', (active) => {
-      if (this.game.state === 'PLAYING') this.game.player.dir = active ? -1 : 0;
+    handleTouch(CONSTANTS.ID_BTN_LEFT, (active) => {
+      if (this.game.state === CONSTANTS.GAME_STATES.PLAYING) this.game.player.dir = active ? -1 : 0;
     });
 
-    handleTouch('btn-right', (active) => {
-      if (this.game.state === 'PLAYING') this.game.player.dir = active ? 1 : 0;
+    handleTouch(CONSTANTS.ID_BTN_RIGHT, (active) => {
+      if (this.game.state === CONSTANTS.GAME_STATES.PLAYING) this.game.player.dir = active ? 1 : 0;
     });
 
-    handleTouch('btn-shoot', (active, e) => {
+    handleTouch(CONSTANTS.ID_BTN_SHOOT, (active, e) => {
       if (!active) return;
+      const { state } = this.game;
+      const { GAME_STATES } = CONSTANTS;
       
-      switch(this.game.state) {
-        case 'START':
+      switch(state) {
+        case GAME_STATES.START:
           this.game.startGame();
           break;
-        case 'GAMEOVER':
+        case GAME_STATES.GAMEOVER:
           this.game.restartGame();
           break;
-        case 'PLAYING':
+        case GAME_STATES.PLAYING:
           this.game.spacePressed = !this.game.spacePressed;
           this.game.ui.setShootActive(this.game.spacePressed);
           break;
-        case 'PAUSED':
+        case GAME_STATES.PAUSED:
           this.game.togglePause();
           break;
-        case 'BOSSKILLED':
+        case GAME_STATES.BOSSKILLED:
           this.game.ui.hideBossClear();
           break;
       }
     });
 
-    handleTouch('btn-pause', (active) => {
-      if (active && (this.game.state === 'PLAYING' || this.game.state === 'PAUSED')) {
+    handleTouch(CONSTANTS.ID_BTN_PAUSE, (active) => {
+      if (active && (this.game.state === CONSTANTS.GAME_STATES.PLAYING || this.game.state === CONSTANTS.GAME_STATES.PAUSED)) {
         this.game.togglePause();
       }
     });

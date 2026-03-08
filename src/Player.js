@@ -8,7 +8,7 @@ export class Player {
     this.w = CONSTANTS.PLAYER_W;
     this.h = CONSTANTS.PLAYER_H;
     this.x = W / 2 - this.w / 2;
-    this.y = H - 60;
+    this.y = H - CONSTANTS.PLAYER_Y_OFFSET;
     this.speed = CONSTANTS.PLAYER_SPEED;
     this.dir = 0;
     
@@ -73,7 +73,7 @@ export class Player {
 
   reset() {
     this.x = this.W / 2 - this.w / 2;
-    this.y = this.H - 80;
+    this.y = this.H - CONSTANTS.PLAYER_Y_OFFSET;
     this.dir = 0;
     this.pods.left = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };
     this.pods.right = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };

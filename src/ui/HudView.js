@@ -1,4 +1,4 @@
-import { COLORS } from '../constants.js';
+import { COLORS, CONSTANTS } from '../constants.js';
 import { BaseView } from './BaseView.js';
 
 export class HudView extends BaseView {
@@ -10,8 +10,8 @@ export class HudView extends BaseView {
   }
 
   init() {
-    const padding = 15;
-    const y = 15;
+    const padding = CONSTANTS.UI_PADDING;
+    const y = CONSTANTS.UI_HUD_Y;
     const colWidth = (this.game.W - padding * 2) / 4;
 
     this.hudTexts.score = this.createHudText('Score: 0', padding, y, this.parseHexColor(COLORS.invader2));
@@ -19,7 +19,7 @@ export class HudView extends BaseView {
     this.hudTexts.lives = this.createHudText('Lives: 3', padding + colWidth * 2, y, this.parseHexColor(COLORS.heal));
     this.hudTexts.shield = this.createHudText('Shield: NONE', padding + colWidth * 3, y, this.parseHexColor(COLORS.shield));
 
-    const y2 = y + 25;
+    const y2 = y + CONSTANTS.UI_HUD_Y2_OFFSET;
     this.hudTexts.pierce = this.createHudText('Pierce: NONE', padding, y2, this.parseHexColor(COLORS.pierce));
     this.hudTexts.damage = this.createHudText('Damage: 1', padding + colWidth, y2, this.parseHexColor(COLORS.invader2));
     this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, this.parseHexColor(COLORS.rocket));
@@ -31,11 +31,16 @@ export class HudView extends BaseView {
     container.position.set(x, y);
     const labelStr = text.split(': ')[0] + ': ';
     const valStr = text.split(': ')[1];
-    const label = new PIXI.Text(labelStr, { fontFamily: 'Orbitron', fontSize: 16, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text) });
+
+    const label = new PIXI.Text(labelStr, { 
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_HUD, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text) 
+    });
+    
     const value = new PIXI.Text(valStr, {
-      fontFamily: 'Orbitron', fontSize: 16, fontWeight: 'bold', fill: valueColor,
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_HUD, fontWeight: 'bold', fill: valueColor,
       dropShadow: true, dropShadowColor: valueColor, dropShadowBlur: 8
     });
+    
     value.x = label.width;
     container.addChild(label, value);
     this.container.addChild(container);
@@ -66,10 +71,10 @@ export class HudView extends BaseView {
   }
 
   updateLayout(W, H) {
-    const padding = 15;
-    const y = 15;
+    const padding = CONSTANTS.UI_PADDING;
+    const y = CONSTANTS.UI_HUD_Y;
     const colWidth = (W - padding * 2) / 4;
-    const y2 = y + 25;
+    const y2 = y + CONSTANTS.UI_HUD_Y2_OFFSET;
 
     this.hudTexts.score.container.position.set(padding, y);
     this.hudTexts.level.container.position.set(padding + colWidth, y);

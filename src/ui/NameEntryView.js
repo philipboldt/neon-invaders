@@ -12,7 +12,7 @@ export class NameEntryView extends BaseView {
 
   init() {
     this.header = new PIXI.Text('NEW HIGH SCORE!', {
-      fontFamily: 'Orbitron', fontSize: 36, fontWeight: 'bold', fill: this.parseHexColor(COLORS.invader2),
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_NAME_ENTRY_HEADER, fontWeight: 'bold', fill: this.parseHexColor(COLORS.invader2),
       dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.invader2), dropShadowBlur: 10
     });
     this.header.anchor.set(0.5, 0);
@@ -22,10 +22,10 @@ export class NameEntryView extends BaseView {
     // Create 3 slots for characters
     for (let i = 0; i < 3; i++) {
       const slot = new PIXI.Container();
-      slot.position.set((i - 1) * 80, 0);
+      slot.position.set((i - 1) * CONSTANTS.UI_NAME_ENTRY_GAP, 0);
 
       const charText = new PIXI.Text('A', {
-        fontFamily: 'Orbitron', fontSize: 64, fontWeight: 900, fill: 0xFFFFFF
+        fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_NAME_ENTRY_CHAR, fontWeight: 900, fill: 0xFFFFFF
       });
       charText.anchor.set(0.5);
       
@@ -79,9 +79,9 @@ export class NameEntryView extends BaseView {
   }
 
   updateLayout(W, H) {
-    this.header.position.set(W / 2, 120);
-    this.entryContainer.position.set(W / 2, 240);
-    this.footer.position.set(W / 2, 340);
+    this.header.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_HEADER_Y);
+    this.entryContainer.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_SLOTS_Y);
+    this.footer.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_FOOTER_Y);
   }
 
   update(now) {

@@ -10,12 +10,12 @@ export class GameOverView extends BaseView {
   init() {
     this.titleContainer = new PIXI.Container();
     const titleText = new PIXI.Text(CONSTANTS.TITLE, {
-      fontFamily: 'Orbitron', fontSize: 48, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_TITLE, fontWeight: 900, fill: this.parseHexColor(COLORS.text), letterSpacing: 8,
       dropShadow: true, dropShadowColor: this.parseHexColor(COLORS.text), dropShadowBlur: 15, dropShadowDistance: 0
     });
     titleText.anchor.set(0.5, 0);
     const versionText = new PIXI.Text(CONSTANTS.VERSION, {
-      fontFamily: 'Orbitron', fontSize: 14, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SUBTITLE, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), alpha: 0.6
     });
     versionText.anchor.set(0.5, 0);
     versionText.position.set(0, 55);
@@ -48,7 +48,7 @@ export class GameOverView extends BaseView {
     this.highscoreContainer.removeChildren();
     
     const header = new PIXI.Text('HIGH SCORES', {
-      fontFamily: 'Orbitron', fontSize: 24, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
+      fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_HEADER, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
     });
     header.anchor.set(0.5, 0);
     this.highscoreContainer.addChild(header);
@@ -58,7 +58,7 @@ export class GameOverView extends BaseView {
       entryContainer.position.set(0, 45 + i * 35);
       const color = i === 0 ? COLORS.invader2 : (i === 1 ? COLORS.text : COLORS.invader3);
       const style = {
-        fontFamily: 'Orbitron', fontSize: 20, fontWeight: 'bold', fill: this.parseHexColor(color),
+        fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_SCORE_ITEM, fontWeight: 'bold', fill: this.parseHexColor(color),
         dropShadow: true, dropShadowColor: this.parseHexColor(color), dropShadowBlur: 5
       };
       const rank = new PIXI.Text(`${i + 1}.`, style); rank.anchor.set(1, 0); rank.position.set(-80, 0);
@@ -78,9 +78,9 @@ export class GameOverView extends BaseView {
 
   update(now) {
     if (this.container.visible) {
-      const scale = 1 + Math.sin(now / 500) * 0.03;
+      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
       this.titleContainer.scale.set(scale);
-      this.restartPrompt.alpha = 0.5 + Math.sin(now / 300) * 0.5;
+      this.restartPrompt.alpha = 0.5 + Math.sin(now / CONSTANTS.ANIM_BLINK_SPEED) * 0.5;
     }
   }
 }

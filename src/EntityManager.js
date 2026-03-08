@@ -9,18 +9,18 @@ export class EntityManager {
 
   initInvaders() {
     this.game.invaders = [];
-    const gap = 8;
+    const gap = CONSTANTS.INVADER_GAP;
     
     const isPortrait = this.game.H > this.game.W;
-    let baseCols = isPortrait ? 6 : 11;
-    let baseRows = isPortrait ? 9 : 5;
+    let baseCols = isPortrait ? CONSTANTS.INVADER_COLS_BASE_PORTRAIT : CONSTANTS.INVADER_COLS_BASE_LANDSCAPE;
+    let baseRows = isPortrait ? CONSTANTS.INVADER_ROWS_BASE_PORTRAIT : CONSTANTS.INVADER_ROWS_BASE_LANDSCAPE;
 
-    const rows = Math.min(baseRows + Math.floor(this.game.level / 2), isPortrait ? 12 : CONSTANTS.INVADER_MAX_ROWS);
-    const cols = Math.min(baseCols + Math.floor(this.game.level / 3), isPortrait ? 8 : CONSTANTS.INVADER_MAX_COLS);
+    const rows = Math.min(baseRows + Math.floor(this.game.level / 2), isPortrait ? CONSTANTS.INVADER_MAX_ROWS + 5 : CONSTANTS.INVADER_MAX_ROWS);
+    const cols = Math.min(baseCols + Math.floor(this.game.level / 3), isPortrait ? CONSTANTS.INVADER_MAX_COLS - 6 : CONSTANTS.INVADER_MAX_COLS);
     
     const totalGridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
     let startX = (this.game.W - totalGridW) / 2;
-    let startY = 140; // Increased for title clearance
+    let startY = CONSTANTS.INVADER_START_Y;
     
     const isBossLevel = this.game.level % 10 === 0;
     const isMiniBossLevel = this.game.level % 10 === 5;
@@ -71,7 +71,7 @@ export class EntityManager {
 
   updateInvaders(now) {
     if (this.game.invaders.length > 0) {
-      const speed = (CONSTANTS.INVADER_SPEED_BASE + this.game.level * CONSTANTS.INVADER_SPEED_INC) / 60;
+      const speed = (CONSTANTS.INVADER_SPEED_BASE + this.game.level * CONSTANTS.INVADER_SPEED_INC) / CONSTANTS.FPS_TARGET;
       let moveDown = false;
       const margin = CONSTANTS.INVADER_MARGIN;
       const moveX = this.game.invaderDir * speed;

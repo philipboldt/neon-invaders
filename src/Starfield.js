@@ -1,13 +1,11 @@
+import { CONSTANTS } from './constants.js';
+
 export class Starfield {
   constructor(W, H, game) {
     this.W = W;
     this.H = H;
     this.game = game;
-    this.layers = [
-      { size: 1, speed: 2.5, count: 50, stars: [] }, 
-      { size: 2, speed: 1.2, count: 30, stars: [] },
-      { size: 3, speed: 0.5, count: 15, stars: [] }  
-    ];
+    this.layers = CONSTANTS.STAR_LAYERS.map(l => ({ ...l, stars: [] }));
     this.container = new PIXI.Container();
     this.game.bgLayer.addChild(this.container);
     this.init();
@@ -15,7 +13,7 @@ export class Starfield {
 
   init() {
     this.layers.forEach((layer, index) => {
-      const opacity = 0.2 + (index * 0.3);
+      const opacity = CONSTANTS.STAR_ALPHA_BASE + (index * CONSTANTS.STAR_ALPHA_INC);
       for (let i = 0; i < layer.count; i++) {
         const g = new PIXI.Graphics();
         g.beginFill(0xFFFFFF, opacity);
