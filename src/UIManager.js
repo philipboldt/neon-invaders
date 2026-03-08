@@ -250,7 +250,11 @@ export class UIManager {
     if (this.debugText) this.debugText.position.set(game.W / 2, 160);
     if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
     if (this.helpPixiContainer) this.helpPixiContainer.position.set(game.W / 2, 220);
-    if (this.startPromptText) this.startPromptText.position.set(game.W / 2, 380);
+    if (this.startPromptText) {
+      // Position about 60 pixels above the player ship
+      const playerY = game.H - 80;
+      this.startPromptText.position.set(game.W / 2, playerY - 60);
+    }
   }
 
   setShootActive(isActive) {
