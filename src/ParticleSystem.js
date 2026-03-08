@@ -33,10 +33,6 @@ export class ParticleSystem {
     return this.freeIndices.pop();
   }
 
-  get hasActiveParticles() {
-    return this.activeIndices.length > 0;
-  }
-
   reset() {
     for (let i = this.activeIndices.length - 1; i >= 0; i--) {
       const idx = this.activeIndices[i];
@@ -284,8 +280,9 @@ export class ParticleSystem {
     }
   }
 
-  parseColor(hex) {
-    return parseInt(hex.replace('#', '0x'));
+  parseColor(color) {
+    if (typeof color === 'number') return color;
+    return parseInt(color.replace('#', '0x'));
   }
 
   update() {
@@ -294,7 +291,6 @@ export class ParticleSystem {
       const p = this.pool[idx];
       
       p.x += p.vx;
-      // Scale vertical movement by height factor
       p.y += p.vy * this.game.heightFactor;
       p.life++;
       const t = p.life / p.maxLife;

@@ -20,7 +20,7 @@ export class EntityManager {
     
     const totalGridW = cols * (CONSTANTS.INVADER_W + gap) - gap;
     let startX = (this.game.W - totalGridW) / 2;
-    let startY = 100; // Adjusted for new in-canvas title
+    let startY = 140; // Increased for title clearance
     
     const isBossLevel = this.game.level % 10 === 0;
     const isMiniBossLevel = this.game.level % 10 === 5;

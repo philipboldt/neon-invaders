@@ -311,7 +311,17 @@ export class Game {
 
     if (this.state !== CONSTANTS.GAME_STATES.PLAYING) return;
     
-    if (this.invaders.length === 0 && this.invaderBullets.length === 0 && !this.particles.hasActiveParticles && this.rockets.length === 0 && this.bossMissiles.length === 0 && this.upgrades.length === 0 && this.activeLightning === null) {
+    // Level end condition: everything must be cleared
+    const noInvaders = this.invaders.length === 0;
+    const noInvaderBullets = this.invaderBullets.length === 0;
+    const noPlayerBullets = this.bullets.length === 0;
+    const noRockets = this.rockets.length === 0;
+    const noMissiles = this.bossMissiles.length === 0;
+    const noUpgrades = this.upgrades.length === 0;
+    const noParticles = !this.particles.hasActiveParticles;
+    const noLightning = this.activeLightning === null;
+
+    if (noInvaders && noInvaderBullets && noPlayerBullets && noParticles && noRockets && noMissiles && noUpgrades && noLightning) {
       const isBossOrMiniBoss = this.level % 5 === 0;
       const rewards = ['+2 Max Health', '+2 Max Damage'];
       if (this.level === CONSTANTS.BOSS_UNLOCK_LEFT) rewards.push('Left Pod Unlocked: PDC');

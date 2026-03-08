@@ -63,7 +63,7 @@ export const CONSTANTS = {
   
   // Upgrades
   UPGRADE_TYPES: ['shield', 'double', 'rocket', 'pierce', 'heal', 'points'],
-  DROP_CHANCE: 0.18, UPGRADE_FALL_SPEED: 3,
+  DROP_CHANCE: 0.18, UPGRADE_FALL_SPEED: 3, UPGRADE_SPEED: 3,
   UPGRADE_W: 24, UPGRADE_H: 24,
   
   // Effects & Particles
