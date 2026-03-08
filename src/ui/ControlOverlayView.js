@@ -64,9 +64,15 @@ export class ControlOverlayView extends BaseView {
   }
 
   update(state) {
-    // Only show control overlay on coarsy (touch) devices effectively
-    // But we keep it visible for all now to help players learn
+    // Only show control overlay on coarse (touch) devices
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (!isTouch) {
+      this.container.visible = false;
+      return;
+    }
+
     const isPlaying = state === CONSTANTS.GAME_STATES.PLAYING;
+    this.container.visible = true;
     this.labels.alpha = isPlaying ? 0.4 : 1.0;
   }
 }
