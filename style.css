@@ -181,7 +181,7 @@ body::before {
 }
 
 #overlay {
-  background: rgba(10, 10, 15, 0.85);
+  background: transparent;
 }
 
 #boss-clear-screen {
