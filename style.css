@@ -43,27 +43,13 @@ body::before {
 
 @media (orientation: landscape) {
   .canvas-container {
-    /* Best Fit: Fill height, derive width from 4:3 ratio */
     width: auto;
     height: auto;
-    max-height: calc(100vh - 100px); /* Leave room for title/controls */
+    max-height: calc(100vh - 80px);
     aspect-ratio: 4 / 3;
     flex-grow: 0;
     max-width: 95vw;
   }
-}
-
-.title {
-  font-size: min(1.8rem, 5vw);
-  font-weight: 900;
-  letter-spacing: 0.3em;
-  margin-bottom: 0.5rem;
-  flex-shrink: 0;
-  width: 100%;
-  text-align: center;
-  text-shadow:
-    0 0 10px #00f5ff,
-    0 0 20px #00f5ff;
 }
 
 .canvas-container {
@@ -87,7 +73,6 @@ body::before {
 
 #game {
   display: block;
-  /* Size will be set dynamically via JS style.width/height */
   max-width: 100%;
   max-height: 100%;
   touch-action: none;
@@ -125,7 +110,6 @@ body::before {
   transition: all 0.1s;
   min-width: 60px;
   min-height: 60px;
-  /* recommended tap target size */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,17 +139,6 @@ body::before {
   box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
 }
 
-.touch-btn.shoot {
-  flex-grow: 1;
-  max-width: 200px;
-  font-size: 1.2rem;
-  letter-spacing: 0.1em;
-  background: rgba(57, 255, 20, 0.1);
-  border-color: #39ff14;
-  color: #39ff14;
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
-}
-
 .touch-btn.pause {
   background: rgba(255, 102, 0, 0.1);
   border-color: #ff6600;
@@ -181,7 +154,6 @@ body::before {
 @media (pointer: coarse) {
   .controls {
     display: none;
-    /* hide keyboard instructions on mobile */
   }
 
   .touch-controls {
@@ -191,12 +163,7 @@ body::before {
   .hud {
     font-size: 0.75rem;
   }
-
-  .title {
-    font-size: 1.5rem;
-  }
 }
-
 
 .overlay {
   position: fixed;
@@ -471,13 +438,6 @@ body::before {
 }
 
 @keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }

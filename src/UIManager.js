@@ -56,6 +56,35 @@ export class UIManager {
     this.hudTexts.rocket = this.createHudText('Rocket: NONE', padding + colWidth * 2, y2, this.parseHexColor(COLORS.rocket));
     this.hudTexts.fps = this.createHudText('FPS: 60', padding + colWidth * 3, y2, this.parseHexColor(COLORS.textYellow));
 
+    // Main Title Overlay
+    this.mainTitleContainer = new PIXI.Container();
+    
+    this.mainTitleText = new PIXI.Text('NEON INVADERS', {
+      fontFamily: 'Orbitron',
+      fontSize: 48,
+      fontWeight: 900,
+      fill: this.parseHexColor(COLORS.text),
+      letterSpacing: 8,
+      dropShadow: true,
+      dropShadowColor: this.parseHexColor(COLORS.text),
+      dropShadowBlur: 15,
+      dropShadowDistance: 0
+    });
+    this.mainTitleText.anchor.set(0.5, 0);
+    
+    this.versionText = new PIXI.Text(CONSTANTS.VERSION, {
+      fontFamily: 'Orbitron',
+      fontSize: 14,
+      fontWeight: 'bold',
+      fill: this.parseHexColor(COLORS.text),
+      alpha: 0.6
+    });
+    this.versionText.anchor.set(0.5, 0);
+    this.versionText.position.set(0, 55);
+
+    this.mainTitleContainer.addChild(this.mainTitleText, this.versionText);
+    this.game.uiLayer.addChild(this.mainTitleContainer);
+
     this.debugText = new PIXI.Text('DEBUG MODE', {
       fontFamily: 'Orbitron',
       fontSize: 56,
@@ -208,7 +237,11 @@ export class UIManager {
     if (this.hudTexts.rocket) this.hudTexts.rocket.container.position.set(padding + colWidth * 2, y2);
     if (this.hudTexts.fps) this.hudTexts.fps.container.position.set(padding + colWidth * 3, y2);
 
-    if (this.debugText) this.debugText.position.set(game.W / 2, 72);
+    if (this.mainTitleContainer) {
+      this.mainTitleContainer.position.set(game.W / 2, 80);
+    }
+
+    if (this.debugText) this.debugText.position.set(game.W / 2, 160);
   }
 
   setShootActive(isActive) {
@@ -216,6 +249,10 @@ export class UIManager {
   }
 
   showStartScreen() {
+    if (this.mainTitleContainer) {
+      this.mainTitleContainer.alpha = 1.0;
+      this.mainTitleText.style.dropShadow = true;
+    }
     this.els.startScreen.classList.remove('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -223,6 +260,10 @@ export class UIManager {
   }
 
   hideScreens() {
+    if (this.mainTitleContainer) {
+      this.mainTitleContainer.alpha = 0.15;
+      this.mainTitleText.style.dropShadow = false;
+    }
     this.els.startScreen.classList.add('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');

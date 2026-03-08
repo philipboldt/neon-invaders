@@ -17,6 +17,14 @@ export class Renderer {
     // Logic-to-UI sync (dirty checks inside updateStats)
     this.game.ui.updateStats(this.game);
     
+    // Breathing animation for title if visible
+    if (this.game.ui.mainTitleContainer && this.game.ui.mainTitleContainer.alpha > 0.5) {
+      const scale = 1 + Math.sin(performance.now() / 500) * 0.03;
+      this.game.ui.mainTitleContainer.scale.set(scale);
+    } else if (this.game.ui.mainTitleContainer) {
+      this.game.ui.mainTitleContainer.scale.set(1.0);
+    }
+    
     // Explicitly clear transient effects if they were reset
     if (!this.game.activeLightning && this.game.weapons.lightningGraphics) {
       this.game.weapons.lightningGraphics.clear();
