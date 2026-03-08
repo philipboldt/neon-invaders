@@ -33,8 +33,6 @@ export class UIManager {
     this.currentCharIndex = 0;
     this.chars = ['A', 'A', 'A'];
     this.pendingScore = 0;
-    this.updateHighScores();
-    this.bindNameInputTouch();
     this.hudTexts = {};
   }
 
@@ -110,6 +108,17 @@ export class UIManager {
     this.watermarkContainer.visible = false;
     this.game.bgLayer.addChild(this.watermarkContainer);
 
+    // 3. Highscore Container (Pixi)
+    this.highscorePixiContainer = new PIXI.Container();
+    this.highscorePixiContainer.visible = false;
+    this.game.uiLayer.addChild(this.highscorePixiContainer);
+
+    // 4. Help Container (Pixi)
+    this.helpPixiContainer = new PIXI.Container();
+    this.helpPixiContainer.visible = false;
+    this.game.uiLayer.addChild(this.helpPixiContainer);
+    this.createPixiHelp();
+
     this.debugText = new PIXI.Text('DEBUG MODE', {
       fontFamily: 'Orbitron',
       fontSize: 56,
@@ -123,6 +132,68 @@ export class UIManager {
     this.debugText.position.set(this.game.W / 2, 160);
     this.debugText.visible = false;
     this.game.uiLayer.addChild(this.debugText);
+
+    this.updateHighScores();
+  }
+
+  createPixiHelp() {
+    const header = new PIXI.Text('UPGRADES', {
+      fontFamily: 'Orbitron',
+      fontSize: 24,
+      fontWeight: 'bold',
+      fill: this.parseHexColor(COLORS.text),
+      letterSpacing: 4
+    });
+    header.anchor.set(0.5, 0);
+    this.helpPixiContainer.addChild(header);
+
+    const upgrades = [
+      { name: 'Shield', color: COLORS.shield, desc: 'Permanent recharge system' },
+      { name: 'Double', color: COLORS.double, desc: 'Add projectile (max 4), then +1 damage' },
+      { name: 'Rocket', color: COLORS.rocket, desc: 'Auto-targeting missile' },
+      { name: 'Pierce', color: COLORS.pierce, desc: 'Shot passes through 1 enemy on kill' },
+      { name: 'Heal', color: COLORS.heal, desc: 'Restores 1 life' },
+      { name: 'Points', color: COLORS.points, desc: 'Gives Level x 100 Bonus Points' }
+    ];
+
+    upgrades.forEach((u, i) => {
+      const row = new PIXI.Container();
+      row.position.set(-180, 45 + i * 30);
+
+      const dot = new PIXI.Graphics();
+      dot.beginFill(this.parseHexColor(u.color));
+      dot.drawCircle(0, 8, 6);
+      dot.endFill();
+      
+      const label = new PIXI.Text(u.name + ':', {
+        fontFamily: 'Orbitron',
+        fontSize: 14,
+        fontWeight: 'bold',
+        fill: this.parseHexColor(u.color)
+      });
+      label.position.set(20, 0);
+
+      const desc = new PIXI.Text(u.desc, {
+        fontFamily: 'Orbitron',
+        fontSize: 12,
+        fill: 0xFFFFFF,
+        alpha: 0.8
+      });
+      desc.position.set(100, 2);
+
+      row.addChild(dot, label, desc);
+      this.helpPixiContainer.addChild(row);
+    });
+
+    const footer = new PIXI.Text('ESC: End Game · H or Tap to continue', {
+      fontFamily: 'Orbitron',
+      fontSize: 12,
+      fill: this.parseHexColor(COLORS.text),
+      alpha: 0.7
+    });
+    footer.anchor.set(0.5, 0);
+    footer.position.set(0, 240);
+    this.helpPixiContainer.addChild(footer);
   }
 
   parseHexColor(hex) {
@@ -132,17 +203,14 @@ export class UIManager {
   createHudText(text, x, y, valueColor) {
     const container = new PIXI.Container();
     container.position.set(x, y);
-    
     const labelStr = text.split(': ')[0] + ': ';
     const valStr = text.split(': ')[1];
-
     const label = new PIXI.Text(labelStr, {
       fontFamily: 'Orbitron',
       fontSize: 16,
       fontWeight: 'bold',
       fill: this.parseHexColor(COLORS.text)
     });
-    
     const value = new PIXI.Text(valStr, {
       fontFamily: 'Orbitron',
       fontSize: 16,
@@ -152,7 +220,6 @@ export class UIManager {
       dropShadowColor: valueColor,
       dropShadowBlur: 8
     });
-    
     value.x = label.width;
     container.addChild(label, value);
     this.game.uiLayer.addChild(container);
@@ -162,28 +229,23 @@ export class UIManager {
   bindNameInputTouch() {
     this.els.touchArrows.forEach(arrow => {
       arrow.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         const index = parseInt(arrow.dataset.index);
         const dir = arrow.dataset.dir;
         this.currentCharIndex = index;
         this.changeChar(index, dir === 'up' ? 1 : -1);
       });
     });
-
     if (this.els.saveNameBtn) {
       this.els.saveNameBtn.addEventListener('pointerdown', (e) => {
         if (!this.nameInputActive) return;
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         this.saveHighscore();
       });
     }
-
     this.els.charEls.forEach((charEl, index) => {
       charEl.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         this.currentCharIndex = index;
         this.updateCharDisplay();
       });
@@ -232,12 +294,10 @@ export class UIManager {
     const padding = 15;
     const y = 15;
     const colWidth = (game.W - padding * 2) / 4;
-
     if (this.hudTexts.score) this.hudTexts.score.container.position.set(padding, y);
     if (this.hudTexts.level) this.hudTexts.level.container.position.set(padding + colWidth, y);
     if (this.hudTexts.lives) this.hudTexts.lives.container.position.set(padding + colWidth * 2, y);
     if (this.hudTexts.shield) this.hudTexts.shield.container.position.set(padding + colWidth * 3, y);
-
     const y2 = y + 25;
     if (this.hudTexts.pierce) this.hudTexts.pierce.container.position.set(padding, y2);
     if (this.hudTexts.damage) this.hudTexts.damage.container.position.set(padding + colWidth, y2);
@@ -247,6 +307,8 @@ export class UIManager {
     if (this.mainTitleContainer) this.mainTitleContainer.position.set(game.W / 2, 100);
     if (this.watermarkContainer) this.watermarkContainer.position.set(20, game.H - 45);
     if (this.debugText) this.debugText.position.set(game.W / 2, 160);
+    if (this.highscorePixiContainer) this.highscorePixiContainer.position.set(game.W / 2, 220);
+    if (this.helpPixiContainer) this.helpPixiContainer.position.set(game.W / 2, 220);
   }
 
   setShootActive(isActive) {
@@ -254,11 +316,10 @@ export class UIManager {
   }
 
   showStartScreen() {
-    if (this.mainTitleContainer) {
-      this.mainTitleContainer.alpha = 1.0;
-      this.mainTitleText.style.dropShadow = true;
-    }
+    if (this.mainTitleContainer) { this.mainTitleContainer.alpha = 1.0; this.mainTitleText.style.dropShadow = true; }
     if (this.watermarkContainer) this.watermarkContainer.visible = false;
+    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
+    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
     this.els.startScreen.classList.remove('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -268,6 +329,8 @@ export class UIManager {
   hideScreens() {
     if (this.mainTitleContainer) this.mainTitleContainer.alpha = 0;
     if (this.watermarkContainer) this.watermarkContainer.visible = true;
+    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
+    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
     this.els.startScreen.classList.add('hidden');
     this.els.overlay.classList.add('hidden');
     this.els.helpScreen.classList.add('hidden');
@@ -276,18 +339,17 @@ export class UIManager {
   }
 
   showGameOver(won) {
-    if (this.mainTitleContainer) {
-      this.mainTitleContainer.alpha = 1.0;
-      this.mainTitleText.style.dropShadow = true;
-    }
+    if (this.mainTitleContainer) { this.mainTitleContainer.alpha = 1.0; this.mainTitleText.style.dropShadow = true; }
     if (this.watermarkContainer) this.watermarkContainer.visible = false;
+    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
+    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
     this.els.overlay.classList.remove('hidden');
     this.els.overlayText.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     this.els.overlayText.classList.toggle('win', won);
-    this.nameInputActive = false;
-    this.bossClearActive = false;
+    this.nameInputActive = false; this.bossClearActive = false;
     this.els.nameInputContainer.classList.add('hidden');
     this.els.bossClearScreen.classList.add('hidden');
+    this.updateHighScores();
   }
 
   showBossClear(level, rewards) {
@@ -295,8 +357,7 @@ export class UIManager {
     this.els.bossLevelText.textContent = `LEVEL ${level} COMPLETE`;
     this.els.rewardList.innerHTML = '';
     rewards.forEach(r => {
-      const li = document.createElement('li');
-      li.textContent = r;
+      const li = document.createElement('li'); li.textContent = r;
       this.els.rewardList.appendChild(li);
     });
     this.els.bossClearScreen.classList.remove('hidden');
@@ -308,11 +369,10 @@ export class UIManager {
   }
 
   showNameInput(score) {
-    if (this.mainTitleContainer) {
-      this.mainTitleContainer.alpha = 1.0;
-      this.mainTitleText.style.dropShadow = true;
-    }
+    if (this.mainTitleContainer) { this.mainTitleContainer.alpha = 1.0; this.mainTitleText.style.dropShadow = true; }
     if (this.watermarkContainer) this.watermarkContainer.visible = false;
+    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
+    if (this.helpPixiContainer) this.helpPixiContainer.visible = false;
     this.pendingScore = score;
     this.nameInputActive = true;
     this.currentCharIndex = 0;
@@ -348,15 +408,14 @@ export class UIManager {
     this.nameInputActive = false;
     this.els.nameInputContainer.classList.add('hidden');
     this.els.overlayText.textContent = 'SCORE SAVED!';
+    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = true;
   }
 
   toggleHelp(isVisible) {
-    if (this.mainTitleContainer) {
-      this.mainTitleContainer.alpha = isVisible ? 1.0 : 0;
-    }
-    if (this.watermarkContainer) {
-      this.watermarkContainer.visible = !isVisible;
-    }
+    if (this.mainTitleContainer) this.mainTitleContainer.alpha = isVisible ? 1.0 : 0;
+    if (this.watermarkContainer) this.watermarkContainer.visible = !isVisible;
+    if (this.highscorePixiContainer) this.highscorePixiContainer.visible = false;
+    if (this.helpPixiContainer) this.helpPixiContainer.visible = isVisible;
     this.els.helpScreen.classList.toggle('hidden', !isVisible);
   }
 
@@ -377,18 +436,28 @@ export class UIManager {
       scores = scores.slice(0, 3);
       try { localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores)); } catch (e) { console.warn('Failed to save highscore', e); }
     }
-    const listEls = document.querySelectorAll('.highscore-list');
-    listEls.forEach(listEl => {
-      listEl.innerHTML = '';
-      scores.forEach((entry, i) => {
-        const li = document.createElement('li');
-        const rankSpan = document.createElement('span'); rankSpan.className = 'rank'; rankSpan.textContent = `${i + 1}.`;
-        const nameSpan = document.createElement('span'); nameSpan.className = 'name'; nameSpan.textContent = entry.name;
-        const scoreSpan = document.createElement('span'); scoreSpan.className = 'score-val'; scoreSpan.textContent = entry.score.toString().padStart(5, '0');
-        li.appendChild(rankSpan); li.appendChild(nameSpan); li.appendChild(scoreSpan);
-        listEl.appendChild(li);
+    if (this.highscorePixiContainer) {
+      this.highscorePixiContainer.removeChildren();
+      const header = new PIXI.Text('HIGH SCORES', {
+        fontFamily: 'Orbitron', fontSize: 24, fontWeight: 'bold', fill: this.parseHexColor(COLORS.text), letterSpacing: 4
       });
-    });
+      header.anchor.set(0.5, 0);
+      this.highscorePixiContainer.addChild(header);
+      scores.forEach((entry, i) => {
+        const entryContainer = new PIXI.Container();
+        entryContainer.position.set(0, 45 + i * 35);
+        const color = i === 0 ? COLORS.invader2 : (i === 1 ? COLORS.text : COLORS.invader3);
+        const style = {
+          fontFamily: 'Orbitron', fontSize: 20, fontWeight: 'bold', fill: this.parseHexColor(color),
+          dropShadow: true, dropShadowColor: this.parseHexColor(color), dropShadowBlur: 5
+        };
+        const rank = new PIXI.Text(`${i + 1}.`, style); rank.anchor.set(1, 0); rank.position.set(-80, 0);
+        const name = new PIXI.Text(entry.name, style); name.anchor.set(0, 0); name.position.set(-60, 0);
+        const score = new PIXI.Text(entry.score.toString().padStart(5, '0'), style); score.anchor.set(0, 0); score.position.set(40, 0);
+        entryContainer.addChild(rank, name, score);
+        this.highscorePixiContainer.addChild(entryContainer);
+      });
+    }
   }
 
   isHighscore(score) {
@@ -400,6 +469,6 @@ export class UIManager {
         if (scores.length > 0 && typeof scores[0] === 'number') scores = scores.map(s => ({ name: '???' , score: s }));
       } else { scores = [{ score: 1000 }, { score: 500 }, { score: 250 }]; }
     } catch (e) { return false; }
-    return scores.length < 3 || score > scores[scores.length - 1].score;
+    return score > 0 && (scores.length < 3 || score > scores[scores.length - 1].score);
   }
 }

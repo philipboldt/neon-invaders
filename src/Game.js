@@ -282,10 +282,10 @@ export class Game {
   endGame(won) {
     this.gameRunning = false; this.spacePressed = false;
     this.ui.setShootActive(false);
+    
     if (this.ui.isHighscore(this.score)) {
       this.ui.showNameInput(this.score);
     } else {
-      this.ui.updateHighScores();
       this.ui.showGameOver(won);
     }
   }

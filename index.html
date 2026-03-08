@@ -13,20 +13,12 @@
   <div class="game-wrap">
     <div class="canvas-container">
       <canvas id="game"></canvas>
+      
+      <!-- Only keeping minimal interactive HTML elements that require complex DOM input -->
       <div id="help-screen" class="overlay hidden">
-        <h2>UPGRADES</h2>
-        <div class="upgrade-info">
-          <p><span class="dot" style="background: #00f5ff"></span> <strong>Shield:</strong> Permanent recharge system</p>
-          <p><span class="dot" style="background: #39ff14"></span> <strong>Double:</strong> Add projectile (max 4), then
-            +1 damage</p>
-          <p><span class="dot" style="background: #ff6600"></span> <strong>Rocket:</strong> Auto-targeting missile</p>
-          <p><span class="dot" style="background: #bc13fe"></span> <strong>Pierce:</strong> Shot passes through 1 enemy on
-            kill</p>
-          <p><span class="dot" style="background: #ff3366"></span> <strong>Heal:</strong> Restores 1 life</p>
-          <p><span class="dot" style="background: #ffff00"></span> <strong>Points:</strong> Gives Level x 100 Bonus Points</p>
-        </div>
-        <p class="small">ESC: End Game · H or Tap to continue</p>
+        <!-- Kept as pointer-event sink, content is now in Pixi -->
       </div>
+
       <div id="boss-clear-screen" class="overlay hidden">
         <h2 class="win">BOSS DEFEATED!</h2>
         <div class="reward-container">
@@ -39,6 +31,7 @@
         </div>
         <p class="blink">Press SPACE or Tap to continue</p>
       </div>
+
       <div id="overlay" class="overlay hidden">
         <div id="name-input-container" class="hidden">
           <h3>NEW HIGH SCORE!</h3>
@@ -62,29 +55,17 @@
           <button id="save-name" class="touch-btn shoot">SAVE NAME</button>
           <p class="small">ARROWS to change · ENTER to save</p>
         </div>
-        <div class="highscore-container">
-          <h2>HIGH SCORES</h2>
-          <ol class="highscore-list">
-            <li>---</li>
-            <li>---</li>
-            <li>---</li>
-          </ol>
-        </div>
+        
         <p id="overlay-text">GAME OVER</p>
         <button id="restart">Play again</button>
       </div>
+
       <div id="start-screen" class="overlay" tabindex="0">
-        <div class="highscore-container">
-          <h2>HIGH SCORES</h2>
-          <ol class="highscore-list">
-            <li>---</li>
-            <li>---</li>
-            <li>---</li>
-          </ol>
-        </div>
-        <p class="blink">Press SPACE or Tap to start</p>
+        <!-- Highscores are now in Pixi behind this overlay -->
+        <p class="blink" style="margin-top: 280px;">Press SPACE or Tap to start</p>
       </div>
     </div>
+
     <div id="touch-controls" class="touch-controls">
       <button id="btn-left" class="touch-btn">◀</button>
       <button id="btn-shoot" class="touch-btn shoot">SHOOT</button>
