@@ -9,7 +9,6 @@ import { WeaponManager } from './WeaponManager.js';
 import { EntityManager } from './EntityManager.js';
 import { CollisionManager } from './CollisionManager.js';
 import { Renderer } from './Renderer.js';
-import { drawRect } from './utils.js';
 
 export class Game {
   constructor(canvas) {
@@ -379,7 +378,7 @@ export class Game {
     }
     
     // Smooth Renderer updates (Screen shake, HUD dirty checks)
-    this.renderer.draw();
+    this.renderer.update();
 
     // Update FPS once per second
     if (now - this.lastFpsUpdate >= 1000) {

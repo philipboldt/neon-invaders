@@ -3,7 +3,7 @@ export class Renderer {
     this.game = game;
   }
 
-  draw() {
+  update() {
     // Screen Shake via Pixi Stage offset
     if (this.game.shake > 0) {
       this.game.stage.position.set(

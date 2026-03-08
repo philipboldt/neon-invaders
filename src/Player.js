@@ -1,5 +1,4 @@
 import { COLORS, CONSTANTS } from './constants.js';
-import { drawRect } from './utils.js';
 
 export class Player {
   constructor(W, H, game) {
@@ -78,21 +77,20 @@ export class Player {
     this.dir = 0;
     this.pods.left = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };
     this.pods.right = { active: false, hp: CONSTANTS.POD_MAX_HP, maxHp: CONSTANTS.POD_MAX_HP };
-    this.syncRender();
+    this.updateSpritePositions();
   }
 
   update() {
     this.x += this.dir * this.speed;
     
-    // Movement constraints based on active sidepods
     const leftLimit = this.pods.left.active ? this.podW + this.podGap : 0;
     const rightLimit = this.pods.right.active ? this.podW + this.podGap : 0;
     
     this.x = Math.max(leftLimit, Math.min(this.W - this.w - rightLimit, this.x));
-    this.syncRender();
+    this.updateSpritePositions();
   }
 
-  syncRender() {
+  updateSpritePositions() {
     if (!this.sprite) return;
     this.sprite.position.set(this.x, this.y);
     
@@ -102,7 +100,7 @@ export class Player {
       this.leftPodSprite.visible = true;
       this.leftPodSprite.position.set(this.x - this.podGap - this.podW, podY);
       const ratio = this.pods.left.hp / this.pods.left.maxHp;
-      this.leftPodSprite.tint = ratio >= 1 ? 0xFFFFFF : this.getTint(ratio);
+      this.leftPodSprite.tint = ratio >= 1 ? 0xFFFFFF : this.getHealthTint(ratio);
     } else {
       this.leftPodSprite.visible = false;
     }
@@ -111,7 +109,7 @@ export class Player {
       this.rightPodSprite.visible = true;
       this.rightPodSprite.position.set(this.x + this.w + this.podGap, podY);
       const ratio = this.pods.right.hp / this.pods.right.maxHp;
-      this.rightPodSprite.tint = ratio >= 1 ? 0xFFFFFF : this.getTint(ratio);
+      this.rightPodSprite.tint = ratio >= 1 ? 0xFFFFFF : this.getHealthTint(ratio);
     } else {
       this.rightPodSprite.visible = false;
     }
@@ -128,12 +126,8 @@ export class Player {
     }
   }
 
-  getTint(ratio) {
+  getHealthTint(ratio) {
     const val = Math.floor(255 * (0.45 + 0.55 * ratio));
     return (val << 16) | (val << 8) | val;
-  }
-
-  draw(ctx, shieldHits) {
-    // Legacy draw for progressive migration, will be removed later
   }
 }

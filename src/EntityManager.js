@@ -1,5 +1,4 @@
 import { COLORS, CONSTANTS } from './constants.js';
-import { drawRect, darkenColor } from './utils.js';
 
 export class EntityManager {
   constructor(game) {
