@@ -242,19 +242,47 @@ export class Game {
 
   spawnUpgrade(x, y) {
     if (Math.random() >= CONSTANTS.DROP_CHANCE) return;
-    const availableTypes = CONSTANTS.UPGRADE_TYPES.filter(type => {
-      if (type === 'shield' && this.hasShieldSystem) return false;
-      if (type === 'double' && this.shotCount >= CONSTANTS.PLAYER_MAX_SHOT_COUNT && this.playerDamage >= this.maxDamage) return false;
-      if (type === 'rocket' && this.rocketLevel >= CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) return false;
-      if (type === 'pierce' && this.hasPierce) return false;
-      if (type === 'heal' && this.lives >= this.maxLives) return false;
-      return true;
-    });
-    if (availableTypes.length === 0) return;
-    const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+    
+    // Roll a random type first
+    let type = CONSTANTS.UPGRADE_TYPES[Math.floor(Math.random() * CONSTANTS.UPGRADE_TYPES.length)];
+    
+    // Check if the rolled type is maxed, fallback to points
+    const isMaxed = 
+      (type === 'shield' && this.hasShieldSystem) ||
+      (type === 'double' && this.shotCount >= CONSTANTS.PLAYER_MAX_SHOT_COUNT && this.playerDamage >= this.maxDamage) ||
+      (type === 'rocket' && this.rocketLevel >= CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) ||
+      (type === 'pierce' && this.hasPierce) ||
+      (type === 'heal' && this.lives >= this.maxLives);
+
+    if (isMaxed) {
+      type = 'points';
+    }
     
     const upgrade = new Upgrade(this, x, y, type, this.level);
     this.upgrades.push(upgrade);
+  }
+
+  transformMaxedUpgrades() {
+    this.upgrades.forEach(u => {
+      if (u.type === 'points') return;
+
+      const isNowMaxed = 
+        (u.type === 'shield' && this.hasShieldSystem) ||
+        (u.type === 'double' && this.shotCount >= CONSTANTS.PLAYER_MAX_SHOT_COUNT && this.playerDamage >= this.maxDamage) ||
+        (u.type === 'rocket' && this.rocketLevel >= CONSTANTS.PLAYER_MAX_ROCKET_LEVEL) ||
+        (u.type === 'pierce' && this.hasPierce) ||
+        (u.type === 'heal' && this.lives >= this.maxLives);
+
+      if (isNowMaxed) {
+        // Change type
+        u.type = 'points';
+        // Re-init sprite visuals
+        if (u.sprite) {
+          u.sprite.texture = this.sprites.getTexture('upg_points');
+          this.addPointsTextToUpgrade(u);
+        }
+      }
+    });
   }
 
   updateEntities(now) {

@@ -123,6 +123,7 @@ export class CollisionManager {
         this.game.score += gain; text = `${gain} BONUS`; break;
     }
     this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, text);
+    this.game.transformMaxedUpgrades();
     this.game.ui.updateStats(this.game);
   }
 
