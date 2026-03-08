@@ -6,39 +6,34 @@ A high-performance, Space Invaders-style arcade shooter built with **PixiJS (Web
 
 ## ✨ Features
 
-- **WebGL Rendering:** Powered by **PixiJS v7** for ultra-smooth 60 FPS performance and hardware-accelerated effects.
-- **Sidepod System:** Unlock auxiliary pods by defeating bosses to enhance your ship:
+- **WebGL Rendering:** Powered by **PixiJS v7** for hardware-accelerated 60 FPS performance.
+- **Pure Canvas UI:** 100% of the game visuals, including menus, highscores, and name entry, are rendered within the WebGL context for a seamless, immersive experience.
+- **Sidepod System:** Unlock auxiliary pods by defeating bosses:
   - 🛡️ **Left Pod (PDC):** Automatic Point Defense Cannon that intercepts enemy projectiles.
-  - ⚡ **Right Pod (Lightning):** High-voltage discharge that automatically strikes random enemies.
-- **Dynamic Combat:** Fast-paced action with satisfying **Screen Shake**, particle explosions, and homing rockets.
-- **Boss Encounters:**
-  - **Mini-Bosses:** Spawn at levels ending in 5 with unique rewards.
-  - **True Bosses:** Massive enemies at levels ending in 0 with 250x health and massive power-up drops.
-- **Power-up System:**
-  - 🛡️ **Shield:** Permanent recharge system (absorbs one hit).
-  - ⚔️ **Double:** Increases shot count or damage.
-  - 🚀 **Rocket:** Homing missiles with massive area-of-effect damage.
-  - ⚡ **Pierce:** Fatal shots pass through enemies.
-  - ❤️ **Heal:** Restores lost lives.
-  - 💎 **Points:** Bonus points when stats are maxed out.
+  - ⚡ **Right Pod (Lightning):** High-voltage discharge that strikes random enemies.
+- **Dynamic Combat:** Satisfying **Screen Shake**, particle explosions, and homing rockets.
+- **RPG-Style Progression:** Increase your ship's "Potential" (Max Health & Damage) by defeating bosses.
 - **Responsive Proportional Scaling:** 
-  - **Landscape:** Fits a perfect 4:3 arcade block into any screen height (letterboxed).
+  - **Landscape:** Fits a perfect 4:3 arcade block into any screen height.
   - **Portrait:** Dynamically extends the vertical field of view for mobile play.
 
-## 🛠️ Performance & Architecture
+## 🛠️ Architecture & Performance
 
-This project is engineered for maximum efficiency:
-- **Unified Ticker:** Uses PixiJS's internal ticker for perfectly synced logic and rendering.
-- **HUD Caching:** Value-based dirty checks for UI text to avoid expensive texture regeneration.
-- **Particle Pooling:** A pre-allocated pool of **1,024 particles** eliminates Garbage Collection spikes.
-- **In-Place Updates:** Entity positions are synced directly during logic loops to eliminate redundant iterations.
+This project uses a modular, engine-grade architecture:
+- **Unified State Machine:** Robust management of game states (`START`, `PLAYING`, `PAUSED`, `GAMEOVER`, `BOSSKILLED`, `HIGHSCORE`).
+- **Modular View System:** Encapsulated view classes (`StartView`, `HudView`, `NameEntryView`, etc.) for clean UI management.
+- **ECS-Lite Entity System:** Class-based entities (`Invader`, `Projectile`, `Upgrade`) that handle their own logic and sprite synchronization.
+- **Centralized Constants:** A single source of truth in `src/constants.js` for all game parameters, colors, and layout offsets.
+- **Universal Dimmer:** Automatic state-based background dimming for high-contrast UI overlays.
+- **Object Pooling:** Zero-allocation projectile management to prevent Garbage Collection stutters.
 
 ## 🎮 How to Play
 
 ### Desktop
 - **← / →** : Move ship
-- **SPACE** : Shoot (Hold for continuous fire)
+- **SPACE** : Shoot (Hold for continuous fire / Start Game)
 - **H** : Toggle Help / Pause
+- **ESC** : End Session / Return to Menu
 - **D** : Toggle Debug Mode
 
 ### Mobile
@@ -56,7 +51,6 @@ npx serve .
 Then visit `http://localhost:3000` in your browser.
 
 ### 🧪 Running Tests
-The project includes a comprehensive E2E test suite using **Playwright**:
 ```bash
 npm install
 npx playwright install
@@ -65,8 +59,8 @@ npx playwright test
 
 ## 🏗️ Technical Stack
 - **Engine:** PixiJS v7 (WebGL)
-- **Language:** JavaScript (ES6+)
-- **Styling:** CSS3 Flexbox/Grid with Orbitron typography
+- **Language:** JavaScript (ES6+ Classes)
+- **Architecture:** Modular View-Controller + State Machine
 - **Testing:** Playwright E2E Framework
 
 ---
