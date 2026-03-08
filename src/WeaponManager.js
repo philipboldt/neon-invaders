@@ -35,8 +35,10 @@ export class WeaponManager {
   }
 
   returnSprite(type, sprite) {
-    sprite.visible = false;
-    this.pools[type].push(sprite);
+    if (sprite) {
+      sprite.visible = false;
+      this.pools[type].push(sprite);
+    }
   }
 
   updateProjectilesRender() {

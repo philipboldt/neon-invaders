@@ -192,10 +192,30 @@ export class Game {
 
     // 2. Clear Projectiles (Return to Pools)
     if (this.weapons) {
-      if (this.bullets) this.bullets.forEach(b => { if (b.sprite) this.weapons.returnSprite('bullet', b.sprite); });
-      if (this.invaderBullets) this.invaderBullets.forEach(b => { if (b.sprite) this.weapons.returnSprite('invaderBullet', b.sprite); });
-      if (this.bossMissiles) this.bossMissiles.forEach(m => { if (m.sprite) this.weapons.returnSprite('bossMissile', m.sprite); });
-      if (this.rockets) this.rockets.forEach(r => { if (r.sprite) this.weapons.returnSprite('rocket', r.sprite); });
+      if (this.bullets) this.bullets.forEach(b => { 
+        if (b.sprite) {
+          b.sprite.visible = false;
+          this.weapons.returnSprite('bullet', b.sprite); 
+        }
+      });
+      if (this.invaderBullets) this.invaderBullets.forEach(b => { 
+        if (b.sprite) {
+          b.sprite.visible = false;
+          this.weapons.returnSprite('invaderBullet', b.sprite); 
+        }
+      });
+      if (this.bossMissiles) this.bossMissiles.forEach(m => { 
+        if (m.sprite) {
+          m.sprite.visible = false;
+          this.weapons.returnSprite('bossMissile', m.sprite); 
+        }
+      });
+      if (this.rockets) this.rockets.forEach(r => { 
+        if (r.sprite) {
+          r.sprite.visible = false;
+          this.weapons.returnSprite('rocket', r.sprite); 
+        }
+      });
       
       // Clear Graphics
       if (this.weapons.lightningGraphics) this.weapons.lightningGraphics.clear();
