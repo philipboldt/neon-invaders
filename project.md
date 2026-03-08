@@ -59,6 +59,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **PixiJS Stabilization:** Reverted the `resolution` and `autoDensity` settings to their standard defaults. This resolves a "Postage Stamp" rendering bug where the game would appear too small on high-DPI monitors and fixes a renderer auto-detection failure in some Chrome environments. **[FIX]**
 - **Vulnerable Sidepods:** Implemented full collision detection for sidepods. Pods now have individual hitboxes and health (3 HP). They can be damaged and destroyed by enemy projectiles, but are fully protected when the player's energy shield is active. **[NEW]**
 - **Desktop Auto-Shoot Toggle:** Refactored the keyboard input logic to allow desktop players to toggle automatic shooting by pressing the Space key once, matching the convenience of the mobile touch system. **[NEW]**
 - **Automated Pod Testing:** Implemented a new test suite (`tests/core/pods.spec.js`) that specifically verifies the logic and visual visibility of sidepod rewards after Level 5 and Level 10 boss battles. **[TEST]**
