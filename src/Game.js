@@ -26,14 +26,17 @@ export class Game {
     }
     
     try {
+      // PixiJS 7 configuration refinement
       this.app = new PIXI.Application({
         view: canvas,
         width: this.W,
         height: this.H,
-        backgroundColor: CONSTANTS.BG_COLOR,
+        background: CONSTANTS.BG_COLOR,
+        backgroundColor: CONSTANTS.BG_COLOR, // Fallback
         antialias: true,
-        resolution: 1, 
-        autoDensity: false
+        resolution: window.devicePixelRatio || 1, 
+        autoDensity: true,
+        hello: true // Logs PixiJS version and renderer in console
       });
     } catch (err) {
       console.error('Failed to create PixiJS Application:', err);
