@@ -274,13 +274,7 @@ export class Game {
         (u.type === 'heal' && this.lives >= this.maxLives);
 
       if (isNowMaxed) {
-        // Change type
-        u.type = 'points';
-        // Re-init sprite visuals
-        if (u.sprite) {
-          u.sprite.texture = this.sprites.getTexture('upg_points');
-          this.addPointsTextToUpgrade(u);
-        }
+        u.convertToPoints();
       }
     });
   }

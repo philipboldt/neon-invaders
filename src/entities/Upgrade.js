@@ -39,6 +39,24 @@ export class Upgrade extends BaseEntity {
     }
   }
 
+  convertToPoints() {
+    if (this.type === 'points') return;
+    
+    this.type = 'points';
+    if (this.sprite) {
+      this.sprite.texture = this.game.sprites.getTexture('upg_points');
+      
+      const amount = this.level * CONSTANTS.POINTS_MULTIPLIER;
+      const textStr = amount >= 1000 ? (amount / 1000).toFixed(1) + 'k' : amount;
+      const text = new PIXI.Text(textStr, { 
+        fontFamily: 'Orbitron', fontSize: 10, fontWeight: 'bold', fill: 0x000000, align: 'center' 
+      });
+      text.anchor.set(0.5);
+      text.position.set(0, 1);
+      this.sprite.addChild(text);
+    }
+  }
+
   deactivate() {
     if (this.sprite) {
       this.game.entityLayer.removeChild(this.sprite);
