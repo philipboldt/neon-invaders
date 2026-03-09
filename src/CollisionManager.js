@@ -192,7 +192,8 @@ export class CollisionManager {
         const gain = level * CONSTANTS.POINTS_MULTIPLIER;
         this.game.score += gain; text = `${gain} BONUS`; break;
     }
-    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_UPGRADE_Y_OFFSET, text);
+    const upgradeColor = COLORS[type] || COLORS.text;
+    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_UPGRADE_Y_OFFSET, text, upgradeColor, true);
     this.game.transformMaxedUpgrades();
     this.game.ui.updateStats(this.game);
   }

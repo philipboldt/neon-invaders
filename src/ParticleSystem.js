@@ -17,7 +17,7 @@ export class ParticleSystem {
         active: false,
         x: 0, y: 0, vx: 0, vy: 0,
         size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff',
-        text: null, isText: false, isLightning: false,
+        text: null, isText: false, isLightning: false, useWobble: false,
         pixiObj: g,
         pixiText: null
       });
@@ -45,32 +45,35 @@ export class ParticleSystem {
     this.activeIndices = [];
   }
 
-  spawnScoreText(x, y, amount) {
+  spawnScoreText(x, y, text, color = COLORS.textYellow, useWobble = false) {
     if (this.freeIndices.length === 0) return;
 
     const idx = this.freeIndices.pop();
     const p = this.pool[idx];
 
     p.active = true;
-    p.x = x;
+    // Add initial spread offset
+    p.x = x + (Math.random() - 0.5) * 40;
     p.y = y;
-    p.vx = 0;
+    // Add slight horizontal drift
+    p.vx = (Math.random() - 0.5) * 1;
     p.vy = CONSTANTS.SCORE_TEXT_SPEED;
     p.size = CONSTANTS.PARTICLE_SCORE_TEXT_SIZE;
     p.maxSize = CONSTANTS.PARTICLE_SCORE_TEXT_MAX_SIZE;
     p.life = 0;
     p.maxLife = CONSTANTS.SCORE_TEXT_LIFE;
-    p.color = COLORS.textYellow;
-    p.text = `+${amount}`;
+    p.color = color;
+    p.text = typeof text === 'number' ? `+${text}` : text;
     p.isText = true;
     p.isLightning = false;
+    p.useWobble = useWobble;
 
     if (!p.pixiText) {
       p.pixiText = new PIXI.Text('', {
         fontFamily: 'Orbitron',
         fontSize: CONSTANTS.FONT_SIZE_HUD,
         fontWeight: 'bold',
-        fill: COLORS.textYellow,
+        fill: color,
         align: 'center',
         stroke: 0x000000,
         strokeThickness: CONSTANTS.PARTICLE_TEXT_STROKE_THICKNESS
@@ -79,7 +82,7 @@ export class ParticleSystem {
       this.game.effectLayer.addChild(p.pixiText);
     }
     p.pixiText.text = p.text;
-    p.pixiText.style.fill = COLORS.textYellow;
+    p.pixiText.style.fill = color;
     p.pixiText.visible = true;
     p.pixiObj.visible = false;
 
@@ -105,6 +108,7 @@ export class ParticleSystem {
     p.text = `-${amount}`;
     p.isText = true;
     p.isLightning = false;
+    p.useWobble = false;
 
     if (!p.pixiText) {
       p.pixiText = new PIXI.Text('', {
@@ -153,6 +157,7 @@ export class ParticleSystem {
       p.isText = false;
       p.text = null;
       p.isLightning = false;
+      p.useWobble = false;
       
       p.pixiObj.clear();
       p.pixiObj.beginFill(0xFFFFFF);
@@ -168,7 +173,6 @@ export class ParticleSystem {
 
   spawnStunningExplosion(cx, cy, color) {
     CONSTANTS.PARTICLE_STUN_LAYERS.forEach(layer => {
-      // Handle potential color reference string
       const layerColor = (layer.color === 'boss' || layer.color === 'player') ? COLORS[layer.color] : layer.color;
       const tint = this.parseColor(layerColor);
       for (let n = 0; n < layer.count; n++) {
@@ -191,6 +195,7 @@ export class ParticleSystem {
         p.isText = false;
         p.text = null;
         p.isLightning = false;
+        p.useWobble = false;
         
         p.pixiObj.clear();
         p.pixiObj.beginFill(0xFFFFFF);
@@ -227,6 +232,7 @@ export class ParticleSystem {
     p.isText = false;
     p.text = null;
     p.isLightning = false;
+    p.useWobble = false;
     
     p.pixiObj.clear();
     p.pixiObj.beginFill(0xFFFFFF);
@@ -263,6 +269,7 @@ export class ParticleSystem {
       p.isText = false;
       p.text = null;
       p.isLightning = true;
+      p.useWobble = false;
 
       p.pixiObj.clear();
       p.pixiObj.beginFill(0xFFFFFF);
@@ -282,18 +289,23 @@ export class ParticleSystem {
   }
 
   update(dt = 1) {
+    const now = performance.now();
     for (let i = this.activeIndices.length - 1; i >= 0; i--) {
       const idx = this.activeIndices[i];
       const p = this.pool[idx];
       
       p.x += p.vx * dt;
-      // Scale vertical movement by height factor
       p.y += p.vy * this.game.heightFactor * dt;
       p.life += 1 * dt;
       const t = p.life / p.maxLife;
       
       if (p.isText) {
-        p.pixiText.position.set(p.x, p.y);
+        let displayX = p.x;
+        if (p.useWobble) {
+          // Add oscillation similar to marquee
+          displayX += Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * 10;
+        }
+        p.pixiText.position.set(displayX, p.y);
         p.pixiText.alpha = 1 - t;
         const fontSize = p.size + (Math.max(0, p.maxSize - p.size)) * t;
         p.pixiText.style.fontSize = Math.floor(fontSize);
