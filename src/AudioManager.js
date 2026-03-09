@@ -85,6 +85,18 @@ export class AudioManager {
     return this.isSFXMuted;
   }
 
+  setMusicVolume(vol) {
+    if (typeof PIXI.sound === 'undefined') return;
+    const bgm = PIXI.sound.find('bgm');
+    if (bgm) bgm.volume = vol;
+  }
+
+  setSFXVolume(vol) {
+    if (typeof PIXI.sound === 'undefined') return;
+    const sfx = PIXI.sound.find('explosion');
+    if (sfx) sfx.volume = vol;
+  }
+
   muteAll() {
     this.isMusicMuted = true;
     this.isSFXMuted = true;

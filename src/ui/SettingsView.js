@@ -1,6 +1,7 @@
 import { COLORS, CONSTANTS } from '../constants.js';
 import { BaseView } from './BaseView.js';
 import { UIButton } from './UIButton.js';
+import { UISlider } from './UISlider.js';
 
 export class SettingsView extends BaseView {
   constructor(game) {
@@ -26,21 +27,31 @@ export class SettingsView extends BaseView {
     this.title.anchor.set(0.5);
     this.titleContainer.addChild(this.title);
 
-    // Music Toggle Button
+    // --- Audio Toggles ---
     this.musicButton = new UIButton('MUSIC: ON', this.parseHexColor(COLORS.player), () => {
       this.game.audio.toggleMusic();
       this.updateMusicButtonText();
     });
     this.container.addChild(this.musicButton);
 
-    // Sound Toggle Button
     this.soundButton = new UIButton('SOUND: ON', this.parseHexColor(COLORS.player), () => {
       this.game.audio.toggleSFX();
       this.updateSoundButtonText();
     });
     this.container.addChild(this.soundButton);
 
-    // Credits Button
+    // --- Volume Sliders ---
+    this.musicSlider = new UISlider('MUSIC VOLUME', this.parseHexColor(COLORS.player), CONSTANTS.AUDIO_BGM_VOLUME, (val) => {
+      this.game.audio.setMusicVolume(val);
+    });
+    this.container.addChild(this.musicSlider);
+
+    this.soundSlider = new UISlider('SFX VOLUME', this.parseHexColor(COLORS.player), CONSTANTS.AUDIO_SFX_VOLUME, (val) => {
+      this.game.audio.setSFXVolume(val);
+    });
+    this.container.addChild(this.soundSlider);
+
+    // --- Credits ---
     this.creditsButton = new UIButton('VIEW CREDITS', this.parseHexColor(COLORS.invader2), () => {
       this.game.ui.creditsReturnState = CONSTANTS.GAME_STATES.SETTINGS;
       this.game.state = CONSTANTS.GAME_STATES.CREDITS;
@@ -87,8 +98,13 @@ export class SettingsView extends BaseView {
 
   updateLayout(W, H) {
     this.titleContainer.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_TITLE_Y_RATIO);
+    
     this.musicButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_MUSIC_Y_RATIO);
+    this.musicSlider.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_MUSIC_VOL_Y_RATIO);
+    
     this.soundButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_SOUND_Y_RATIO);
+    this.soundSlider.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_SOUND_VOL_Y_RATIO);
+    
     this.creditsButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_CREDITS_Y_RATIO);
     this.warning.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_WARNING_Y_RATIO);
     this.prompt.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_PROMPT_Y_RATIO);

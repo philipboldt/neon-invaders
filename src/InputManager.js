@@ -191,12 +191,14 @@ export class InputManager {
       if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
       if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
       if (state === GAME_STATES.SETTINGS) {
-        // 1. Check if we hit a specific button first
+        // 1. Check if we hit a specific button or slider first
         const settingsView = this.game.ui.views.settings;
         const point = new PIXI.Point(lx, ly);
         if (settingsView.musicButton.containsPoint(point) || 
             settingsView.soundButton.containsPoint(point) || 
-            settingsView.creditsButton.containsPoint(point)) {
+            settingsView.creditsButton.containsPoint(point) ||
+            settingsView.musicSlider.containsPoint(point) ||
+            settingsView.soundSlider.containsPoint(point)) {
           return; // Let Pixi's static event listeners handle it
         }
 
