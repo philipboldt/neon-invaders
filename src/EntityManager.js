@@ -35,7 +35,7 @@ export class EntityManager {
     
     const totalGridW = cols * (invW + gap) - gap;
     let startX = (this.game.W - totalGridW) / 2;
-    let startY = CONSTANTS.INVADER_START_Y;
+    let startY = this.game.H * CONSTANTS.INVADER_START_Y_RATIO;
     
     const isBossLevel = this.game.level % 10 === 0;
     const isMiniBossLevel = this.game.level % 10 === 5;

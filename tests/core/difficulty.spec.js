@@ -55,4 +55,29 @@ test.describe('Neon Invaders - Dynamic Difficulty Scaling', () => {
         expect(gridInfo.invWidth).toBe(36 * 1.5);
         expect(gridInfo.gridW).toBeGreaterThan(400);
     });
+
+    test('Position: Starting Y should be 20% of screen height', async ({ page }) => {
+        // Landscape
+        await page.setViewportSize({ width: 800, height: 600 });
+        await page.goto('/');
+        await page.waitForFunction(() => !!window.game && window.game.invaders.length > 0);
+        
+        let startY = await page.evaluate(() => {
+            // Find the highest invader (lowest Y)
+            return Math.min(...window.game.invaders.map(inv => inv.y));
+        });
+        // Boss might be higher, but let's check standard ones. 
+        // Actually initInvaders sets startY for the grid, boss is above startY - gap*2.
+        // Let's just check the first invader in the array (usually the first grid row)
+        startY = await page.evaluate(() => window.game.invaders[0].y);
+        expect(startY).toBeCloseTo(600 * 0.2, 0);
+
+        // Portrait
+        await page.setViewportSize({ width: 800, height: 1200 });
+        await page.goto('/');
+        await page.waitForFunction(() => !!window.game && window.game.invaders.length > 0);
+        
+        startY = await page.evaluate(() => window.game.invaders[0].y);
+        expect(startY).toBeCloseTo(1200 * 0.2, 0);
+    });
 });
