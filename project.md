@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Settings System & Music Toggle:** Transformed the Quit Confirmation screen into a comprehensive "Settings" view. Accessible from all game states (Start, Playing, Game Over, etc.) via `Esc`. Added a music toggle button and a global `M` key shortcut. **[NEW]**
 - **Strict Planning Policy:** Updated `Gemini.md` to enforce a mandatory "Plan First" workflow. No implementation proceeds without an explicit directive after reviewing and discussing the proposed plan. **[POLICY]**
 - **Audio System Integration:** Integrated `@pixi/sound` and implemented a dedicated `AudioManager`. Background music (`res/bgm.ogg`) now loops during gameplay, with robust handling for browser autoplay policies and state-aware pause/resume logic. **[NEW]**
 - **Cinematic Credits System:** Added an automated "Attract Mode" and manual credits view featuring vertical neon scrolling, viewport masking, and state memory for seamless navigation. **[NEW]**

@@ -353,7 +353,7 @@ export class Game {
       this.entities.bossShoot(now);
       this.collisions.checkCollisions(now);
       this.particles.update(dt);
-    } else if (this.state === CONSTANTS.GAME_STATES.GAMEOVER || this.state === CONSTANTS.GAME_STATES.PAUSED || this.state === CONSTANTS.GAME_STATES.START || this.state === CONSTANTS.GAME_STATES.QUIT_CONFIRM || this.state === CONSTANTS.GAME_STATES.BOSSKILLED) {
+    } else if (this.state === CONSTANTS.GAME_STATES.GAMEOVER || this.state === CONSTANTS.GAME_STATES.PAUSED || this.state === CONSTANTS.GAME_STATES.START || this.state === CONSTANTS.GAME_STATES.SETTINGS || this.state === CONSTANTS.GAME_STATES.BOSSKILLED) {
       this.player.updateSpritePositions();
     }
     

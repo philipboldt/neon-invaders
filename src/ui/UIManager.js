@@ -6,7 +6,7 @@ import { GameOverView } from './GameOverView.js';
 import { BossClearView } from './BossClearView.js';
 import { NameEntryView } from './NameEntryView.js';
 import { ControlOverlayView } from './ControlOverlayView.js';
-import { QuitConfirmView } from './QuitConfirmView.js';
+import { SettingsView } from './SettingsView.js';
 import { CreditsView } from './CreditsView.js';
 
 export class UIManager {
@@ -58,7 +58,7 @@ export class UIManager {
     this.views.gameOver = new GameOverView(game);
     this.views.bossClear = new BossClearView(game);
     this.views.nameEntry = new NameEntryView(game);
-    this.views.quitConfirm = new QuitConfirmView(game);
+    this.views.settings = new SettingsView(game);
     this.views.credits = new CreditsView(game);
 
     // In-Canvas Border & Global Instructions
@@ -146,8 +146,9 @@ export class UIManager {
       case CONSTANTS.GAME_STATES.HIGHSCORE:
         this.views.nameEntry.show();
         break;
-      case CONSTANTS.GAME_STATES.QUIT_CONFIRM:
-        this.views.quitConfirm.show();
+      case CONSTANTS.GAME_STATES.SETTINGS:
+        this.views.settings.onShow();
+        this.views.settings.show();
         break;
       case CONSTANTS.GAME_STATES.CREDITS:
         this.views.credits.show();

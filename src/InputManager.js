@@ -61,11 +61,17 @@ export class InputManager {
       this.game.ui.resetIdleTimer();
       const { state } = this.game;
       
-      // H Key is Universal Pause Toggle
+      // Universal Keys
       if (e.code === 'KeyH') {
         if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED || state === GAME_STATES.START) {
           this.game.togglePause();
         }
+        return;
+      }
+
+      if (e.code === 'KeyM') {
+        this.game.audio.toggleMute();
+        if (state === GAME_STATES.SETTINGS) this.game.ui.views.settings.updateMusicButtonText();
         return;
       }
 
@@ -76,9 +82,19 @@ export class InputManager {
           break;
         case GAME_STATES.START:
           if (e.code === 'Space' || e.code === 'Enter') this.game.startGame();
+          else if (e.code === 'Escape') {
+            this.game.previousState = GAME_STATES.START;
+            this.game.state = GAME_STATES.SETTINGS;
+            this.game.ui.handleStateChange(this.game.state);
+          }
           break;
         case GAME_STATES.GAMEOVER:
-          if (e.code === 'Space' || e.code === 'Enter' || e.code === 'Escape') this.game.restartGame();
+          if (e.code === 'Space' || e.code === 'Enter') this.game.restartGame();
+          else if (e.code === 'Escape') {
+            this.game.previousState = GAME_STATES.GAMEOVER;
+            this.game.state = GAME_STATES.SETTINGS;
+            this.game.ui.handleStateChange(this.game.state);
+          }
           break;
         case GAME_STATES.PLAYING:
           if (e.code === 'ArrowLeft') this.game.player.dir = -1;
@@ -90,7 +106,7 @@ export class InputManager {
           }
           if (e.code === 'Escape') {
             this.game.previousState = GAME_STATES.PLAYING;
-            this.game.state = GAME_STATES.QUIT_CONFIRM;
+            this.game.state = GAME_STATES.SETTINGS;
             this.game.ui.handleStateChange(this.game.state);
           }
           if (e.code === 'KeyD') { this.game.debugMode = !this.game.debugMode; this.game.ui.updateStats(this.game); }
@@ -99,13 +115,19 @@ export class InputManager {
           if (e.code === 'Space' || e.code === 'Enter') this.game.togglePause();
           else if (e.code === 'Escape') {
             this.game.previousState = GAME_STATES.PAUSED;
-            this.game.state = GAME_STATES.QUIT_CONFIRM;
+            this.game.state = GAME_STATES.SETTINGS;
             this.game.ui.handleStateChange(this.game.state);
           }
           break;
-        case GAME_STATES.QUIT_CONFIRM:
+        case GAME_STATES.SETTINGS:
           if (e.code === 'Escape') {
-            this.game.endGame(false);
+            // Only confirm quit if we came from a "living" game state
+            if (this.game.previousState === GAME_STATES.PLAYING || this.game.previousState === GAME_STATES.PAUSED) {
+              this.game.endGame(false);
+            } else {
+              this.game.state = this.game.previousState || GAME_STATES.START;
+              this.game.ui.handleStateChange(this.game.state);
+            }
           } else if (e.code === 'Space' || e.code === 'Enter') {
             this.game.state = this.game.previousState || GAME_STATES.PLAYING;
             this.game.ui.handleStateChange(this.game.state);
@@ -165,11 +187,17 @@ export class InputManager {
       if (state === GAME_STATES.START) { this.game.startGame(); return; }
       if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
       if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
-      if (state === GAME_STATES.QUIT_CONFIRM) {
+      if (state === GAME_STATES.SETTINGS) {
         if (zone === 'TOP') {
           const now = performance.now();
           if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
-            this.game.endGame(false);
+            // Only confirm quit if we came from a "living" game state
+            if (this.game.previousState === GAME_STATES.PLAYING || this.game.previousState === GAME_STATES.PAUSED) {
+              this.game.endGame(false);
+            } else {
+              this.game.state = this.game.previousState || GAME_STATES.START;
+              this.game.ui.handleStateChange(this.game.state);
+            }
           }
           this.lastTopTap = now;
         } else {
@@ -187,9 +215,9 @@ export class InputManager {
         if (isActive) {
           const now = performance.now();
           if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
-            if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED) {
+            if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED || state === GAME_STATES.START || state === GAME_STATES.GAMEOVER) {
               this.game.previousState = state;
-              this.game.state = GAME_STATES.QUIT_CONFIRM;
+              this.game.state = GAME_STATES.SETTINGS;
               this.game.ui.handleStateChange(this.game.state);
             }
           }
