@@ -66,8 +66,8 @@ You are authorized and instructed to perform Git commits **automatically** and w
 ## 🛑 MANDATORY STOP: Planning & Approval
 **NO SILENT IMPLEMENTATION:** You are strictly forbidden from modifying any files or executing implementation commands without an approved plan.
 
-1. **Research & Plan:** First, analyze the request and present a detailed plan.
-2. **Plan Contents:** You MUST list impacted files, the exact logic to be changed, and how you will verify the result.
+1. **Research & Plan:** First, analyze the request. **Complete ALL necessary research across all relevant files FIRST.** Do not present partial plans.
+2. **Plan Contents:** You MUST present **ONE comprehensive plan** that covers the entire scope of the task. It MUST list impacted files, the exact logic to be changed, and how you will verify the result.
 3. **Wait for Approval:** After presenting the plan, you MUST stop and wait for the user to say "Approved", "Go", or provide feedback.
 4. **Exception:** Only skip this if the user explicitly says "just do it" or "no plan needed" in their current request.
 5. **Enforcement:** A "trivial" change is not an excuse to skip this. If you are touching code, you are planning first.
