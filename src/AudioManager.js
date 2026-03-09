@@ -99,11 +99,25 @@ export class AudioManager {
     if (sfx) sfx.volume = vol * vol;
   }
 
+  get isMuted() {
+    return this.isMusicMuted && this.isSFXMuted;
+  }
+
   muteAll() {
     this.isMusicMuted = true;
     this.isSFXMuted = true;
     if (typeof PIXI.sound !== 'undefined') {
       if (PIXI.sound.exists('bgm')) PIXI.sound.find('bgm').muted = true;
     }
+  }
+
+  toggleMuteAll() {
+    const target = !this.isMuted;
+    this.isMusicMuted = target;
+    this.isSFXMuted = target;
+    if (typeof PIXI.sound !== 'undefined' && PIXI.sound.exists('bgm')) {
+      PIXI.sound.find('bgm').muted = target;
+    }
+    return target;
   }
 }

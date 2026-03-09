@@ -110,10 +110,10 @@ export class UIManager {
     }
 
     // Highscore board visibility
-    if (this.views.start.highscoreContainer) {
+    if (this.views.start && this.views.start.highscoreContainer) {
       this.views.start.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.START) && !this.attractModeActive;
     }
-    if (this.views.gameOver.highscoreContainer) {
+    if (this.views.gameOver && this.views.gameOver.highscoreContainer) {
       this.views.gameOver.highscoreContainer.visible = (newState === CONSTANTS.GAME_STATES.GAMEOVER) && !this.attractModeActive;
     }
 
@@ -272,8 +272,8 @@ export class UIManager {
       try { localStorage.setItem('neonNukeHighScores', JSON.stringify(scores)); } catch (e) { console.warn(e); }
     }
 
-    if (this.views.start) this.views.start.updateHighScores(scores);
-    if (this.views.gameOver) this.views.gameOver.updateHighScores(scores);
+    if (this.views.start && typeof this.views.start.updateHighScores === 'function') this.views.start.updateHighScores(scores);
+    if (this.views.gameOver && typeof this.views.gameOver.updateHighScores === 'function') this.views.gameOver.updateHighScores(scores);
   }
 
   update(now) {

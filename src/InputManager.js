@@ -70,7 +70,7 @@ export class InputManager {
       }
 
       if (e.code === 'KeyM') {
-        this.game.audio.muteAll();
+        this.game.audio.toggleMuteAll();
         if (state === GAME_STATES.SETTINGS) {
           this.game.ui.views.settings.updateMusicButtonText();
           this.game.ui.views.settings.updateSoundButtonText();
@@ -176,6 +176,7 @@ export class InputManager {
   }
 
   handlePointerAction(coords, isActive) {
+    const { lx, ly } = coords;
     const zone = this.getZone(coords);
     const { GAME_STATES } = CONSTANTS;
     const { state } = this.game;

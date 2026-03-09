@@ -48,8 +48,8 @@ test.describe('Neon Nuke - Loading and Initialization', () => {
         const startScreenVisible = await page.evaluate(() => window.game.ui.views.start.container.visible);
         expect(startScreenVisible).toBe(true);
         
-        const promptText = await page.evaluate(() => window.game.ui.views.start.startPrompt.text);
-        expect(promptText).toContain('start');
+        const promptText = await page.evaluate(() => window.game.ui.views.start.prompt.text);
+        expect(promptText.toLowerCase()).toContain('space');
         
         // HUD should be hidden on start screen
         const hudVisible = await page.evaluate(() => window.game.ui.views.hud.container.visible);
