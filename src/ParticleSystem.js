@@ -56,8 +56,8 @@ export class ParticleSystem {
     p.y = y;
     p.vx = 0;
     p.vy = CONSTANTS.SCORE_TEXT_SPEED;
-    p.size = 16;
-    p.maxSize = 32;
+    p.size = CONSTANTS.PARTICLE_SCORE_TEXT_SIZE;
+    p.maxSize = CONSTANTS.PARTICLE_SCORE_TEXT_MAX_SIZE;
     p.life = 0;
     p.maxLife = CONSTANTS.SCORE_TEXT_LIFE;
     p.color = COLORS.textYellow;
@@ -73,7 +73,7 @@ export class ParticleSystem {
         fill: COLORS.textYellow,
         align: 'center',
         stroke: 0x000000,
-        strokeThickness: 3
+        strokeThickness: CONSTANTS.PARTICLE_TEXT_STROKE_THICKNESS
       });
       p.pixiText.anchor.set(0.5);
       this.game.effectLayer.addChild(p.pixiText);
@@ -97,8 +97,8 @@ export class ParticleSystem {
     p.y = y;
     p.vx = 0;
     p.vy = 0;
-    p.size = 20;
-    p.maxSize = 64;
+    p.size = CONSTANTS.PARTICLE_DAMAGE_TEXT_SIZE;
+    p.maxSize = CONSTANTS.PARTICLE_DAMAGE_TEXT_MAX_SIZE;
     p.life = 0;
     p.maxLife = CONSTANTS.DAMAGE_TEXT_LIFE;
     p.color = COLORS.textRed;
@@ -114,7 +114,7 @@ export class ParticleSystem {
         fill: COLORS.textRed,
         align: 'center',
         stroke: 0x000000,
-        strokeThickness: 3
+        strokeThickness: CONSTANTS.PARTICLE_TEXT_STROKE_THICKNESS
       });
       p.pixiText.anchor.set(0.5);
       this.game.effectLayer.addChild(p.pixiText);
@@ -128,7 +128,7 @@ export class ParticleSystem {
   }
 
   spawnExplosion(cx, cy, color, angleStart = 0, angleRange = Math.PI * 2, radius = 0) {
-    const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * 3 : CONSTANTS.EXPLOSION_PARTICLES;
+    const particleCount = radius > 0 ? CONSTANTS.EXPLOSION_PARTICLES * CONSTANTS.PARTICLE_EXPLOSION_LARGE_MULT : CONSTANTS.EXPLOSION_PARTICLES;
     const tint = this.parseColor(color);
     for (let n = 0; n < particleCount; n++) {
       if (this.freeIndices.length === 0) break;
@@ -137,11 +137,11 @@ export class ParticleSystem {
       const p = this.pool[idx];
 
       const angle = angleStart + (angleRange * n) / particleCount + (Math.random() - 0.5) * (angleRange / particleCount);
-      const speedBase = radius > 0 ? radius * 0.15 : CONSTANTS.PARTICLE_SPEED;
-      const speed = speedBase * (0.6 + Math.random() * 0.8);
+      const speedBase = radius > 0 ? radius * CONSTANTS.PARTICLE_EXPLOSION_SPEED_BASE_RATIO : CONSTANTS.PARTICLE_SPEED;
+      const speed = speedBase * (CONSTANTS.PARTICLE_EXPLOSION_SPEED_RAND_MIN + Math.random() * CONSTANTS.PARTICLE_EXPLOSION_SPEED_RAND_RANGE);
       const sizeBase = radius > 0 ? CONSTANTS.PARTICLE_MAX_SIZE * 2 : CONSTANTS.PARTICLE_MAX_SIZE;
-      const maxSize = sizeBase * (0.4 + Math.random() * 0.6);
-      const lifeBase = radius > 0 ? CONSTANTS.PARTICLE_LIFE * 1.5 : CONSTANTS.PARTICLE_LIFE;
+      const maxSize = sizeBase * (CONSTANTS.PARTICLE_EXPLOSION_SIZE_RAND_MIN + Math.random() * CONSTANTS.PARTICLE_EXPLOSION_SIZE_RAND_RANGE);
+      const lifeBase = radius > 0 ? CONSTANTS.PARTICLE_LIFE * CONSTANTS.PARTICLE_EXPLOSION_LIFE_LARGE_MULT : CONSTANTS.PARTICLE_LIFE;
       
       p.active = true;
       p.x = cx; p.y = cy; 
@@ -167,14 +167,10 @@ export class ParticleSystem {
   }
 
   spawnStunningExplosion(cx, cy, color) {
-    const layers = [
-      { count: 128, speed: 45, life: 100, size: 50, color: '#ffffff' },
-      { count: 256, speed: 25, life: 150, size: 35, color: color },
-      { count: 256, speed: 12, life: 200, size: 20, color: color },
-    ];
-
-    layers.forEach(layer => {
-      const tint = this.parseColor(layer.color);
+    CONSTANTS.PARTICLE_STUN_LAYERS.forEach(layer => {
+      // Handle potential color reference string
+      const layerColor = (layer.color === 'boss' || layer.color === 'player') ? COLORS[layer.color] : layer.color;
+      const tint = this.parseColor(layerColor);
       for (let n = 0; n < layer.count; n++) {
         if (this.freeIndices.length === 0) break;
         
@@ -191,7 +187,7 @@ export class ParticleSystem {
         p.vy = Math.sin(angle) * speed;
         p.size = maxSize; p.maxSize = maxSize; 
         p.life = 0; p.maxLife = layer.life * (0.8 + Math.random() * 0.4); 
-        p.color = layer.color;
+        p.color = layerColor;
         p.isText = false;
         p.text = null;
         p.isLightning = false;
@@ -244,7 +240,7 @@ export class ParticleSystem {
   }
 
   spawnLightningHit(x, y) {
-    const count = 12;
+    const count = CONSTANTS.PARTICLE_LIGHTNING_HIT_COUNT;
     for (let i = 0; i < count; i++) {
       if (this.freeIndices.length === 0) break;
 
@@ -259,10 +255,10 @@ export class ParticleSystem {
       p.y = y;
       p.vx = Math.cos(angle) * speed;
       p.vy = Math.sin(angle) * speed;
-      p.size = 3 + Math.random() * 3;
+      p.size = CONSTANTS.PARTICLE_LIGHTNING_HIT_SIZE_BASE + Math.random() * CONSTANTS.PARTICLE_LIGHTNING_HIT_SIZE_RAND;
       p.maxSize = p.size;
       p.life = 0;
-      p.maxLife = 20 + Math.random() * 15;
+      p.maxLife = CONSTANTS.PARTICLE_LIGHTNING_LIFE_BASE + Math.random() * CONSTANTS.PARTICLE_LIGHTNING_LIFE_RAND;
       p.color = '#555555';
       p.isText = false;
       p.text = null;

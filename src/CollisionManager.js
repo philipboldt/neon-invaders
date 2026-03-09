@@ -105,13 +105,13 @@ export class CollisionManager {
 
   handleInvaderDeath(inv, index) {
     this.game.score += inv.scoreValue;
-    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 20, inv.scoreValue);
+    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_SCORE_Y_OFFSET, inv.scoreValue);
     this.game.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2, 0);
     
     if (inv.isBoss) {
       this.game.shake = CONSTANTS.SHAKE_BIG_EXPLOSION;
-      this.game.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, 20);
-      this.game.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, 20);
+      this.game.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, CONSTANTS.EXPLOSION_RADIUS_BOSS_HIT);
+      this.game.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, CONSTANTS.EXPLOSION_RADIUS_BOSS_HIT);
       
       this.game.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
       this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
@@ -119,7 +119,7 @@ export class CollisionManager {
       
       this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
       this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
-      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
+      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_BOSS_POT_Y_OFFSET, "POTENTIAL INCREASED!");
     } else {
       this.game.spawnUpgrade(inv.x, inv.y);
     }
@@ -134,11 +134,11 @@ export class CollisionManager {
       this.game.shieldHits--;
       this.game.lastShieldLostTime = performance.now();
       this.game.shake = CONSTANTS.SHAKE_PLAYER_HIT;
-      this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.shield, 0, Math.PI * 2, 10);
+      this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.shield, 0, Math.PI * 2, CONSTANTS.EXPLOSION_RADIUS_SHIELD);
     } else {
       this.game.lives--;
       this.game.shake = CONSTANTS.SHAKE_PLAYER_DEATH;
-      this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, 0, Math.PI * 2, 20);
+      this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, 0, Math.PI * 2, CONSTANTS.EXPLOSION_RADIUS_PLAYER);
       if (this.game.lives <= 0) {
         this.game.endGame(false);
       }
@@ -156,12 +156,12 @@ export class CollisionManager {
     // Position for explosion
     const bounds = side === 'left' ? this.game.player.getLeftPodBounds() : this.game.player.getRightPodBounds();
     if (bounds) {
-      this.game.particles.spawnExplosion(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2, COLORS.player, 0, Math.PI * 2, 10);
+      this.game.particles.spawnExplosion(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2, COLORS.player, 0, Math.PI * 2, CONSTANTS.EXPLOSION_RADIUS_POD);
     }
 
     if (pod.hp <= 0) {
       pod.active = false;
-      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, `${side.toUpperCase()} POD DESTROYED!`);
+      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_POD_DEST_Y_OFFSET, `${side.toUpperCase()} POD DESTROYED!`);
       this.game.player.updateSpritePositions();
     }
     this.game.ui.updateStats(this.game);
@@ -189,7 +189,7 @@ export class CollisionManager {
         const gain = level * CONSTANTS.POINTS_MULTIPLIER;
         this.game.score += gain; text = `${gain} BONUS`; break;
     }
-    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 40, text);
+    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_UPGRADE_Y_OFFSET, text);
     this.game.transformMaxedUpgrades();
     this.game.ui.updateStats(this.game);
   }

@@ -68,23 +68,23 @@ export class CreditsView extends BaseView {
       align: 'center',
       dropShadow: true,
       dropShadowColor: color,
-      dropShadowBlur: 8,
+      dropShadowBlur: CONSTANTS.CREDITS_GLOW_BLUR_SMALL,
       dropShadowDistance: 0
     };
 
     switch (type) {
       case 'header':
-        return { ...baseStyle, fontSize: 32, fontWeight: 900, letterSpacing: 4, dropShadowBlur: 12 };
+        return { ...baseStyle, fontSize: CONSTANTS.CREDITS_FONT_SIZE_HEADER, fontWeight: 900, letterSpacing: 4, dropShadowBlur: CONSTANTS.CREDITS_GLOW_BLUR_LARGE };
       case 'quote':
-        return { ...baseStyle, fontSize: 16, fontWeight: 'bold', fontStyle: 'italic' };
+        return { ...baseStyle, fontSize: CONSTANTS.CREDITS_FONT_SIZE_QUOTE, fontWeight: 'bold', fontStyle: 'italic' };
       case 'role':
-        return { ...baseStyle, fontSize: 14, fontWeight: 'bold', alpha: 0.7 };
+        return { ...baseStyle, fontSize: CONSTANTS.CREDITS_FONT_SIZE_ROLE, fontWeight: 'bold', alpha: 0.7 };
       case 'name':
-        return { ...baseStyle, fontSize: 24, fontWeight: 900 };
+        return { ...baseStyle, fontSize: CONSTANTS.CREDITS_FONT_SIZE_NAME, fontWeight: 900 };
       case 'link':
-        return { ...baseStyle, fontSize: 14, letterSpacing: 2 };
+        return { ...baseStyle, fontSize: CONSTANTS.CREDITS_FONT_SIZE_LINK, letterSpacing: 2 };
       default:
-        return { ...baseStyle, fontSize: 18 };
+        return { ...baseStyle, fontSize: CONSTANTS.CREDITS_FONT_SIZE_DEFAULT };
     }
   }
 
@@ -122,12 +122,12 @@ export class CreditsView extends BaseView {
 
     // 3. Visual FX: Breathing Glow & Color Shift
     const breath = Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED);
-    const glowScale = 0.8 + (breath * 0.2);
+    const glowScale = CONSTANTS.CREDITS_GLOW_PULSE_MIN + (breath * CONSTANTS.CREDITS_GLOW_PULSE_RANGE);
     
     this.scrollContainer.children.forEach(child => {
       if (child instanceof PIXI.Text) {
         // Pulse the glow
-        child.style.dropShadowBlur = (child.style.fontSize > 20 ? 12 : 8) * glowScale;
+        child.style.dropShadowBlur = (child.style.fontSize > 20 ? CONSTANTS.CREDITS_GLOW_BLUR_LARGE : CONSTANTS.CREDITS_GLOW_BLUR_SMALL) * glowScale;
         
         // Optional: slow color pulse for headers
         if (child.baseColor === 'player') {

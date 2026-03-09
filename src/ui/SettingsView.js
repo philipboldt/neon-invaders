@@ -16,11 +16,11 @@ export class SettingsView extends BaseView {
       fontSize: CONSTANTS.FONT_SIZE_TITLE,
       fontWeight: 900,
       fill: this.parseHexColor(COLORS.text),
-      letterSpacing: 4,
+      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_TITLE,
       dropShadow: true,
       dropShadowColor: 0x000000,
-      dropShadowBlur: 4,
-      dropShadowDistance: 4
+      dropShadowBlur: CONSTANTS.UI_SETTINGS_DROP_SHADOW_BLUR,
+      dropShadowDistance: CONSTANTS.UI_SETTINGS_DROP_SHADOW_DISTANCE
     });
     this.title.anchor.set(0.5);
     this.titleContainer.addChild(this.title);
@@ -31,7 +31,7 @@ export class SettingsView extends BaseView {
       fontSize: CONSTANTS.FONT_SIZE_HEADER,
       fontWeight: 'bold',
       fill: this.parseHexColor(COLORS.player),
-      letterSpacing: 2
+      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_BUTTON
     });
     this.musicButton.anchor.set(0.5);
     this.musicButton.eventMode = 'static';
@@ -52,7 +52,7 @@ export class SettingsView extends BaseView {
       fontSize: CONSTANTS.FONT_SIZE_HEADER,
       fontWeight: 'bold',
       fill: this.parseHexColor(COLORS.invader2),
-      letterSpacing: 2
+      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_BUTTON
     });
     this.creditsButton.anchor.set(0.5);
     this.creditsButton.eventMode = 'static';
@@ -91,7 +91,7 @@ export class SettingsView extends BaseView {
   updateMusicButtonText() {
     const isMuted = this.game.audio.isMuted;
     this.musicButton.text = `MUSIC: ${isMuted ? 'OFF' : 'ON'}`;
-    this.musicButton.style.fill = isMuted ? 0x888888 : this.parseHexColor(COLORS.player);
+    this.musicButton.style.fill = isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player);
   }
 
   onShow() {
@@ -99,11 +99,11 @@ export class SettingsView extends BaseView {
   }
 
   updateLayout(W, H) {
-    this.titleContainer.position.set(W / 2, H * 0.25);
-    this.musicButton.position.set(W / 2, H * 0.45);
-    this.creditsButton.position.set(W / 2, H * 0.55);
-    this.warning.position.set(W / 2, H * 0.70);
-    this.prompt.position.set(W / 2, H * 0.85);
+    this.titleContainer.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_TITLE_Y_RATIO);
+    this.musicButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_MUSIC_Y_RATIO);
+    this.creditsButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_CREDITS_Y_RATIO);
+    this.warning.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_WARNING_Y_RATIO);
+    this.prompt.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_PROMPT_Y_RATIO);
   }
 
   update(now) {

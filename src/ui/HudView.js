@@ -14,7 +14,7 @@ export class HudView extends BaseView {
     const y = CONSTANTS.UI_HUD_Y;
     const W = this.game.W;
     const H = this.game.H;
-    const colWidth = (W - padding * 2) / 4;
+    const colWidth = (W - padding * 2) / CONSTANTS.UI_HUD_COLS;
 
     this.hudTexts.score = this.createHudText('Score: 0', padding, y, this.parseHexColor(COLORS.invader2));
     this.hudTexts.level = this.createHudText('Level: 1', padding + colWidth, y, this.parseHexColor(COLORS.invader3));
@@ -44,7 +44,7 @@ export class HudView extends BaseView {
     
     const value = new PIXI.Text(valStr, {
       fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_HUD, fontWeight: 'bold', fill: valueColor,
-      dropShadow: true, dropShadowColor: valueColor, dropShadowBlur: 8
+      dropShadow: true, dropShadowColor: valueColor, dropShadowBlur: CONSTANTS.UI_HUD_SHADOW_BLUR
     });
     
     value.x = label.width;
@@ -85,7 +85,7 @@ export class HudView extends BaseView {
   updateLayout(W, H) {
     const padding = CONSTANTS.UI_PADDING;
     const y = CONSTANTS.UI_HUD_Y;
-    const colWidth = (W - padding * 2) / 4;
+    const colWidth = (W - padding * 2) / CONSTANTS.UI_HUD_COLS;
     const y2 = y + CONSTANTS.UI_HUD_Y2_OFFSET;
 
     this.hudTexts.score.container.position.set(padding, y);
@@ -98,7 +98,7 @@ export class HudView extends BaseView {
     this.hudTexts.pods.container.position.set(padding + colWidth * 3, y2);
     
     if (this.hudTexts.fps) {
-      this.hudTexts.fps.container.position.set(W - padding - this.hudTexts.fps.container.width, H - padding - 15);
+      this.hudTexts.fps.container.position.set(W - padding - this.hudTexts.fps.container.width, H - padding - CONSTANTS.UI_HUD_FPS_Y_OFFSET);
     }
   }
 }

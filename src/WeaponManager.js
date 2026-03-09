@@ -48,10 +48,9 @@ export class WeaponManager {
   playerShoot(now) {
     if (!this.game.spacePressed || now - this.game.lastPlayerShot < CONSTANTS.PLAYER_SHOOT_COOLDOWN) return;
     this.game.lastPlayerShot = now;
-    const maxBullets = 15; // Optional: could be moved to constants if needed
     
-    if (this.game.bullets.length < maxBullets) {
-      const spread = 14;
+    if (this.game.bullets.length < CONSTANTS.WEAPON_MAX_BULLETS) {
+      const spread = CONSTANTS.WEAPON_BULLET_SPREAD;
       const startX = this.game.player.x + this.game.player.w / 2 - CONSTANTS.BULLET_W / 2 - (this.game.shotCount - 1) * (spread / 2);
       for (let i = 0; i < this.game.shotCount; i++) {
         this.game.bullets.push(new Projectile(this.game, 
@@ -124,7 +123,7 @@ export class WeaponManager {
         
         const hitX = this.game.pdcTarget.x + this.game.pdcTarget.w / 2;
         const hitY = this.game.pdcTarget.y + this.game.pdcTarget.h / 2;
-        this.game.particles.spawnExplosion(hitX, hitY, '#ffffff', 0, Math.PI * 2, 5);
+        this.game.particles.spawnExplosion(hitX, hitY, '#ffffff', 0, Math.PI * 2, CONSTANTS.WEAPON_PDC_EXPLOSION_RADIUS);
         
         this.game.activePDCTracer.destroyed = true;
         this.game.activePDCTracer.frozenX = hitX;
@@ -139,7 +138,7 @@ export class WeaponManager {
       const endY = tracer.destroyed ? tracer.frozenY : (tracer.target.y + tracer.target.h / 2);
       
       this.pdcGraphics.clear();
-      this.pdcGraphics.lineStyle(2, 0xffffff, 1);
+      this.pdcGraphics.lineStyle(CONSTANTS.WEAPON_PDC_TRACER_WIDTH, 0xffffff, 1);
       this.pdcGraphics.moveTo(podX, podY);
       this.pdcGraphics.lineTo(endX, endY);
     }
@@ -173,7 +172,7 @@ export class WeaponManager {
         const targetY = target.y + target.h / 2;
         
         const dist = Math.sqrt((targetX - rx) ** 2 + (targetY - ry) ** 2);
-        const segments = Math.max(4, Math.floor(dist / CONSTANTS.LIGHTNING_SEGMENT_DIST)); 
+        const segments = Math.max(CONSTANTS.WEAPON_LIGHTNING_SEGMENTS_MIN, Math.floor(dist / CONSTANTS.LIGHTNING_SEGMENT_DIST)); 
         
         const points = [];
         for (let i = 0; i <= segments; i++) {
@@ -214,10 +213,10 @@ export class WeaponManager {
     const ty = target.hp > 0 ? target.y + target.h / 2 : this.game.activeLightning.points[this.game.activeLightning.points.length-1].y;
 
     const color = t < 0.25 ? 0x555555 : t < 0.50 ? 0x00f5ff : t < 0.75 ? 0xffffff : t < 0.90 ? 0x00f5ff : 0x555555;
-    const bw = t < 0.5 ? 12 : 24 * (1 - t);
+    const bw = t < 0.5 ? CONSTANTS.WEAPON_LIGHTNING_LINE_WIDTH_BASE : CONSTANTS.WEAPON_LIGHTNING_LINE_WIDTH_GLOW * (1 - t);
 
     this.lightningGraphics.clear();
-    this.lightningGraphics.lineStyle(bw + 4, 0x000000, 1);
+    this.lightningGraphics.lineStyle(bw + CONSTANTS.WEAPON_LIGHTNING_LINE_WIDTH_OUTLINE, 0x000000, 1);
     this.drawLightningPath(rx, ry, tx, ty, this.game.activeLightning.points);
     this.lightningGraphics.lineStyle(bw, color, 1);
     this.drawLightningPath(rx, ry, tx, ty, this.game.activeLightning.points);
@@ -275,8 +274,8 @@ export class WeaponManager {
         const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W;
         this.game.shake = CONSTANTS.SHAKE_POD_HIT; // Using POD_HIT as a base for rocket shake
         
-        this.game.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * 0.8);
-        this.game.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * 0.4);
+        this.game.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * CONSTANTS.WEAPON_ROCKET_EXPLOSION_SPEED_MULT);
+        this.game.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * CONSTANTS.WEAPON_ROCKET_EXPLOSION_WHITE_MULT);
 
         for (let i = this.game.invaders.length - 1; i >= 0; i--) {
           const inv = this.game.invaders[i];
@@ -288,19 +287,19 @@ export class WeaponManager {
             if (inv.takeDamage(this.game.playerDamage)) {
               const gain = Math.floor(inv.scoreValue * 1.5);
               this.game.score += gain;
-              this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w/2, this.game.player.y - 20, gain);
+              this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w/2, this.game.player.y - UI_FEEDBACK_SCORE_Y_OFFSET, gain);
               this.game.particles.spawnExplosion(inv.x + inv.w/2, inv.y + inv.h/2, inv.color, 0, Math.PI * 2, 0);
               
               if (inv.isBoss) {
                 this.game.shake = CONSTANTS.SHAKE_BIG_EXPLOSION;
-                this.game.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, 20);
-                this.game.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, 20);
+                this.game.particles.spawnExplosion(inv.x + inv.w / 4, inv.y + inv.h / 4, inv.color, 0, Math.PI * 2, EXPLOSION_RADIUS_BOSS_HIT);
+                this.game.particles.spawnExplosion(inv.x + inv.w * 0.75, inv.y + inv.h * 0.75, inv.color, 0, Math.PI * 2, EXPLOSION_RADIUS_BOSS_HIT);
                 this.game.spawnUpgrade(inv.x + inv.w / 4, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w * 0.75, inv.y + inv.h / 2);
                 this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
                 this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
                 this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
-                this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - 60, "POTENTIAL INCREASED!");
+                this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - UI_FEEDBACK_BOSS_POT_Y_OFFSET, "POTENTIAL INCREASED!");
               } else {
                 this.game.spawnUpgrade(inv.x, inv.y);
               }
@@ -315,8 +314,8 @@ export class WeaponManager {
       } else {
         // Draw Target Marker
         const rocketColor = this.parseColor(COLORS.rocket);
-        this.markerGraphics.lineStyle(2, rocketColor, 0.6);
-        const size = 15;
+        this.markerGraphics.lineStyle(CONSTANTS.WEAPON_ROCKET_MARKER_LINE_WIDTH, rocketColor, CONSTANTS.WEAPON_ROCKET_MARKER_ALPHA);
+        const size = CONSTANTS.WEAPON_ROCKET_MARKER_SIZE;
         this.markerGraphics.drawCircle(r.targetX, r.targetY, size);
         this.markerGraphics.moveTo(r.targetX - size, r.targetY);
         this.markerGraphics.lineTo(r.targetX + size, r.targetY);
