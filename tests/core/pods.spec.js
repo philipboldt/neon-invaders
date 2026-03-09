@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Pod Progression', () => {
+test.describe('Neon Nuke - Pod Progression', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');

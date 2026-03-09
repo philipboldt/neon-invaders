@@ -22,7 +22,7 @@ export const COLORS = {
 export const CONSTANTS = {
   // --- CORE ENGINE ---
   VERSION: 'beta 0.9',
-  TITLE: 'NEON INVADERS',
+  TITLE: 'NEON NUKE',
   BG_COLOR: 0x0d0d14,
   FPS_TARGET: 60,
   

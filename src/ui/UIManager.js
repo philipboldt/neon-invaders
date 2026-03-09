@@ -253,7 +253,7 @@ export class UIManager {
   updateHighScores(newEntry) {
     let scores = [];
     try {
-      const saved = localStorage.getItem('neonInvadersHighScores');
+      const saved = localStorage.getItem('neonNukeHighScores');
       if (saved) {
         scores = JSON.parse(saved).map(s => {
           if (typeof s === 'number') return { name: '???' , score: s };
@@ -269,7 +269,7 @@ export class UIManager {
       scores.push(newEntry);
       scores.sort((a, b) => b.score - a.score);
       scores = scores.slice(0, 3);
-      try { localStorage.setItem('neonInvadersHighScores', JSON.stringify(scores)); } catch (e) { console.warn(e); }
+      try { localStorage.setItem('neonNukeHighScores', JSON.stringify(scores)); } catch (e) { console.warn(e); }
     }
 
     if (this.views.start) this.views.start.updateHighScores(scores);
@@ -314,7 +314,7 @@ export class UIManager {
   isHighscore(score) {
     let scores = [];
     try {
-      const saved = localStorage.getItem('neonInvadersHighScores');
+      const saved = localStorage.getItem('neonNukeHighScores');
       if (saved) scores = JSON.parse(saved);
       else scores = [{ score: 1000 }, { score: 500 }, { score: 250 }];
     } catch (e) { return false; }

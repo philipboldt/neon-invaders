@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Dynamic Difficulty Scaling', () => {
+test.describe('Neon Nuke - Dynamic Difficulty Scaling', () => {
 
     test('Grid: 4:3 Landscape (800x600) should have ~11 columns', async ({ page }) => {
         await page.setViewportSize({ width: 800, height: 600 });

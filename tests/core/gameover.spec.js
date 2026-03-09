@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Game Over and Reset', () => {
+test.describe('Neon Nuke - Game Over and Reset', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
@@ -67,7 +67,7 @@ test.describe('Neon Invaders - Game Over and Reset', () => {
 
     test('Highscore: Should show name entry if score is sufficient', async ({ page }) => {
         await page.evaluate(() => {
-            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([
+            window.localStorage.setItem('neonNukeHighScores', JSON.stringify([
                 { name: 'LOW', score: 10 }
             ]));
         });
@@ -91,7 +91,7 @@ test.describe('Neon Invaders - Game Over and Reset', () => {
         expect(finalState).toBe('GAMEOVER');
         
         const topScore = await page.evaluate(() => {
-            const scores = JSON.parse(localStorage.getItem('neonInvadersHighScores'));
+            const scores = JSON.parse(localStorage.getItem('neonNukeHighScores'));
             return scores[0].score;
         });
         expect(topScore).toBe(5000);

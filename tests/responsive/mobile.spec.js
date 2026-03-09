@@ -2,7 +2,7 @@ import { test, expect, devices } from '@playwright/test';
 
 test.use({ ...devices['Pixel 5'] });
 
-test.describe('Neon Invaders - Mobile Responsive (New Touch System)', () => {
+test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');

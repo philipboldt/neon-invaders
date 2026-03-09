@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Pierce Logic', () => {
+test.describe('Neon Nuke - Pierce Logic', () => {
     test.setTimeout(30000);
 
     test.beforeEach(async ({ page }) => {

@@ -1,5 +1,5 @@
 [
-  { "type": "header", "text": "NEON INVADERS", "color": "player" },
+  { "type": "header", "text": "NEON NUKE", "color": "player" },
   { "type": "quote", "text": "MADE WITH ❤️ BY PHILIP BOLDT", "color": "text" },
   { "type": "spacer", "size": 80 },
   { "type": "role", "text": "CO-PILOT & ARCHITECT", "color": "invader3" },

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Visual Snapshots', () => {
+test.describe('Neon Nuke - Visual Snapshots', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
@@ -10,7 +10,7 @@ test.describe('Neon Invaders - Visual Snapshots', () => {
         
         // Setup consistent highscores for start screen
         await page.evaluate(() => {
-            window.localStorage.setItem('neonInvadersHighScores', JSON.stringify([
+            window.localStorage.setItem('neonNukeHighScores', JSON.stringify([
                 { name: 'NEO', score: 9999 },
                 { name: 'TRN', score: 5555 },
                 { name: 'FLY', score: 1111 }

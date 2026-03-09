@@ -1,4 +1,4 @@
-# Project Status: Neon Invaders
+# Project Status: Neon Nuke
 
 ## Overview
 A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScript. The player controls a spaceship to defeat waves of alien invaders, collect power-ups, and survive as long as possible.

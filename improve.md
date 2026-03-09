@@ -1,4 +1,4 @@
-# Potential Improvements: Neon Invaders
+# Potential Improvements: Neon Nuke
 
 This document tracks identified areas for future enhancement, UX refinement, and logic polishing.
 

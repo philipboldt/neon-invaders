@@ -9,7 +9,7 @@
 
 ## ✨ Visual Polish & Effects
 - [ ] **Dynamic Color Cycling:** Implementation of slow neon color shifting for credit text as it scrolls.
-- [ ] **Global Intel Section:** Add a section at the end of credits showing fun global stats (Total Invaders Neutralized, etc.).
+- [ ] **Global Intel Section:** Add a section at the end of credits showing fun global stats (Total Nukes Neutralized, etc.).
 - [ ] **Neon Breathing:** Sync glow intensity with the `ANIM_BREATH_SPEED`.
 - [ ] **Invader Guard of Honor:** Two non-hostile invaders escorting the credits upward.
 

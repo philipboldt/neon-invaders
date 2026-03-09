@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Core Gameplay', () => {
+test.describe('Neon Nuke - Core Gameplay', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');

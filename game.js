@@ -2,7 +2,7 @@ import { Game } from './src/Game.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   if (window.location.protocol === 'file:') {
-    alert('Neon Invaders uses ES Modules and requires a local web server to run. Please use "npm run report" or another server to view the game locally.');
+    alert('Neon Nuke uses ES Modules and requires a local web server to run. Please use "npm run report" or another server to view the game locally.');
   }
 
   const canvas = document.getElementById('game');

@@ -1,8 +1,8 @@
-# 🚀 NEON INVADERS
+# 🚀 NEON NUKE
 
 A high-performance, Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and a modern neon aesthetic. Defeat waves of alien invaders, unlock powerful sidepods, and survive massive boss encounters.
 
-![Neon Invaders Screenshot](https://via.placeholder.com/800x450/0d0d14/00f5ff?text=NEON+INVADERS+GAMEPLAY)
+![Neon Nuke Screenshot](https://via.placeholder.com/800x450/0d0d14/00f5ff?text=NEON+NUKE+GAMEPLAY)
 
 ## ✨ Features
 

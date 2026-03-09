@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Neon Invaders - Loading and Initialization', () => {
+test.describe('Neon Nuke - Loading and Initialization', () => {
 
     test.beforeEach(async ({ page }) => {
         page.on('console', msg => {
@@ -10,7 +10,7 @@ test.describe('Neon Invaders - Loading and Initialization', () => {
 
     test('Basic: HTML structure and title', async ({ page }) => {
         await page.goto('/');
-        await expect(page).toHaveTitle(/Neon Invaders/);
+        await expect(page).toHaveTitle(/Neon Nuke/);
         
         const viewport = await page.locator('meta[name="viewport"]').getAttribute('content');
         expect(viewport).toContain('width=device-width');

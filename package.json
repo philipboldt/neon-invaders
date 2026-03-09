@@ -1,7 +1,7 @@
 {
-  "name": "neon-invaders",
+  "name": "neon-nuke",
   "version": "1.0.0",
-  "description": "A Space Invaders–style arcade game with a neon aesthetic. Shoot the invaders before they reach you or hit you with their shots.",
+  "description": "A Space Invaders–style arcade game with a neon aesthetic. Shoot the nukes before they reach you or hit you with their shots.",
   "main": "game.js",
   "type": "module",
   "scripts": {
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/philipboldt/neon-invaders.git"
+    "url": "git+https://github.com/philipboldt/neon-nuke.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/philipboldt/neon-invaders/issues"
+    "url": "https://github.com/philipboldt/neon-nuke/issues"
   },
-  "homepage": "https://github.com/philipboldt/neon-invaders#readme",
+  "homepage": "https://github.com/philipboldt/neon-nuke#readme",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "serve": "^14.2.5"

@@ -1,4 +1,4 @@
-# Engineering Blueprint: Neon Invaders Refactor
+# Engineering Blueprint: Neon Nuke Refactor
 
 This document outlines the architectural standards and best practices being applied during the "Pure Engine" migration (PixiJS + Modular JavaScript).
 
