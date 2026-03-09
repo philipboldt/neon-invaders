@@ -289,7 +289,7 @@ export class WeaponManager {
             if (inv.takeDamage(this.game.playerDamage)) {
               const gain = Math.floor(inv.scoreValue * 1.5);
               this.game.score += gain;
-              this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w/2, this.game.player.y - CONSTANTS.UI_FEEDBACK_SCORE_Y_OFFSET, gain);
+              this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w/2, this.game.player.y - CONSTANTS.UI_FEEDBACK_SCORE_Y_OFFSET, gain, COLORS.textYellow);
               this.game.particles.spawnExplosion(inv.x + inv.w/2, inv.y + inv.h/2, inv.color, 0, Math.PI * 2, 0);
               
               if (inv.isBoss) {
@@ -301,7 +301,7 @@ export class WeaponManager {
                 this.game.spawnUpgrade(inv.x + inv.w / 2, inv.y + inv.h / 2);
                 this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
                 this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
-                this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_BOSS_POT_Y_OFFSET, "POTENTIAL INCREASED!");
+                this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_BOSS_POT_Y_OFFSET, "POTENTIAL INCREASED!", COLORS.invader2);
               } else {
                 this.game.spawnUpgrade(inv.x, inv.y);
               }

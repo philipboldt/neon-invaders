@@ -106,7 +106,7 @@ export class CollisionManager {
   handleInvaderDeath(inv, index) {
     this.game.score += inv.scoreValue;
     this.game.audio.playSFX('explosion');
-    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_SCORE_Y_OFFSET, inv.scoreValue);
+    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_SCORE_Y_OFFSET, inv.scoreValue, COLORS.textYellow);
     this.game.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2, 0);
     
     if (inv.isBoss) {
@@ -120,7 +120,7 @@ export class CollisionManager {
       
       this.game.maxLives += CONSTANTS.STAT_POTENTIAL_GAIN;
       this.game.maxDamage += CONSTANTS.STAT_POTENTIAL_GAIN;
-      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_BOSS_POT_Y_OFFSET, "POTENTIAL INCREASED!");
+      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_BOSS_POT_Y_OFFSET, "POTENTIAL INCREASED!", COLORS.invader2);
     } else {
       this.game.spawnUpgrade(inv.x, inv.y);
     }
@@ -164,7 +164,7 @@ export class CollisionManager {
     if (pod.hp <= 0) {
       pod.active = false;
       this.game.audio.playSFX('explosion');
-      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_POD_DEST_Y_OFFSET, `${side.toUpperCase()} POD DESTROYED!`);
+      this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_POD_DEST_Y_OFFSET, `${side.toUpperCase()} POD DESTROYED!`, COLORS.textRed);
       this.game.player.updateSpritePositions();
     }
     this.game.ui.updateStats(this.game);
@@ -193,7 +193,7 @@ export class CollisionManager {
         this.game.score += gain; text = `${gain} BONUS`; break;
     }
     const upgradeColor = COLORS[type] || COLORS.text;
-    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_UPGRADE_Y_OFFSET, text, upgradeColor, true);
+    this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_UPGRADE_Y_OFFSET, text, upgradeColor);
     this.game.transformMaxedUpgrades();
     this.game.ui.updateStats(this.game);
   }

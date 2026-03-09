@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Enhanced Dynamic Feedback:** Overhauled the floating text system to support custom colors and random horizontal offsets. Score gains now appear in a "cloud" above the player to prevent overlapping, while upgrade notifications are color-coded to match their item (e.g., Cyan for Shield, Green for Weapons). **[NEW]**
 - **Refined Planning Mandate:** Updated `Gemini.md` to a "MANDATORY STOP" policy. It now explicitly requires completing all research and presenting one comprehensive plan before any implementation or file modification. **[CRITICAL]**
 - **Audio System Overhaul:** Integrated explosion SFX (`res/explosion.wav`) for invader, boss, player, and pod destruction. Refactored `AudioManager` to support independent muting of music and sound effects. Updated the "M" key to function as a global mute (Music & SFX OFF). Added a dedicated "Sound" toggle button to the settings menu. **[NEW]**
 - **Settings UI & Interaction Fix:** Improved discoverability of settings buttons by adding `[ ]` frames. Fixed a bug where `InputManager` intercepted clicks in the settings view, preventing button interaction on desktop. **[FIX]**

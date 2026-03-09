@@ -17,7 +17,7 @@ export class ParticleSystem {
         active: false,
         x: 0, y: 0, vx: 0, vy: 0,
         size: 0, maxSize: 0, life: 0, maxLife: 0, color: '#fff',
-        text: null, isText: false, isLightning: false, useWobble: false,
+        text: null, isText: false, isLightning: false,
         pixiObj: g,
         pixiText: null
       });
@@ -45,14 +45,14 @@ export class ParticleSystem {
     this.activeIndices = [];
   }
 
-  spawnScoreText(x, y, text, color = COLORS.textYellow, useWobble = false) {
+  spawnScoreText(x, y, text, color = COLORS.textYellow) {
     if (this.freeIndices.length === 0) return;
 
     const idx = this.freeIndices.pop();
     const p = this.pool[idx];
 
     p.active = true;
-    // Add initial spread offset
+    // Add initial spread offset to prevent stacking
     p.x = x + (Math.random() - 0.5) * 40;
     p.y = y;
     // Add slight horizontal drift
@@ -66,7 +66,6 @@ export class ParticleSystem {
     p.text = typeof text === 'number' ? `+${text}` : text;
     p.isText = true;
     p.isLightning = false;
-    p.useWobble = useWobble;
 
     if (!p.pixiText) {
       p.pixiText = new PIXI.Text('', {
@@ -108,7 +107,6 @@ export class ParticleSystem {
     p.text = `-${amount}`;
     p.isText = true;
     p.isLightning = false;
-    p.useWobble = false;
 
     if (!p.pixiText) {
       p.pixiText = new PIXI.Text('', {
@@ -157,7 +155,6 @@ export class ParticleSystem {
       p.isText = false;
       p.text = null;
       p.isLightning = false;
-      p.useWobble = false;
       
       p.pixiObj.clear();
       p.pixiObj.beginFill(0xFFFFFF);
@@ -195,7 +192,6 @@ export class ParticleSystem {
         p.isText = false;
         p.text = null;
         p.isLightning = false;
-        p.useWobble = false;
         
         p.pixiObj.clear();
         p.pixiObj.beginFill(0xFFFFFF);
@@ -232,7 +228,6 @@ export class ParticleSystem {
     p.isText = false;
     p.text = null;
     p.isLightning = false;
-    p.useWobble = false;
     
     p.pixiObj.clear();
     p.pixiObj.beginFill(0xFFFFFF);
@@ -269,7 +264,6 @@ export class ParticleSystem {
       p.isText = false;
       p.text = null;
       p.isLightning = true;
-      p.useWobble = false;
 
       p.pixiObj.clear();
       p.pixiObj.beginFill(0xFFFFFF);
@@ -289,7 +283,6 @@ export class ParticleSystem {
   }
 
   update(dt = 1) {
-    const now = performance.now();
     for (let i = this.activeIndices.length - 1; i >= 0; i--) {
       const idx = this.activeIndices[i];
       const p = this.pool[idx];
@@ -300,12 +293,7 @@ export class ParticleSystem {
       const t = p.life / p.maxLife;
       
       if (p.isText) {
-        let displayX = p.x;
-        if (p.useWobble) {
-          // Add oscillation similar to marquee
-          displayX += Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * 10;
-        }
-        p.pixiText.position.set(displayX, p.y);
+        p.pixiText.position.set(p.x, p.y);
         p.pixiText.alpha = 1 - t;
         const fontSize = p.size + (Math.max(0, p.maxSize - p.size)) * t;
         p.pixiText.style.fontSize = Math.floor(fontSize);
