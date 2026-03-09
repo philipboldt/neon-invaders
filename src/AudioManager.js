@@ -14,18 +14,18 @@ export class AudioManager {
       return;
     }
 
-    // Pre-load BGM
+    // Pre-load BGM (Apply quadratic curve to initial volume)
     PIXI.sound.add('bgm', {
       url: CONSTANTS.AUDIO_ASSETS.BGM,
       loop: true,
-      volume: CONSTANTS.AUDIO_BGM_VOLUME,
+      volume: CONSTANTS.AUDIO_BGM_VOLUME * CONSTANTS.AUDIO_BGM_VOLUME,
       preload: true
     });
 
-    // Pre-load Explosion SFX
+    // Pre-load Explosion SFX (Apply quadratic curve to initial volume)
     PIXI.sound.add('explosion', {
       url: CONSTANTS.AUDIO_ASSETS.EXPLOSION,
-      volume: CONSTANTS.AUDIO_SFX_VOLUME,
+      volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME,
       preload: true
     });
   }
@@ -88,13 +88,15 @@ export class AudioManager {
   setMusicVolume(vol) {
     if (typeof PIXI.sound === 'undefined') return;
     const bgm = PIXI.sound.find('bgm');
-    if (bgm) bgm.volume = vol;
+    // Quadratic curve for more natural volume control
+    if (bgm) bgm.volume = vol * vol;
   }
 
   setSFXVolume(vol) {
     if (typeof PIXI.sound === 'undefined') return;
     const sfx = PIXI.sound.find('explosion');
-    if (sfx) sfx.volume = vol;
+    // Quadratic curve for more natural volume control
+    if (sfx) sfx.volume = vol * vol;
   }
 
   muteAll() {

@@ -316,8 +316,8 @@ export const CONSTANTS = {
   TOUCH_LABEL_ALPHA: 0.15,
 
   // --- AUDIO ---
-  AUDIO_BGM_VOLUME: 0.4,
-  AUDIO_SFX_VOLUME: 0.6,
+  AUDIO_BGM_VOLUME: 0.25,
+  AUDIO_SFX_VOLUME: 0.4,
   AUDIO_ASSETS: {
     BGM: 'res/bgm.ogg',
     EXPLOSION: 'res/explosion.wav'

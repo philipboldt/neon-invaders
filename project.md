@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Improved Audio Scaling:** Implemented quadratic volume mapping in `AudioManager` to better match human perceived loudness. This ensures that low volume settings (e.g., 5-10%) are appropriately quiet. Lowered default volume constants for a better initial experience. **[FIX]**
 - **Interactive Audio Controls:** Implemented a reusable `UISlider` component for fine-grained volume control. Added "Music Volume" and "SFX Volume" sliders to the Mission Settings menu, providing real-time audio feedback. **[NEW]**
 - **UI Component Refactor:** Introduced a reusable `UIButton` class to standardize interactive elements. Refactored `SettingsView` to use this new component, centralizing logic for label formatting (`[ ]`), hover effects, and event handling. **[REFACTOR]**
 - **UI Cleanup:** Removed the redundant "View Credits" button from the `HelpView` to reduce screen clutter and improve readability. Functional access remains available via the "Mission Settings" screen. **[CLEANUP]**
