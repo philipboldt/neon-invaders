@@ -7,7 +7,8 @@
   "scripts": {
     "test": "playwright test",
     "test:report": "playwright test ; npm run report",
-    "report": "serve playwright-report"
+    "report": "serve playwright-report",
+    "start": "serve ."
   },
   "repository": {
     "type": "git",
