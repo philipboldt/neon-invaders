@@ -105,6 +105,7 @@ export class CollisionManager {
 
   handleInvaderDeath(inv, index) {
     this.game.score += inv.scoreValue;
+    this.game.audio.playSFX('explosion');
     this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_SCORE_Y_OFFSET, inv.scoreValue);
     this.game.particles.spawnExplosion(inv.x + inv.w / 2, inv.y + inv.h / 2, inv.color, 0, Math.PI * 2, 0);
     
@@ -138,6 +139,7 @@ export class CollisionManager {
     } else {
       this.game.lives--;
       this.game.shake = CONSTANTS.SHAKE_PLAYER_DEATH;
+      this.game.audio.playSFX('explosion');
       this.game.particles.spawnExplosion(this.game.player.x + this.game.player.w / 2, this.game.player.y + this.game.player.h / 2, COLORS.player, 0, Math.PI * 2, CONSTANTS.EXPLOSION_RADIUS_PLAYER);
       if (this.game.lives <= 0) {
         this.game.endGame(false);
@@ -161,6 +163,7 @@ export class CollisionManager {
 
     if (pod.hp <= 0) {
       pod.active = false;
+      this.game.audio.playSFX('explosion');
       this.game.particles.spawnScoreText(this.game.player.x + this.game.player.w / 2, this.game.player.y - CONSTANTS.UI_FEEDBACK_POD_DEST_Y_OFFSET, `${side.toUpperCase()} POD DESTROYED!`);
       this.game.player.updateSpritePositions();
     }

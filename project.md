@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Audio System Overhaul:** Integrated explosion SFX (`res/explosion.wav`) for invader, boss, player, and pod destruction. Refactored `AudioManager` to support independent muting of music and sound effects. Updated the "M" key to function as a global mute (Music & SFX OFF). Added a dedicated "Sound" toggle button to the settings menu. **[NEW]**
 - **Settings UI & Interaction Fix:** Improved discoverability of settings buttons by adding `[ ]` frames. Fixed a bug where `InputManager` intercepted clicks in the settings view, preventing button interaction on desktop. **[FIX]**
 - **Adaptive Framing:** Refined the framing logic to only show the neon border when horizontal letterboxing is active (on screens wider than 4:3). This keeps mobile and tall viewports clean while maintaining the "arcade cabinet" feel on desktops. **[FIX]**
 - **Restored Hybrid Scaling:** Re-implemented the "best-fit" scaling strategy that handles wide and tall screens gracefully. Wide screens (landscape) now show a fixed 4:3 logical area centered, while tall screens (portrait) expand vertically to utilize the full height. Removed CSS aspect-ratio constraints to give JS full layout control. **[FIX]**

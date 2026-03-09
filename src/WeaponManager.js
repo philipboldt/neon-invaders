@@ -120,6 +120,7 @@ export class WeaponManager {
 
       if (Math.random() < CONSTANTS.PDC_CHANCE) {
         this.game.pdcTarget.deactivate();
+        this.game.audio.playSFX('explosion');
         
         const hitX = this.game.pdcTarget.x + this.game.pdcTarget.w / 2;
         const hitY = this.game.pdcTarget.y + this.game.pdcTarget.h / 2;
@@ -273,6 +274,7 @@ export class WeaponManager {
       if (distSq < hitRadiusSq) {
         const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W;
         this.game.shake = CONSTANTS.SHAKE_POD_HIT; // Using POD_HIT as a base for rocket shake
+        this.game.audio.playSFX('explosion');
         
         this.game.particles.spawnExplosion(cx, cy, COLORS.rocket, 0, Math.PI * 2, blastRadius * CONSTANTS.WEAPON_ROCKET_EXPLOSION_SPEED_MULT);
         this.game.particles.spawnExplosion(cx, cy, '#ffffff', 0, Math.PI * 2, blastRadius * CONSTANTS.WEAPON_ROCKET_EXPLOSION_WHITE_MULT);

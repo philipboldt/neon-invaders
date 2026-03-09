@@ -41,10 +41,31 @@ export class SettingsView extends BaseView {
     this.musicButton.on('pointerout', () => { this.updateMusicButtonText(); });
     this.musicButton.on('pointertap', (e) => {
       e.stopPropagation();
-      this.game.audio.toggleMute();
+      this.game.audio.toggleMusic();
       this.updateMusicButtonText();
     });
     this.container.addChild(this.musicButton);
+
+    // Sound Toggle Button
+    this.soundButton = new PIXI.Text('[ SOUND: ON ]', {
+      fontFamily: 'Orbitron',
+      fontSize: CONSTANTS.FONT_SIZE_HEADER,
+      fontWeight: 'bold',
+      fill: this.parseHexColor(COLORS.player),
+      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_BUTTON
+    });
+    this.soundButton.anchor.set(0.5);
+    this.soundButton.eventMode = 'static';
+    this.soundButton.cursor = 'pointer';
+    
+    this.soundButton.on('pointerover', () => { this.soundButton.style.fill = 0xFFFFFF; });
+    this.soundButton.on('pointerout', () => { this.updateSoundButtonText(); });
+    this.soundButton.on('pointertap', (e) => {
+      e.stopPropagation();
+      this.game.audio.toggleSFX();
+      this.updateSoundButtonText();
+    });
+    this.container.addChild(this.soundButton);
 
     // Credits Button
     this.creditsButton = new PIXI.Text('[ VIEW CREDITS ]', {
@@ -89,18 +110,26 @@ export class SettingsView extends BaseView {
   }
 
   updateMusicButtonText() {
-    const isMuted = this.game.audio.isMuted;
+    const isMuted = this.game.audio.isMusicMuted;
     this.musicButton.text = `[ MUSIC: ${isMuted ? 'OFF' : 'ON'} ]`;
     this.musicButton.style.fill = isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player);
   }
 
+  updateSoundButtonText() {
+    const isMuted = this.game.audio.isSFXMuted;
+    this.soundButton.text = `[ SOUND: ${isMuted ? 'OFF' : 'ON'} ]`;
+    this.soundButton.style.fill = isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player);
+  }
+
   onShow() {
     this.updateMusicButtonText();
+    this.updateSoundButtonText();
   }
 
   updateLayout(W, H) {
     this.titleContainer.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_TITLE_Y_RATIO);
     this.musicButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_MUSIC_Y_RATIO);
+    this.soundButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_SOUND_Y_RATIO);
     this.creditsButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_CREDITS_Y_RATIO);
     this.warning.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_WARNING_Y_RATIO);
     this.prompt.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_PROMPT_Y_RATIO);

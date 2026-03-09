@@ -70,8 +70,11 @@ export class InputManager {
       }
 
       if (e.code === 'KeyM') {
-        this.game.audio.toggleMute();
-        if (state === GAME_STATES.SETTINGS) this.game.ui.views.settings.updateMusicButtonText();
+        this.game.audio.muteAll();
+        if (state === GAME_STATES.SETTINGS) {
+          this.game.ui.views.settings.updateMusicButtonText();
+          this.game.ui.views.settings.updateSoundButtonText();
+        }
         return;
       }
 
@@ -191,7 +194,9 @@ export class InputManager {
         // 1. Check if we hit a specific button first
         const settingsView = this.game.ui.views.settings;
         const point = new PIXI.Point(lx, ly);
-        if (settingsView.musicButton.containsPoint(point) || settingsView.creditsButton.containsPoint(point)) {
+        if (settingsView.musicButton.containsPoint(point) || 
+            settingsView.soundButton.containsPoint(point) || 
+            settingsView.creditsButton.containsPoint(point)) {
           return; // Let Pixi's static event listeners handle it
         }
 

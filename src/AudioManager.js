@@ -3,14 +3,12 @@ import { CONSTANTS } from './constants.js';
 export class AudioManager {
   constructor(game) {
     this.game = game;
-    this.bgm = null;
-    this.sfx = new Map();
-    this.isMuted = false;
+    this.isMusicMuted = false;
+    this.isSFXMuted = false;
     this.init();
   }
 
   init() {
-    // PIXI.sound is globally available via the script tag in index.html
     if (typeof PIXI.sound === 'undefined') {
       console.warn('PIXI.sound not found. Audio will be disabled.');
       return;
@@ -23,30 +21,28 @@ export class AudioManager {
       volume: CONSTANTS.AUDIO_BGM_VOLUME,
       preload: true
     });
+
+    // Pre-load Explosion SFX
+    PIXI.sound.add('explosion', {
+      url: CONSTANTS.AUDIO_ASSETS.EXPLOSION,
+      volume: CONSTANTS.AUDIO_SFX_VOLUME,
+      preload: true
+    });
   }
 
   resumeContext() {
     if (typeof PIXI.sound === 'undefined') return;
-    
-    // Pixi Sound has its own context manager
     const context = PIXI.sound.context;
     if (context && context.audioContext && context.audioContext.state === 'suspended') {
-      context.audioContext.resume().then(() => {
-        console.log('AudioContext resumed successfully');
-      }).catch(err => {
-        console.warn('Failed to resume AudioContext:', err);
-      });
+      context.audioContext.resume().catch(err => console.warn('Failed to resume AudioContext:', err));
     }
   }
 
   playBGM() {
-    if (typeof PIXI.sound === 'undefined') return;
-    if (!PIXI.sound.exists('bgm')) return;
-    
+    if (typeof PIXI.sound === 'undefined' || !PIXI.sound.exists('bgm')) return;
     const bgm = PIXI.sound.find('bgm');
-    // Important: Only trigger play if not already playing AND not already loading/readying
     if (!bgm.isPlaying && !bgm.isPaused) {
-      PIXI.sound.play('bgm');
+      PIXI.sound.play('bgm', { muted: this.isMusicMuted });
     } else if (bgm.isPaused) {
       PIXI.sound.resume('bgm');
     }
@@ -65,17 +61,35 @@ export class AudioManager {
   }
 
   resumeBGM() {
-    if (typeof PIXI.sound !== 'undefined' && PIXI.sound.exists('bgm')) {
+    if (typeof PIXI.sound !== 'undefined' && PIXI.sound.exists('bgm') && !this.isMusicMuted) {
       PIXI.sound.resume('bgm');
     }
   }
 
-  toggleMute() {
-    this.isMuted = !this.isMuted;
-    if (typeof PIXI.sound !== 'undefined') {
-      if (this.isMuted) PIXI.sound.muteAll();
-      else PIXI.sound.unmuteAll();
+  playSFX(name) {
+    if (typeof PIXI.sound === 'undefined' || this.isSFXMuted || !PIXI.sound.exists(name)) return;
+    PIXI.sound.play(name);
+  }
+
+  toggleMusic() {
+    this.isMusicMuted = !this.isMusicMuted;
+    if (typeof PIXI.sound !== 'undefined' && PIXI.sound.exists('bgm')) {
+      if (this.isMusicMuted) PIXI.sound.find('bgm').mute = true;
+      else PIXI.sound.find('bgm').mute = false;
     }
-    return this.isMuted;
+    return this.isMusicMuted;
+  }
+
+  toggleSFX() {
+    this.isSFXMuted = !this.isSFXMuted;
+    return this.isSFXMuted;
+  }
+
+  muteAll() {
+    this.isMusicMuted = true;
+    this.isSFXMuted = true;
+    if (typeof PIXI.sound !== 'undefined') {
+      if (PIXI.sound.exists('bgm')) PIXI.sound.find('bgm').mute = true;
+    }
   }
 }
