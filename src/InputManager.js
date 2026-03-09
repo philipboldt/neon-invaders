@@ -188,6 +188,14 @@ export class InputManager {
       if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
       if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
       if (state === GAME_STATES.SETTINGS) {
+        // 1. Check if we hit a specific button first
+        const settingsView = this.game.ui.views.settings;
+        const point = new PIXI.Point(lx, ly);
+        if (settingsView.musicButton.containsPoint(point) || settingsView.creditsButton.containsPoint(point)) {
+          return; // Let Pixi's static event listeners handle it
+        }
+
+        // 2. Default behavior (resume or quit)
         if (zone === 'TOP') {
           const now = performance.now();
           if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {

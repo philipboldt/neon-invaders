@@ -26,7 +26,7 @@ export class SettingsView extends BaseView {
     this.titleContainer.addChild(this.title);
 
     // Music Toggle Button
-    this.musicButton = new PIXI.Text('MUSIC: ON', {
+    this.musicButton = new PIXI.Text('[ MUSIC: ON ]', {
       fontFamily: 'Orbitron',
       fontSize: CONSTANTS.FONT_SIZE_HEADER,
       fontWeight: 'bold',
@@ -47,7 +47,7 @@ export class SettingsView extends BaseView {
     this.container.addChild(this.musicButton);
 
     // Credits Button
-    this.creditsButton = new PIXI.Text('VIEW CREDITS', {
+    this.creditsButton = new PIXI.Text('[ VIEW CREDITS ]', {
       fontFamily: 'Orbitron',
       fontSize: CONSTANTS.FONT_SIZE_HEADER,
       fontWeight: 'bold',
@@ -90,7 +90,7 @@ export class SettingsView extends BaseView {
 
   updateMusicButtonText() {
     const isMuted = this.game.audio.isMuted;
-    this.musicButton.text = `MUSIC: ${isMuted ? 'OFF' : 'ON'}`;
+    this.musicButton.text = `[ MUSIC: ${isMuted ? 'OFF' : 'ON'} ]`;
     this.musicButton.style.fill = isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player);
   }
 
