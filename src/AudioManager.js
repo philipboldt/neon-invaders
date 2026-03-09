@@ -74,8 +74,8 @@ export class AudioManager {
   toggleMusic() {
     this.isMusicMuted = !this.isMusicMuted;
     if (typeof PIXI.sound !== 'undefined' && PIXI.sound.exists('bgm')) {
-      if (this.isMusicMuted) PIXI.sound.find('bgm').mute = true;
-      else PIXI.sound.find('bgm').mute = false;
+      if (this.isMusicMuted) PIXI.sound.find('bgm').muted = true;
+      else PIXI.sound.find('bgm').muted = false;
     }
     return this.isMusicMuted;
   }
@@ -89,7 +89,7 @@ export class AudioManager {
     this.isMusicMuted = true;
     this.isSFXMuted = true;
     if (typeof PIXI.sound !== 'undefined') {
-      if (PIXI.sound.exists('bgm')) PIXI.sound.find('bgm').mute = true;
+      if (PIXI.sound.exists('bgm')) PIXI.sound.find('bgm').muted = true;
     }
   }
 }
