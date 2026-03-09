@@ -63,8 +63,14 @@ You are authorized and instructed to perform Git commits **automatically** and w
 
 ---
 
-## 📝 Planning & Execution
-**Plan First:** We always plan first. No implementation if not directly said. After viewing the plan, we will discuss it. Unless explicitly stated otherwise (e.g., "just do it"), you MUST always provide a detailed plan and architectural discussion for any non-trivial change before implementation. Wait for user approval before modifying any code files.
+## 🛑 MANDATORY STOP: Planning & Approval
+**NO SILENT IMPLEMENTATION:** You are strictly forbidden from modifying any files or executing implementation commands without an approved plan.
+
+1. **Research & Plan:** First, analyze the request and present a detailed plan.
+2. **Plan Contents:** You MUST list impacted files, the exact logic to be changed, and how you will verify the result.
+3. **Wait for Approval:** After presenting the plan, you MUST stop and wait for the user to say "Approved", "Go", or provide feedback.
+4. **Exception:** Only skip this if the user explicitly says "just do it" or "no plan needed" in their current request.
+5. **Enforcement:** A "trivial" change is not an excuse to skip this. If you are touching code, you are planning first.
 
 **Feature Integrity:** During refactoring, if you identify an opportunity to improve, add, or change a game feature, you MUST present the idea to the user first and obtain explicit approval before implementation. Refactoring should focus strictly on structural integrity unless directed otherwise.
 
