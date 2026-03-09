@@ -25,14 +25,13 @@ export class EntityManager {
     const invH = CONSTANTS.INVADER_H * currentScale;
 
     // 2. Determine Target Threat Volume (Independent of Ratio)
-    // Progression: Start ~50, grow slightly per level
-    const targetTotal = 50 + (this.game.level * 2);
+    const targetTotal = CONSTANTS.INVADER_BASE_TOTAL + (this.game.level * CONSTANTS.INVADER_GROWTH_PER_LEVEL);
 
     // 3. Solve for Tactical Grid (Ratio Dependent)
     // Goal: Fill ~60% of width
     const targetGridW = this.game.W * CONSTANTS.INVADER_TARGET_WIDTH_FACTOR;
-    const cols = Math.max(4, Math.floor(targetGridW / (invW + gap)));
-    const rows = Math.max(1, Math.round(targetTotal / cols));
+    const cols = Math.max(CONSTANTS.INVADER_MIN_COLS, Math.floor(targetGridW / (invW + gap)));
+    const rows = Math.max(CONSTANTS.INVADER_MIN_ROWS, Math.round(targetTotal / cols));
     
     const totalGridW = cols * (invW + gap) - gap;
     let startX = (this.game.W - totalGridW) / 2;
@@ -44,11 +43,11 @@ export class EntityManager {
     const bossW = isBossLevel ? invW * CONSTANTS.BOSS_W_MULT : (isMiniBossLevel ? invW * CONSTANTS.BOSS_W_MULT_MINI : 0);
     const bossH = isBossLevel ? invH * CONSTANTS.BOSS_H_MULT : (isMiniBossLevel ? invH * CONSTANTS.BOSS_H_MULT_MINI : 0);
 
-    const block = Math.floor((this.game.level - 1) / 4);
-    const p = (this.game.level - 1) % 4;
-    const baseHp = 1 + block * 2;
-    const higherHp = baseHp + 2;
-    const rowsWithHigher = p * 2;
+    const block = Math.floor((this.game.level - 1) / CONSTANTS.INVADER_HP_BLOCK_SIZE);
+    const p = (this.game.level - 1) % CONSTANTS.INVADER_HP_BLOCK_SIZE;
+    const baseHp = CONSTANTS.INVADER_HP_BASE + block * CONSTANTS.INVADER_HP_INC;
+    const higherHp = baseHp + CONSTANTS.INVADER_HP_INC;
+    const rowsWithHigher = p * CONSTANTS.INVADER_HIGHER_HP_ROWS_MULT;
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -56,7 +55,7 @@ export class EntityManager {
           row === 0 ? COLORS.invader3 :
           row < Math.ceil(rows / 2) ? COLORS.invader1 : COLORS.invader2;
         const maxHp = row < rowsWithHigher ? higherHp : baseHp;
-        const scoreValue = color === COLORS.invader3 ? 30 : color === COLORS.invader1 ? 20 : 10;
+        const scoreValue = color === COLORS.invader3 ? CONSTANTS.INVADER_SCORE_L1 : color === COLORS.invader1 ? CONSTANTS.INVADER_SCORE_L2 : CONSTANTS.INVADER_SCORE_L3;
         
         const invX = startX + col * (invW + gap);
         const invY = startY + row * (invH + gap);
@@ -112,7 +111,7 @@ export class EntityManager {
   }
 
   invaderShoot(now) {
-    const shootInterval = Math.max(CONSTANTS.INVADER_SHOOT_INTERVAL_MIN, CONSTANTS.INVADER_SHOOT_INTERVAL_BASE - this.game.level * 60);
+    const shootInterval = Math.max(CONSTANTS.INVADER_SHOOT_INTERVAL_MIN, CONSTANTS.INVADER_SHOOT_INTERVAL_BASE - this.game.level * CONSTANTS.INVADER_SHOOT_LEVEL_MULT);
     if (this.game.invaders.length === 0 || now - this.game.lastInvaderShoot < shootInterval) return;
     this.game.lastInvaderShoot = now;
     const idx = Math.floor(Math.random() * this.game.invaders.length);
