@@ -133,6 +133,7 @@ export class Game {
       this.H = CONSTANTS.LOGICAL_HEIGHT_MIN;
       this.canvas.style.width = `${this.W * scale}px`;
       this.canvas.style.height = `${this.H * scale}px`;
+      this.isLetterboxedX = true;
     } else {
       // Portrait / Tall - Fit to Width, Expand Height
       const scale = scaleWidth;
@@ -143,6 +144,7 @@ export class Game {
       this.H = Math.max(this.H, CONSTANTS.LOGICAL_HEIGHT_MIN);
       this.canvas.style.width = `${availW}px`;
       this.canvas.style.height = `${availH}px`;
+      this.isLetterboxedX = false;
     }
     
     this.gameOffsetY = (this.appH - this.H) / 2;
