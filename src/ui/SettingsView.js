@@ -1,5 +1,6 @@
 import { COLORS, CONSTANTS } from '../constants.js';
 import { BaseView } from './BaseView.js';
+import { UIButton } from './UIButton.js';
 
 export class SettingsView extends BaseView {
   constructor(game) {
@@ -26,63 +27,21 @@ export class SettingsView extends BaseView {
     this.titleContainer.addChild(this.title);
 
     // Music Toggle Button
-    this.musicButton = new PIXI.Text('[ MUSIC: ON ]', {
-      fontFamily: 'Orbitron',
-      fontSize: CONSTANTS.FONT_SIZE_HEADER,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.player),
-      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_BUTTON
-    });
-    this.musicButton.anchor.set(0.5);
-    this.musicButton.eventMode = 'static';
-    this.musicButton.cursor = 'pointer';
-    
-    this.musicButton.on('pointerover', () => { this.musicButton.style.fill = 0xFFFFFF; });
-    this.musicButton.on('pointerout', () => { this.updateMusicButtonText(); });
-    this.musicButton.on('pointertap', (e) => {
-      e.stopPropagation();
+    this.musicButton = new UIButton('MUSIC: ON', this.parseHexColor(COLORS.player), () => {
       this.game.audio.toggleMusic();
       this.updateMusicButtonText();
     });
     this.container.addChild(this.musicButton);
 
     // Sound Toggle Button
-    this.soundButton = new PIXI.Text('[ SOUND: ON ]', {
-      fontFamily: 'Orbitron',
-      fontSize: CONSTANTS.FONT_SIZE_HEADER,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.player),
-      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_BUTTON
-    });
-    this.soundButton.anchor.set(0.5);
-    this.soundButton.eventMode = 'static';
-    this.soundButton.cursor = 'pointer';
-    
-    this.soundButton.on('pointerover', () => { this.soundButton.style.fill = 0xFFFFFF; });
-    this.soundButton.on('pointerout', () => { this.updateSoundButtonText(); });
-    this.soundButton.on('pointertap', (e) => {
-      e.stopPropagation();
+    this.soundButton = new UIButton('SOUND: ON', this.parseHexColor(COLORS.player), () => {
       this.game.audio.toggleSFX();
       this.updateSoundButtonText();
     });
     this.container.addChild(this.soundButton);
 
     // Credits Button
-    this.creditsButton = new PIXI.Text('[ VIEW CREDITS ]', {
-      fontFamily: 'Orbitron',
-      fontSize: CONSTANTS.FONT_SIZE_HEADER,
-      fontWeight: 'bold',
-      fill: this.parseHexColor(COLORS.invader2),
-      letterSpacing: CONSTANTS.UI_SETTINGS_LETTER_SPACING_BUTTON
-    });
-    this.creditsButton.anchor.set(0.5);
-    this.creditsButton.eventMode = 'static';
-    this.creditsButton.cursor = 'pointer';
-    
-    this.creditsButton.on('pointerover', () => { this.creditsButton.style.fill = 0xFFFFFF; });
-    this.creditsButton.on('pointerout', () => { this.creditsButton.style.fill = this.parseHexColor(COLORS.invader2); });
-    this.creditsButton.on('pointertap', (e) => {
-      e.stopPropagation();
+    this.creditsButton = new UIButton('VIEW CREDITS', this.parseHexColor(COLORS.invader2), () => {
       this.game.ui.creditsReturnState = CONSTANTS.GAME_STATES.SETTINGS;
       this.game.state = CONSTANTS.GAME_STATES.CREDITS;
       this.game.ui.handleStateChange(this.game.state);
@@ -111,14 +70,14 @@ export class SettingsView extends BaseView {
 
   updateMusicButtonText() {
     const isMuted = this.game.audio.isMusicMuted;
-    this.musicButton.text = `[ MUSIC: ${isMuted ? 'OFF' : 'ON'} ]`;
-    this.musicButton.style.fill = isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player);
+    this.musicButton.setLabel(`MUSIC: ${isMuted ? 'OFF' : 'ON'}`);
+    this.musicButton.setColor(isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player));
   }
 
   updateSoundButtonText() {
     const isMuted = this.game.audio.isSFXMuted;
-    this.soundButton.text = `[ SOUND: ${isMuted ? 'OFF' : 'ON'} ]`;
-    this.soundButton.style.fill = isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player);
+    this.soundButton.setLabel(`SOUND: ${isMuted ? 'OFF' : 'ON'}`);
+    this.soundButton.setColor(isMuted ? CONSTANTS.UI_SETTINGS_COLOR_MUTED : this.parseHexColor(COLORS.player));
   }
 
   onShow() {
