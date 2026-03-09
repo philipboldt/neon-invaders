@@ -48,7 +48,7 @@ export class UIManager {
     marqueeVer.anchor.set(0.5, 0);
     marqueeVer.position.set(0, CONSTANTS.FONT_SIZE_TITLE + 5);
     this.marqueeContainer.addChild(marqueeTitle, marqueeVer);
-    this.game.fullScreenBgLayer.addChild(this.marqueeContainer);
+    this.game.fullScreenTopLayer.addChild(this.marqueeContainer);
 
     // Initialize View Modules
     this.views.overlay = new ControlOverlayView(game);

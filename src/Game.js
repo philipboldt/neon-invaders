@@ -55,6 +55,11 @@ export class Game {
     this.gameContainer.y = this.gameOffsetY;
     this.gameContainer.sortableChildren = true;
     this.stage.addChild(this.gameContainer);
+
+    // Full Screen Top Layer (for Marquee & high-level UI that covers everything)
+    this.fullScreenTopLayer = new PIXI.Container();
+    this.fullScreenTopLayer.zIndex = CONSTANTS.Z_UI;
+    this.stage.addChild(this.fullScreenTopLayer);
     
     // 1. Game World (The Dimmer Layer)
     this.gameWorld = new PIXI.Container();
