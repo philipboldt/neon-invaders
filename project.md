@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Strict Planning Policy:** Updated `Gemini.md` to enforce a mandatory "Plan First" workflow. No implementation proceeds without an explicit directive after reviewing and discussing the proposed plan. **[POLICY]**
 - **Audio System Integration:** Integrated `@pixi/sound` and implemented a dedicated `AudioManager`. Background music (`res/bgm.ogg`) now loops during gameplay, with robust handling for browser autoplay policies and state-aware pause/resume logic. **[NEW]**
 - **Cinematic Credits System:** Added an automated "Attract Mode" and manual credits view featuring vertical neon scrolling, viewport masking, and state memory for seamless navigation. **[NEW]**
 - **Dynamic Arcade Marquee:** On tall mobile screens, the game's title now acts as a permanent, glowing "arcade marquee" resting in the top letterbox space. The inner game border is removed to seamlessly blend the gameplay area into the full-screen animated starfield. **[DONE]**
