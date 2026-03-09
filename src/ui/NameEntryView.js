@@ -1,5 +1,6 @@
 import { COLORS, CONSTANTS } from '../constants.js';
 import { BaseView } from './BaseView.js';
+import { UIButton } from './UIButton.js';
 
 export class NameEntryView extends BaseView {
   constructor(game) {
@@ -7,6 +8,8 @@ export class NameEntryView extends BaseView {
     this.currentCharIndex = 0;
     this.chars = ['A', 'A', 'A'];
     this.charTexts = [];
+    this.dragStartY = 0;
+    this.dragStartChar = '';
     this.init();
   }
 
@@ -23,6 +26,8 @@ export class NameEntryView extends BaseView {
     for (let i = 0; i < 3; i++) {
       const slot = new PIXI.Container();
       slot.position.set((i - 1) * CONSTANTS.UI_NAME_ENTRY_GAP, 0);
+      slot.eventMode = 'static';
+      slot.cursor = 'pointer';
 
       const charText = new PIXI.Text('A', {
         fontFamily: 'Orbitron', fontSize: CONSTANTS.FONT_SIZE_NAME_ENTRY_CHAR, fontWeight: 900, fill: 0xFFFFFF
@@ -35,6 +40,25 @@ export class NameEntryView extends BaseView {
       underline.endFill();
 
       slot.addChild(charText, underline);
+      
+      // Touch/Drag Events
+      slot.on('pointerdown', (e) => {
+        this.currentCharIndex = i;
+        this.dragStartY = e.global.y;
+        this.dragStartChar = this.chars[i];
+        this.updateDisplay();
+      });
+
+      slot.on('globalpointermove', (e) => {
+        if (this.currentCharIndex === i && e.buttons > 0) {
+          const dy = this.dragStartY - e.global.y;
+          const charOffset = Math.round(dy / 20); // 20px per letter change
+          if (charOffset !== 0) {
+            this.setCharFromOffset(i, charOffset);
+          }
+        }
+      });
+
       this.charTexts.push({ container: slot, text: charText, underline });
       this.entryContainer.addChild(slot);
     }
@@ -44,7 +68,20 @@ export class NameEntryView extends BaseView {
     });
     this.footer.anchor.set(0.5, 0);
 
-    this.container.addChild(this.header, this.entryContainer, this.footer);
+    this.saveButton = new UIButton('SAVE', this.parseHexColor(COLORS.invader2), () => {
+      this.game.ui.submitHighScore();
+    });
+    this.saveButton.visible = true;
+
+    this.container.addChild(this.header, this.entryContainer, this.footer, this.saveButton);
+  }
+
+  setCharFromOffset(idx, offset) {
+    const baseCode = this.dragStartChar.charCodeAt(0);
+    let newCode = ((baseCode - 65 + offset) % 26);
+    if (newCode < 0) newCode += 26;
+    this.chars[idx] = String.fromCharCode(newCode + 65);
+    this.updateDisplay();
   }
 
   reset() {
@@ -70,7 +107,6 @@ export class NameEntryView extends BaseView {
       ct.text.text = this.chars[i];
       const isActive = i === this.currentCharIndex;
       ct.text.style.fill = isActive ? this.parseHexColor(COLORS.player) : 0xFFFFFF;
-      ct.underline.alpha = isActive ? 1.0 : 0.2;
       ct.underline.clear();
       ct.underline.beginFill(isActive ? this.parseHexColor(COLORS.player) : 0xFFFFFF, isActive ? 1.0 : 0.3);
       ct.underline.drawRect(-25, 35, 50, 4);
@@ -82,6 +118,7 @@ export class NameEntryView extends BaseView {
     this.header.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_HEADER_Y);
     this.entryContainer.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_SLOTS_Y);
     this.footer.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_FOOTER_Y);
+    this.saveButton.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_FOOTER_Y + 60);
   }
 
   update(now) {

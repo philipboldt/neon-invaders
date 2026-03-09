@@ -187,9 +187,25 @@ export class InputManager {
         this.game.ui.handleStateChange(this.game.state);
         return;
       }
-      if (state === GAME_STATES.START) { this.game.startGame(); return; }
+      if (state === GAME_STATES.START) { 
+        const view = this.game.ui.views.start;
+        const point = new PIXI.Point(lx, ly);
+        if (view.startButton.containsPoint(point)) {
+          return; // Let Pixi handle the button tap
+        }
+        this.game.startGame(); 
+        return; 
+      }
       if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
       if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
+      if (state === GAME_STATES.HIGHSCORE) {
+        const view = this.game.ui.views.nameEntry;
+        const point = new PIXI.Point(lx, ly);
+        const hitSlot = view.charTexts.some(ct => ct.container.containsPoint(point));
+        if (hitSlot || view.saveButton.containsPoint(point)) {
+          return; // Let Pixi handle character selection/dragging and button taps
+        }
+      }
       if (state === GAME_STATES.SETTINGS) {
         // 1. Check if we hit a specific button or slider first
         const settingsView = this.game.ui.views.settings;

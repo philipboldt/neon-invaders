@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Mobile Interaction Completeness:** Overhauled `NameEntryView` for full touch support, enabling character selection via tapping and vertical swiping. Added a "TAP TO START" button to the start screen and a "SAVE" button for high scores, ensuring all core game flows are accessible without a keyboard. **[ACCESSIBILITY]**
 - **Rocket Rebalance:** Halved the rocket explosion radius by introducing `ROCKET_BLAST_RADIUS_MULT`. This requires more precise targeting and reduces the ability to clear massive clusters with a single shot. **[BALANCE]**
 - **Improved Audio Scaling:** Implemented quadratic volume mapping in `AudioManager` to better match human perceived loudness. This ensures that low volume settings (e.g., 5-10%) are appropriately quiet. Lowered default volume constants for a better initial experience. **[FIX]**
 - **Interactive Audio Controls:** Implemented a reusable `UISlider` component for fine-grained volume control. Added "Music Volume" and "SFX Volume" sliders to the Mission Settings menu, providing real-time audio feedback. **[NEW]**
