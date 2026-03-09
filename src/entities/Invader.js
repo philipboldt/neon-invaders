@@ -19,13 +19,11 @@ export class Invader extends BaseEntity {
     const textureKey = `inv_${this.color}`;
     this.sprite = new PIXI.Sprite(this.game.sprites.getTexture(textureKey));
     this.sprite.anchor.set(0.5);
-    
-    if (this.isBoss) {
-      // Scale based on logical size relative to standard invader
-      this.sprite.scale.set(this.w / CONSTANTS.INVADER_W);
-    }
-
     this.game.entityLayer.addChild(this.sprite);
+
+    // Always scale sprite based on logical width relative to standard invader
+    this.sprite.scale.set(this.w / CONSTANTS.INVADER_W);
+
     this.syncSprite();
     this.syncTint();
   }
