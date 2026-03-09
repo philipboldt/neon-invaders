@@ -117,20 +117,36 @@ export class Game {
     const availW = container.clientWidth;
     const availH = container.clientHeight;
     
-    const scale = availW / CONSTANTS.LOGICAL_WIDTH;
+    // Hybrid Scaling Strategy:
+    // 1. If screen is wider than 4:3, we scale to fit HEIGHT and letterbox horizontally.
+    // 2. If screen is taller than 4:3, we scale to fit WIDTH and expand vertically.
     
-    this.appW = CONSTANTS.LOGICAL_WIDTH;
-    this.appH = availH / scale;
-    
-    this.W = CONSTANTS.LOGICAL_WIDTH;
-    this.H = Math.min(this.appH, CONSTANTS.LOGICAL_HEIGHT_MAX);
-    this.H = Math.max(this.H, CONSTANTS.LOGICAL_HEIGHT_MIN);
+    const scaleWidth = availW / CONSTANTS.LOGICAL_WIDTH;
+    const scaleHeight = availH / CONSTANTS.LOGICAL_HEIGHT_MIN;
+
+    if (scaleWidth > scaleHeight) {
+      // Landscape / Wide - Fit to Height, Letterbox sides
+      const scale = scaleHeight;
+      this.appW = CONSTANTS.LOGICAL_WIDTH;
+      this.appH = CONSTANTS.LOGICAL_HEIGHT_MIN;
+      this.W = CONSTANTS.LOGICAL_WIDTH;
+      this.H = CONSTANTS.LOGICAL_HEIGHT_MIN;
+      this.canvas.style.width = `${this.W * scale}px`;
+      this.canvas.style.height = `${this.H * scale}px`;
+    } else {
+      // Portrait / Tall - Fit to Width, Expand Height
+      const scale = scaleWidth;
+      this.appW = CONSTANTS.LOGICAL_WIDTH;
+      this.appH = availH / scale;
+      this.W = CONSTANTS.LOGICAL_WIDTH;
+      this.H = Math.min(this.appH, CONSTANTS.LOGICAL_HEIGHT_MAX);
+      this.H = Math.max(this.H, CONSTANTS.LOGICAL_HEIGHT_MIN);
+      this.canvas.style.width = `${availW}px`;
+      this.canvas.style.height = `${availH}px`;
+    }
     
     this.gameOffsetY = (this.appH - this.H) / 2;
     this.heightFactor = this.H / CONSTANTS.LOGICAL_HEIGHT_MIN;
-
-    this.canvas.style.width = `${availW}px`;
-    this.canvas.style.height = `${availH}px`;
   }
 
   handleResize() {

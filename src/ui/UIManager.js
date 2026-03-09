@@ -173,12 +173,11 @@ export class UIManager {
     
     if (this.borderGraphics) {
       this.borderGraphics.clear();
-      // Only draw the border if we are NOT in letterboxed mode
-      if (game.gameOffsetY === 0) {
-        const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
-        this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
-        this.borderGraphics.drawRect(0, 0, game.W, game.H);
-      }
+      // Always draw the border around the logical game area (game.W, game.H)
+      // This ensures we have a frame on wide screens too.
+      const thickness = CONSTANTS.UI_BORDER_THICKNESS * (game.heightFactor || 1);
+      this.borderGraphics.lineStyle(thickness, this.parseHexColor(COLORS.player), 1);
+      this.borderGraphics.drawRect(0, 0, game.W, game.H);
     }
 
     if (this.controlsText) {

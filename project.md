@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Restored Hybrid Scaling & Framing:** Re-implemented the "best-fit" scaling strategy that handles wide and tall screens gracefully. Wide screens (landscape) now show a fixed 4:3 logical area centered with a permanent frame, while tall screens (portrait) expand vertically to utilize the full height. Removed CSS aspect-ratio constraints to give JS full layout control. **[FIX]**
 - **Dynamic Grid Scaling & Full Constant Centralization:** Implemented a responsive formation system that equalizes difficulty between landscape and portrait. It uses a base "Target Threat" (independent of ratio) and calculates a 1.0x to 1.5x scale factor for invaders. The grid dynamically adjusts its columns to maintain ~60% horizontal coverage on any screen, and its vertical start position is fixed at 20% of screen height to ensure consistent pressure. Every single magic number in the codebase has been migrated to `constants.js` for robust architectural control. **[BALANCE/REFACTOR]**
 - **Reinforced Planning Mandate:** Updated `Gemini.md` to a "MANDATORY STOP" policy. No implementation or file modification can occur without an explicit, detailed plan and user approval ("Go/Approved"). **[CRITICAL]**
 - **Settings System & Music Toggle:** Transformed the Quit Confirmation screen into a comprehensive "Settings" view. Accessible from all game states (Start, Playing, Game Over, etc.) via `Esc`. Added a music toggle button and a global `M` key shortcut. **[NEW]**
@@ -43,5 +44,5 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Clamped Delta Time:** Decoupled game logic from frame rate to ensure consistent gameplay speed on high-refresh monitors. **[FIX]**
 - **Pure Canvas Touch System:** Removed all HTML/DOM touch buttons in favor of a 3-tier vertical touch zone system directly in PixiJS. **[NEW]**
 - **Desktop Auto-Shoot Toggle:** Added auto-shoot toggle for the Space key on desktop. **[NEW]**
-- **Quit Confirmation Stage ("Airlock"):** Added a safety state to prevent accidental mission aborts. **[NEW]**
+- **Quit Confirmation Stage (\"Airlock\"):** Added a safety state to prevent accidental mission aborts. **[NEW]**
 - **Test Suite Refactor:** Completely rewrote the testing infrastructure into modular categories (`core`, `visual`, `responsive`). **[DONE]**
