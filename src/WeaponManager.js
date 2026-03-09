@@ -272,7 +272,7 @@ export class WeaponManager {
       const hitRadiusSq = CONSTANTS.ROCKET_HIT_RADIUS * CONSTANTS.ROCKET_HIT_RADIUS;
 
       if (distSq < hitRadiusSq) {
-        const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W;
+        const blastRadius = this.game.rocketLevel * CONSTANTS.INVADER_W * CONSTANTS.ROCKET_BLAST_RADIUS_MULT;
         this.game.shake = CONSTANTS.SHAKE_POD_HIT; // Using POD_HIT as a base for rocket shake
         this.game.audio.playSFX('explosion');
         
