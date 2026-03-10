@@ -246,7 +246,7 @@ export class InputManager {
               });
             } else {
               // Tap anywhere else to resume
-              this.game.state = this.game.previousState || GAME_STATES.PLAYING;
+              this.game.state = GAME_STATES.PLAYING;
               this.game.ui.handleStateChange(this.game.state);
             }
           }
