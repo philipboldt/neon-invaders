@@ -13,11 +13,6 @@ export class StartView extends BaseView {
     this.bg.beginFill(0x000000, 0.001); // Invisible but interactive
     this.bg.drawRect(0, 0, 100, 100);
     this.bg.endFill();
-    this.bg.eventMode = 'static';
-    this.bg.cursor = 'pointer';
-    this.bg.on('pointerdown', () => {
-      this.game.startGame();
-    });
     this.container.addChild(this.bg);
 
     this.header = new PIXI.Container();

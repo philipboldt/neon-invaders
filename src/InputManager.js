@@ -181,112 +181,156 @@ export class InputManager {
     const { GAME_STATES } = CONSTANTS;
     const { state } = this.game;
 
-    // 1. Menu Interactions (Always Single Taps)
-    if (isActive) {
-      if (state === GAME_STATES.CREDITS) {
-        this.game.state = this.game.ui.creditsReturnState || GAME_STATES.START;
-        this.game.ui.handleStateChange(this.game.state);
-        return;
-      }
-      if (state === GAME_STATES.START) { 
-        const view = this.game.ui.views.start;
-        const point = new PIXI.Point(lx, ly);
-        if (view.startButton.containsPoint(point)) {
-          return; // Let Pixi handle the button tap
-        }
-        this.game.startGame(); 
-        return; 
-      }
-      if (state === GAME_STATES.GAMEOVER) { this.game.restartGame(); return; }
-      if (state === GAME_STATES.BOSSKILLED) { this.game.ui.hideBossClear(); return; }
-      if (state === GAME_STATES.HIGHSCORE) {
-        const view = this.game.ui.views.nameEntry;
-        const point = new PIXI.Point(lx, ly);
-        const hitSlot = view.charTexts.some(ct => ct.container.containsPoint(point));
-        if (hitSlot || view.saveButton.containsPoint(point)) {
-          return; // Let Pixi handle character selection/dragging and button taps
-        }
-      }
-      if (state === GAME_STATES.SETTINGS) {
-        // 1. Check if we hit a specific button or slider first
-        const settingsView = this.game.ui.views.settings;
-        const point = new PIXI.Point(lx, ly);
-        if (settingsView.musicButton.containsPoint(point) || 
-            settingsView.soundButton.containsPoint(point) || 
-            settingsView.creditsButton.containsPoint(point) ||
-            settingsView.musicSlider.containsPoint(point) ||
-            settingsView.soundSlider.containsPoint(point)) {
-          return; // Let Pixi's static event listeners handle it
-        }
-
-        // 2. Default behavior (resume or quit)
-        if (zone === 'TOP') {
-          const now = performance.now();
-          if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
-            // Only confirm quit if we came from a "living" game state
-            if (this.game.previousState === GAME_STATES.PLAYING || this.game.previousState === GAME_STATES.PAUSED) {
-              this.game.endGame(false);
-            } else {
-              this.game.state = this.game.previousState || GAME_STATES.START;
-              this.game.ui.handleStateChange(this.game.state);
-            }
-          }
-          this.lastTopTap = now;
-        } else {
-          // Tap anywhere else to resume
-          this.game.state = this.game.previousState || GAME_STATES.PLAYING;
-          this.game.ui.handleStateChange(this.game.state);
-        }
-        return;
-      }
-    }
-
-    // 2. Playing/Paused Interactions
-    switch(zone) {
-      case 'TOP':
+    // 1. State-Based Touch Router
+    switch (state) {
+      case GAME_STATES.START:
         if (isActive) {
-          const now = performance.now();
-          if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
-            if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED || state === GAME_STATES.START || state === GAME_STATES.GAMEOVER) {
-              this.game.previousState = state;
+          if (zone === 'TOP') {
+            this.handleDoubleTap(() => {
+              this.game.previousState = GAME_STATES.START;
               this.game.state = GAME_STATES.SETTINGS;
               this.game.ui.handleStateChange(this.game.state);
+            });
+            return;
+          }
+
+          if (zone === 'MIDDLE') {
+            this.game.togglePause();
+            return;
+          }
+
+          const view = this.game.ui.views.start;
+          // Only trigger start if we didn't hit a specific UI button (let Pixi handle those)
+          if (!view.startButton.getBounds().contains(lx, ly)) {
+            this.game.startGame();
+          }
+        }
+        break;
+
+      case GAME_STATES.PLAYING:
+        this.handlePlayingTouch(zone, isActive);
+        break;
+
+      case GAME_STATES.PAUSED:
+        if (isActive) {
+          if (zone === 'MIDDLE') {
+            this.game.togglePause();
+          } else if (zone === 'TOP') {
+            this.handleDoubleTap(() => {
+              this.game.previousState = GAME_STATES.PAUSED;
+              this.game.state = GAME_STATES.SETTINGS;
+              this.game.ui.handleStateChange(this.game.state);
+            });
+          }
+        }
+        break;
+
+      case GAME_STATES.SETTINGS:
+        if (isActive) {
+          const view = this.game.ui.views.settings;
+          // Check if we hit any specific buttons or sliders
+          const hitUI = [
+            view.musicButton, view.soundButton, view.creditsButton,
+            view.musicSlider, view.soundSlider
+          ].some(ui => ui.getBounds().contains(lx, ly));
+
+          if (!hitUI) {
+            if (zone === 'TOP') {
+              this.handleDoubleTap(() => {
+                if (this.game.previousState === GAME_STATES.PLAYING || this.game.previousState === GAME_STATES.PAUSED) {
+                  this.game.endGame(false);
+                } else {
+                  this.game.state = this.game.previousState || GAME_STATES.START;
+                  this.game.ui.handleStateChange(this.game.state);
+                }
+              });
+            } else {
+              // Tap anywhere else to resume
+              this.game.state = this.game.previousState || GAME_STATES.PLAYING;
+              this.game.ui.handleStateChange(this.game.state);
             }
           }
-          this.lastTopTap = now;
+        }
+        break;
+
+      case GAME_STATES.GAMEOVER:
+        if (isActive) {
+          if (zone === 'TOP') {
+            this.handleDoubleTap(() => {
+              this.game.previousState = GAME_STATES.GAMEOVER;
+              this.game.state = GAME_STATES.SETTINGS;
+              this.game.ui.handleStateChange(this.game.state);
+            });
+          } else {
+            this.game.restartGame();
+          }
+        }
+        break;
+
+      case GAME_STATES.BOSSKILLED:
+        if (isActive) {
+          this.game.ui.hideBossClear();
+        }
+        break;
+
+      case GAME_STATES.HIGHSCORE:
+        // Let Pixi handle character selection and buttons in NameEntryView
+        break;
+
+      case GAME_STATES.CREDITS:
+        if (isActive) {
+          this.game.state = this.game.ui.creditsReturnState || GAME_STATES.START;
+          this.game.ui.handleStateChange(this.game.state);
+        }
+        break;
+    }
+  }
+
+  handlePlayingTouch(zone, isActive) {
+    const { GAME_STATES } = CONSTANTS;
+    
+    switch (zone) {
+      case 'TOP':
+        if (isActive) {
+          this.handleDoubleTap(() => {
+            this.game.previousState = GAME_STATES.PLAYING;
+            this.game.state = GAME_STATES.SETTINGS;
+            this.game.ui.handleStateChange(this.game.state);
+          });
         }
         break;
 
       case 'MIDDLE':
         if (isActive) {
-          if (state === GAME_STATES.PLAYING || state === GAME_STATES.PAUSED) {
-            this.game.togglePause();
-          }
+          this.game.togglePause();
         }
         break;
 
       case 'BOTTOM_LEFT':
-        if (state === GAME_STATES.PLAYING) {
-          this.game.player.dir = isActive ? -1 : (this.isZoneActive('BOTTOM_RIGHT') ? 1 : 0);
-        }
+        this.game.player.dir = isActive ? -1 : (this.isZoneActive('BOTTOM_RIGHT') ? 1 : 0);
         break;
 
       case 'BOTTOM_RIGHT':
-        if (state === GAME_STATES.PLAYING) {
-          this.game.player.dir = isActive ? 1 : (this.isZoneActive('BOTTOM_LEFT') ? -1 : 0);
-        }
+        this.game.player.dir = isActive ? 1 : (this.isZoneActive('BOTTOM_LEFT') ? -1 : 0);
         break;
 
       case 'BOTTOM_CENTER':
-        if (state === GAME_STATES.PLAYING) {
-          if (isActive) {
-            this.game.spacePressed = !this.game.spacePressed; // Toggle for mobile
-            this.game.ui.setShootActive(this.game.spacePressed);
-          }
+        if (isActive) {
+          this.game.spacePressed = !this.game.spacePressed;
+          this.game.ui.setShootActive(this.game.spacePressed);
         }
         break;
     }
   }
+
+  handleDoubleTap(callback) {
+    const now = performance.now();
+    if (now - this.lastTopTap < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
+      callback();
+    }
+    this.lastTopTap = now;
+  }
+
 
   isZoneActive(targetZone) {
     for (const coords of this.activePointers.values()) {

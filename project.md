@@ -31,7 +31,11 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
-- **Settings Interaction Fix (Mobile):** Added tap and double-tap logic to the `SettingsView` background. Tapping the lower 2/3 of the screen now resumes the game, while double-tapping the upper 1/3 aborts the mission, ensuring full mobile accessibility. **[FIX]**
+- **Unified State-Based Touch Control:** Overhauled the touch system into a centralized, context-aware router in `InputManager.js`. Each game state (`START`, `PLAYING`, `PAUSED`, `SETTINGS`, `GAMEOVER`, etc.) now has its own isolated touch logic, resolving interferences between layers.
+  - **Dynamic Control Overlay:** The `ControlOverlayView` now intelligently shows/hides labels based on the active state (e.g., hiding movement arrows in menus, showing "TAP TO RESTART" only on Game Over).
+  - **Universal Exit:** Standardized "Double Tap TOP" as the universal gesture for `Escape/Abort` across all relevant states.
+  - **Start/Settings Cleanup:** Removed redundant background listeners from `StartView` and `SettingsView`, centralizing all interaction logic within the state-driven `InputManager`. **[REFACTOR/FIX]**
+- **Settings Interaction Fix (Mobile):** (Superseded by Unified Touch Control) **[REFACTOR]**
 - **Start Screen Interaction:** Enhanced the `StartView` to support "tap anywhere to start," making the game more intuitive for mobile users. **[FIX]**
 - **Name Entry Layout Fix:** Adjusted the layout constants in `NameEntryView` to prevent the character-changing interface from overlapping the "SAVE" button. Increased vertical spacing between slots, footer, and buttons for better ergonomics on touch screens. **[FIX]**
 - **Lightning Visual Refinement:** Thinned the lightning beam and reduced its outline for a more precise "electric" look. Doubled the duration of the strike animation to 300ms, making the glow and flicker effects more impactful. **[VISUAL]**

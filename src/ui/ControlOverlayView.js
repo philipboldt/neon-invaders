@@ -66,6 +66,7 @@ export class ControlOverlayView extends BaseView {
   }
 
   update(state) {
+    const { GAME_STATES } = CONSTANTS;
     // Only show control overlay on coarse (touch) devices
     const isTouch = window.matchMedia('(pointer: coarse)').matches;
     if (!isTouch) {
@@ -73,8 +74,41 @@ export class ControlOverlayView extends BaseView {
       return;
     }
 
-    const isPlaying = state === CONSTANTS.GAME_STATES.PLAYING;
     this.container.visible = true;
+    const isPlaying = state === GAME_STATES.PLAYING;
+    const isPaused = state === GAME_STATES.PAUSED;
+    const isStart = state === GAME_STATES.START;
+    const isGameOver = state === GAME_STATES.GAMEOVER;
+
     this.labels.alpha = isPlaying ? 0.4 : 1.0;
+    
+    // Show/Hide labels based on state
+    this.labels.children.forEach(label => {
+      const text = label.text;
+      if (text.includes('EXIT')) {
+        label.visible = isPlaying || isPaused || isStart || isGameOver;
+      } else if (text.includes('PAUSE')) {
+        label.visible = isPlaying || isPaused || isStart;
+      } else if (text.includes('LEFT') || text.includes('RIGHT') || text.includes('SHOOT')) {
+        label.visible = isPlaying || isPaused;
+      }
+    });
+
+    // Special labels for non-playing states
+    if (isGameOver) {
+      // Find or create a RESTART label in the middle
+      let restartLabel = this.labels.children.find(l => l.text === 'TAP TO RESTART');
+      if (!restartLabel) {
+        const style = this.labels.children[0].style;
+        restartLabel = new PIXI.Text('TAP TO RESTART', style);
+        restartLabel.anchor.set(0.5);
+        restartLabel.position.set(this.game.appW / 2, this.game.appH * 0.75);
+        this.labels.addChild(restartLabel);
+      }
+      restartLabel.visible = true;
+    } else {
+      const restartLabel = this.labels.children.find(l => l.text === 'TAP TO RESTART');
+      if (restartLabel) restartLabel.visible = false;
+    }
   }
 }
