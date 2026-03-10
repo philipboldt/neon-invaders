@@ -118,7 +118,7 @@ export class NameEntryView extends BaseView {
     this.header.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_HEADER_Y);
     this.entryContainer.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_SLOTS_Y);
     this.footer.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_FOOTER_Y);
-    this.saveButton.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_FOOTER_Y + 60);
+    this.saveButton.position.set(W / 2, CONSTANTS.UI_NAME_ENTRY_FOOTER_Y + 80);
   }
 
   update(now) {

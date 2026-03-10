@@ -10,6 +10,31 @@ export class SettingsView extends BaseView {
   }
 
   init() {
+    this.lastTapTime = 0;
+    this.bg = new PIXI.Graphics();
+    this.bg.beginFill(0x000000, 0.001);
+    this.bg.drawRect(0, 0, 100, 100);
+    this.bg.endFill();
+    this.bg.eventMode = 'static';
+    this.bg.on('pointerdown', (e) => {
+      const { y } = e.global;
+      const height = this.game.H;
+      const now = performance.now();
+
+      if (y > height * (1/3)) {
+        // Lower 2/3 - Resume
+        this.game.state = CONSTANTS.GAME_STATES.PLAYING;
+        this.game.ui.handleStateChange(this.game.state);
+      } else {
+        // Upper 1/3 - Check for double tap
+        if (now - this.lastTapTime < CONSTANTS.TOUCH_DOUBLE_TAP_MS) {
+          this.game.gameOver(false);
+        }
+        this.lastTapTime = now;
+      }
+    });
+    this.container.addChild(this.bg);
+
     this.titleContainer = new PIXI.Container();
     this.container.addChild(this.titleContainer);
 
@@ -97,6 +122,11 @@ export class SettingsView extends BaseView {
   }
 
   updateLayout(W, H) {
+    this.bg.clear();
+    this.bg.beginFill(0x000000, 0.001);
+    this.bg.drawRect(0, 0, W, H);
+    this.bg.endFill();
+
     this.titleContainer.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_TITLE_Y_RATIO);
     
     this.musicButton.position.set(W / 2, H * CONSTANTS.UI_SETTINGS_MUSIC_Y_RATIO);

@@ -31,6 +31,9 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Settings Interaction Fix (Mobile):** Added tap and double-tap logic to the `SettingsView` background. Tapping the lower 2/3 of the screen now resumes the game, while double-tapping the upper 1/3 aborts the mission, ensuring full mobile accessibility. **[FIX]**
+- **Start Screen Interaction:** Enhanced the `StartView` to support "tap anywhere to start," making the game more intuitive for mobile users. **[FIX]**
+- **Name Entry Layout Fix:** Adjusted the layout constants in `NameEntryView` to prevent the character-changing interface from overlapping the "SAVE" button. Increased vertical spacing between slots, footer, and buttons for better ergonomics on touch screens. **[FIX]**
 - **Lightning Visual Refinement:** Thinned the lightning beam and reduced its outline for a more precise "electric" look. Doubled the duration of the strike animation to 300ms, making the glow and flicker effects more impactful. **[VISUAL]**
 - **Mobile Interaction Completeness:** Overhauled `NameEntryView` for full touch support, enabling character selection via tapping and vertical swiping. Added a "TAP TO START" button to the start screen and a "SAVE" button for high scores, ensuring all core game flows are accessible without a keyboard. **[ACCESSIBILITY]**
 - **Rocket Rebalance:** Halved the rocket explosion radius by introducing `ROCKET_BLAST_RADIUS_MULT`. This requires more precise targeting and reduces the ability to clear massive clusters with a single shot. **[BALANCE]**
