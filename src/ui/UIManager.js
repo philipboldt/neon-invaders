@@ -277,8 +277,10 @@ export class UIManager {
 
   update(now) {
     if (this.marqueeContainer && this.marqueeContainer.visible) {
-      const scale = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
-      this.marqueeContainer.scale.set(scale);
+      const isStart = this.game.state === CONSTANTS.GAME_STATES.START;
+      const baseScale = isStart ? 1.2 : 1.0;
+      const breathing = 1 + Math.sin(now / CONSTANTS.ANIM_BREATH_SPEED) * CONSTANTS.ANIM_BREATH_STRENGTH;
+      this.marqueeContainer.scale.set(baseScale * breathing);
     }
 
     // Attract Mode Logic
