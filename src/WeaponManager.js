@@ -50,6 +50,7 @@ export class WeaponManager {
     this.game.lastPlayerShot = now;
     
     if (this.game.bullets.length < CONSTANTS.WEAPON_MAX_BULLETS) {
+      this.game.audio.playSFX('laser');
       const spread = CONSTANTS.WEAPON_BULLET_SPREAD;
       const startX = this.game.player.x + this.game.player.w / 2 - CONSTANTS.BULLET_W / 2 - (this.game.shotCount - 1) * (spread / 2);
       for (let i = 0; i < this.game.shotCount; i++) {

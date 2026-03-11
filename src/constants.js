@@ -322,6 +322,7 @@ export const CONSTANTS = {
   AUDIO_SFX_VOLUME: 0.4,
   AUDIO_ASSETS: {
     BGM: 'res/bgm.ogg',
-    EXPLOSION: 'res/explosion.wav'
+    EXPLOSION: 'res/explosion.wav',
+    LASER: 'res/laserthing.wav'
   }
 };

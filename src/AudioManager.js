@@ -28,6 +28,13 @@ export class AudioManager {
       volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME,
       preload: true
     });
+
+    // Pre-load Laser SFX (Apply quadratic curve to initial volume)
+    PIXI.sound.add('laser', {
+      url: CONSTANTS.AUDIO_ASSETS.LASER,
+      volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME,
+      preload: true
+    });
   }
 
   resumeContext() {
@@ -94,9 +101,11 @@ export class AudioManager {
 
   setSFXVolume(vol) {
     if (typeof PIXI.sound === 'undefined') return;
-    const sfx = PIXI.sound.find('explosion');
     // Quadratic curve for more natural volume control
-    if (sfx) sfx.volume = vol * vol;
+    const exp = PIXI.sound.find('explosion');
+    if (exp) exp.volume = vol * vol;
+    const lsr = PIXI.sound.find('laser');
+    if (lsr) lsr.volume = vol * vol;
   }
 
   get isMuted() {
