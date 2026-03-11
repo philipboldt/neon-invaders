@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Master Volume Factor:** Introduced `AUDIO_MASTER_VOLUME` set to 0.5. This constant acts as an overall global multiplier for both music and sound effects, providing an extra layer of control for the final output volume across the entire audio system. **[NEW]**
 - **Audio Rebalancing:** Further reduced `AUDIO_GAIN_EXPLOSION` to 0.075 (92.5% total reduction). Verified the gain mechanism is correctly applied in `AudioManager.js`. This creates a very subtle "thud" for explosions, allowing player laser shots to be the dominant sound. **[BALANCE]**
 - **Audio Rebalancing (Previous):** Further reduced `AUDIO_GAIN_EXPLOSION` to 0.15 (85% total reduction). **[BALANCE]**
 - **Player Laser SFX:** Integrated the "laserthing" sound effect (`res/laserthing.wav`) for player shooting. Updated the `AudioManager` to handle pre-loading and volume scaling for the new asset. Credited the original creator, **FROSTY HAM**, in the in-game credits. **[NEW]**

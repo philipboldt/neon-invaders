@@ -18,21 +18,21 @@ export class AudioManager {
     PIXI.sound.add('bgm', {
       url: CONSTANTS.AUDIO_ASSETS.BGM,
       loop: true,
-      volume: CONSTANTS.AUDIO_BGM_VOLUME * CONSTANTS.AUDIO_BGM_VOLUME,
+      volume: CONSTANTS.AUDIO_BGM_VOLUME * CONSTANTS.AUDIO_BGM_VOLUME * CONSTANTS.AUDIO_MASTER_VOLUME,
       preload: true
     });
 
     // Pre-load Explosion SFX (Apply quadratic curve to initial volume)
     PIXI.sound.add('explosion', {
       url: CONSTANTS.AUDIO_ASSETS.EXPLOSION,
-      volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_GAIN_EXPLOSION,
+      volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_GAIN_EXPLOSION * CONSTANTS.AUDIO_MASTER_VOLUME,
       preload: true
     });
 
     // Pre-load Laser SFX (Apply quadratic curve to initial volume)
     PIXI.sound.add('laser', {
       url: CONSTANTS.AUDIO_ASSETS.LASER,
-      volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_GAIN_LASER,
+      volume: CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_SFX_VOLUME * CONSTANTS.AUDIO_GAIN_LASER * CONSTANTS.AUDIO_MASTER_VOLUME,
       preload: true
     });
   }
@@ -96,13 +96,13 @@ export class AudioManager {
     if (typeof PIXI.sound === 'undefined') return;
     const bgm = PIXI.sound.find('bgm');
     // Quadratic curve for more natural volume control
-    if (bgm) bgm.volume = vol * vol;
+    if (bgm) bgm.volume = vol * vol * CONSTANTS.AUDIO_MASTER_VOLUME;
   }
 
   setSFXVolume(vol) {
     if (typeof PIXI.sound === 'undefined') return;
     // Quadratic curve for more natural volume control
-    const baseVol = vol * vol;
+    const baseVol = vol * vol * CONSTANTS.AUDIO_MASTER_VOLUME;
     const exp = PIXI.sound.find('explosion');
     if (exp) exp.volume = baseVol * CONSTANTS.AUDIO_GAIN_EXPLOSION;
     const lsr = PIXI.sound.find('laser');
