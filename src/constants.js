@@ -320,6 +320,8 @@ export const CONSTANTS = {
   // --- AUDIO ---
   AUDIO_BGM_VOLUME: 0.25,
   AUDIO_SFX_VOLUME: 0.4,
+  AUDIO_GAIN_EXPLOSION: 0.6,
+  AUDIO_GAIN_LASER: 1.0,
   AUDIO_ASSETS: {
     BGM: 'res/bgm.ogg',
     EXPLOSION: 'res/explosion.wav',
