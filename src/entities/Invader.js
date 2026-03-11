@@ -16,7 +16,7 @@ export class Invader extends BaseEntity {
   }
 
   initSprite() {
-    const textureKey = `inv_${this.color}`;
+    const textureKey = this.isBoss ? `inv_${this.color}` : 'enemy';
     this.sprite = new PIXI.Sprite(this.game.sprites.getTexture(textureKey));
     this.sprite.anchor.set(0.5);
     this.game.entityLayer.addChild(this.sprite);
@@ -34,13 +34,24 @@ export class Invader extends BaseEntity {
   }
 
   syncTint() {
-    const ratio = this.maxHp > 1 ? CONSTANTS.INVADER_TINT_MIN + CONSTANTS.INVADER_TINT_RANGE * (this.hp / this.maxHp) : 1;
-    if (ratio < 1) {
-      const val = Math.floor(255 * ratio);
-      const targetTint = (val << 16) | (val << 8) | val;
+    const hpRatio = this.maxHp > 1 ? CONSTANTS.INVADER_TINT_MIN + CONSTANTS.INVADER_TINT_RANGE * (this.hp / this.maxHp) : 1;
+    const baseColor = this.game.ui.parseHexColor(this.color);
+    
+    if (hpRatio < 1) {
+      // Decompose base color into RGB
+      const r = (baseColor >> 16) & 0xFF;
+      const g = (baseColor >> 8) & 0xFF;
+      const b = baseColor & 0xFF;
+      
+      // Apply hpRatio to each component
+      const tr = Math.floor(r * hpRatio);
+      const tg = Math.floor(g * hpRatio);
+      const tb = Math.floor(b * hpRatio);
+      
+      const targetTint = (tr << 16) | (tg << 8) | tb;
       if (this.sprite.tint !== targetTint) this.sprite.tint = targetTint;
-    } else if (this.sprite.tint !== 0xFFFFFF) {
-      this.sprite.tint = 0xFFFFFF;
+    } else if (this.sprite.tint !== baseColor) {
+      this.sprite.tint = baseColor;
     }
   }
 

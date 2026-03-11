@@ -31,6 +31,7 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
+- **Enemy Sprite Integration:** Replaced the procedural rectangular invaders with the new high-fidelity enemy sprite (`res/enemy sprite.png`). Standard invaders now use this single texture with color-coded tinting (Pink, Green, Orange) to maintain variety. The sprite also dynamically darkens as the enemy takes damage. Bosses continue to use their unique procedural red rectangular design for distinct visual hierarchy. **[NEW/VISUAL]**
 - **Enemy Sprite Cleaning:** Used the updated `clean-sprite.js` tool to remove the magenta background from the new enemy sprite (`res/enemy sprite.png`), making it game-ready with transparency. **[TOOLING/DONE]**
 - **Image Processing Helper Enhancement:** Refactored the `scripts/clean-sprite.js` tool to accept a filename as a command-line argument. This allows for flexible cleaning of any sprite in the `res` directory by simply passing its name (e.g., `node scripts/clean-sprite.js "enemy sprite.png"`). Increased the color matching threshold to 15 for better background removal. **[TOOLING/IMPROVED]**
 - **Start Screen Visuals:** Increased the "NEON NUKE" logo size by 20% (factor 1.2) specifically on the start screen to enhance its presence as a centerpiece. The logo remains at its standard 1.0x scale in other game states (Pause, Game Over, etc.). **[VISUAL]**
