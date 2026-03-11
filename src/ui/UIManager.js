@@ -124,7 +124,6 @@ export class UIManager {
     switch(newState) {
       case CONSTANTS.GAME_STATES.START:
         if (this.attractModeActive) {
-          this.views.start.highscoreContainer.visible = false;
           this.views.credits.show();
         } else {
           this.views.start.show();
