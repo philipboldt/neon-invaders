@@ -95,8 +95,9 @@ export class Game {
 
     this.ui = new UIManager();
     this.particles = new ParticleSystem(this);
-    this.player = new Player(this.W, this.H, this);
     this.sprites = new SpriteManager(this.app); 
+    this.initSprites();
+    this.player = new Player(this.W, this.H, this);
     this.starfield = new Starfield(this.appW, this.appH, this);
     this.inputs = new InputManager(this);
     this.weapons = new WeaponManager(this);
@@ -107,7 +108,6 @@ export class Game {
     
     this.ui.initPixiHUD(this);
     this.ui.updateLayout(this);
-    this.initSprites();
     this.resetState();
     this.inputs.bindInputs();
     
