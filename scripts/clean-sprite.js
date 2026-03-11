@@ -5,8 +5,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const imagePath = path.join(__dirname, '..', 'res', 'player sprite.png');
-const threshold = 10; // Tolerance for color matching
+// Get the filename from command line arguments, default to 'player sprite.png'
+const fileName = process.argv[2] || 'player sprite.png';
+const imagePath = path.isAbsolute(fileName) ? fileName : path.join(__dirname, '..', 'res', fileName);
+const threshold = 15; // Increased tolerance for color matching
 
 async function cleanSprite() {
   try {
