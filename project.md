@@ -31,8 +31,8 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Known Bugs:** Actively tracked in `bugs.md`.
 
 ## Recent Changes
-- **Audio Rebalancing:** Fine-tuned SFX balance by lowering the default `AUDIO_SFX_VOLUME` to 0.25 (matching BGM). Further reduced `AUDIO_GAIN_EXPLOSION` to 0.3 (70% reduction) to ensure explosions provide impact without drowning out the player's laser shots. **[BALANCE]**
-- **Audio Rebalancing (Initial):** Introduced `AUDIO_GAIN_EXPLOSION` and `AUDIO_GAIN_LASER` constants to balance the volume levels between sound effects. Explosions were initially dampened by 40% compared to lasers. **[BALANCE]**
+- **Audio Rebalancing:** Further reduced `AUDIO_GAIN_EXPLOSION` to 0.15 (85% total reduction). This ultra-quiet setting ensures explosions provide a subtle low-end impact while keeping the soundstage completely clear for player lasers and UI feedback. **[BALANCE]**
+- **Audio Rebalancing (Volume Match):** Fine-tuned SFX balance by lowering the default `AUDIO_SFX_VOLUME` to 0.25 (matching BGM). **[BALANCE]**
 - **Player Laser SFX:** Integrated the "laserthing" sound effect (`res/laserthing.wav`) for player shooting. Updated the `AudioManager` to handle pre-loading and volume scaling for the new asset. Credited the original creator, **FROSTY HAM**, in the in-game credits. **[NEW]**
 - **Unified State-Based Touch Control:** Overhauled the touch system into a centralized, context-aware router in `InputManager.js`. Each game state (`START`, `PLAYING`, `PAUSED`, `SETTINGS`, `GAMEOVER`, etc.) now has its own isolated touch logic, resolving interferences between layers.
   - **Dynamic Control Overlay:** The `ControlOverlayView` now intelligently shows/hides labels based on the active state (e.g., hiding movement arrows in menus, showing "TAP TO RESTART" only on Game Over).
