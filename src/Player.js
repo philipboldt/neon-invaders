@@ -30,8 +30,9 @@ export class Player {
   }
 
   initPixi() {
-    this.sprite = new PIXI.Graphics();
-    this.drawShipGraphics(this.sprite, COLORS.player);
+    this.sprite = new PIXI.Sprite(this.game.sprites.getTexture('player'));
+    this.sprite.width = this.w;
+    this.sprite.height = this.h;
     this.game.entityLayer.addChild(this.sprite);
 
     this.leftPodSprite = new PIXI.Graphics();
@@ -46,18 +47,6 @@ export class Player {
 
     this.shieldGraphics = new PIXI.Graphics();
     this.game.effectLayer.addChild(this.shieldGraphics);
-  }
-
-  drawShipGraphics(g, color) {
-    g.clear();
-    g.beginFill(this.parseColor(color));
-    g.drawRect(0, 0, this.w, this.h);
-    g.endFill();
-    // Windows
-    g.beginFill(0x0a0a0f);
-    g.drawRect(8, 4, 8, 8);
-    g.drawRect(this.w - 16, 4, 8, 8);
-    g.endFill();
   }
 
   drawPodGraphics(g, color) {

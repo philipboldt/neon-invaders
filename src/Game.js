@@ -174,6 +174,7 @@ export class Game {
   }
 
   initSprites() {
+    this.sprites.loadTexture('player', 'res/player sprite.png');
     [COLORS.invader1, COLORS.invader2, COLORS.invader3, COLORS.boss].forEach(color => {
       this.sprites.preRender(`inv_${color}`, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, (ctx) => {
         drawRect(ctx, 0, 0, CONSTANTS.INVADER_W, CONSTANTS.INVADER_H, color, true);

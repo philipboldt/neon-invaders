@@ -26,6 +26,11 @@ export class SpriteManager {
     this.sprites[key] = canvas; // Keep legacy canvas for progressive migration
   }
 
+  loadTexture(key, url) {
+    const texture = PIXI.Texture.from(url);
+    this.textures[key] = texture;
+  }
+
   getTexture(key) {
     return this.textures[key];
   }

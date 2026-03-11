@@ -7,5 +7,7 @@ www.opengameart.org
 Laser Sound by frosty ham 
 www.opengameart.org
 
+Sprites by Nano Banana
+
 
 
