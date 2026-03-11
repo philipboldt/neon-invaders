@@ -21,9 +21,9 @@ export class Invader extends BaseEntity {
     this.sprite.anchor.set(0.5);
     this.game.entityLayer.addChild(this.sprite);
 
-    // Scaling: Target logical width / Actual texture width
-    const texW = this.sprite.texture.width;
-    this.sprite.scale.set(this.w / texW);
+    // Set absolute size in logical units
+    this.sprite.width = this.w;
+    this.sprite.height = this.h;
 
     this.syncSprite();
     this.syncTint();
