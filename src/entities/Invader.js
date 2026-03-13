@@ -36,8 +36,9 @@ export class Invader extends BaseEntity {
 
   syncTint() {
     const hpRatio = this.maxHp > 1 ? CONSTANTS.INVADER_TINT_MIN + CONSTANTS.INVADER_TINT_RANGE * (this.hp / this.maxHp) : 1;
-    // Standard invaders (not bosses) should show their original sprite colors at full health (0xFFFFFF)
-    const baseColor = this.isBoss ? this.game.ui.parseHexColor(this.color) : 0xFFFFFF;
+    
+    // Use the assigned row color as the base tint for ALL invaders
+    const baseColor = this.game.ui.parseHexColor(this.color);
     
     if (hpRatio < 1) {
       // Decompose base color into RGB
@@ -45,7 +46,7 @@ export class Invader extends BaseEntity {
       const g = (baseColor >> 8) & 0xFF;
       const b = baseColor & 0xFF;
       
-      // Apply hpRatio to each component
+      // Apply hpRatio to each component to darken the neon color as HP drops
       const tr = Math.floor(r * hpRatio);
       const tg = Math.floor(g * hpRatio);
       const tb = Math.floor(b * hpRatio);
