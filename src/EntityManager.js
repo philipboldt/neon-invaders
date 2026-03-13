@@ -30,8 +30,15 @@ export class EntityManager {
     // 3. Solve for Tactical Grid (Ratio Dependent)
     // Goal: Fill ~60% of width
     const targetGridW = this.game.W * CONSTANTS.INVADER_TARGET_WIDTH_FACTOR;
-    const cols = Math.max(CONSTANTS.INVADER_MIN_COLS, Math.floor(targetGridW / (invW + gap)));
-    const rows = Math.max(CONSTANTS.INVADER_MIN_ROWS, Math.round(targetTotal / cols));
+    let cols = Math.max(CONSTANTS.INVADER_MIN_COLS, Math.floor(targetGridW / (invW + gap)));
+    let rows = Math.max(CONSTANTS.INVADER_MIN_ROWS, Math.round(targetTotal / cols));
+    
+    // Height Safety Check: Grid should not take more than 45% of screen height
+    const maxGridHeight = this.game.H * 0.45;
+    while (rows * (invH + gap) > maxGridHeight && cols < 12) {
+      cols++;
+      rows = Math.ceil(targetTotal / cols);
+    }
     
     const totalGridW = cols * (invW + gap) - gap;
     let startX = (this.game.W - totalGridW) / 2;
