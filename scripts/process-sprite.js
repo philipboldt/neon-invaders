@@ -1,4 +1,4 @@
-import { Jimp } from 'jimp';
+import { Jimp, intToRGBA } from 'jimp';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -6,9 +6,18 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Helper to calculate color distance
+function getColorDistance(r1, g1, b1, r2, g2, b2) {
+    return Math.sqrt(
+        Math.pow(r1 - r2, 2) +
+        Math.pow(g1 - g2, 2) +
+        Math.pow(b1 - b2, 2)
+    );
+}
+
 async function processSprite(inputPath, outputPath, reportPath) {
     try {
-        console.log(`Processing: ${inputPath}`);
+        console.log(`🚀 Processing: ${inputPath}`);
         if (!fs.existsSync(inputPath)) {
             console.error(`❌ Input file not found: ${inputPath}`);
             return;
@@ -18,18 +27,30 @@ async function processSprite(inputPath, outputPath, reportPath) {
         const originalWidth = image.bitmap.width;
         const originalHeight = image.bitmap.height;
 
-        // Target colors (RGBA)
-        const MAGENTA = 0xFF00FFFF;
-        const GREEN = 0x00FF00FF;
+        // Target Reference Colors
+        const REF_MAGENTA = { r: 255, g: 0, b: 255 };
+        const THRESHOLD_MAGENTA = 100; // Fairly generous for AI output
+        
+        // Probe background color at 0,0
+        const bgHex = image.getPixelColor(0, 0);
+        const REF_GREEN = intToRGBA(bgHex);
+        const THRESHOLD_GREEN = 80;
+
+        console.log(`Detected Background (0,0): R:${REF_GREEN.r} G:${REF_GREEN.g} B:${REF_GREEN.b}`);
 
         let minX = image.bitmap.width, minY = image.bitmap.height, maxX = 0, maxY = 0;
         let found = false;
 
-        console.log("Scanning for Magenta box...");
-        // 1. Scan for Magenta box
+        console.log("Scanning for Magenta marker box...");
+        // 1. Scan for Magenta box with threshold
         image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
-            const color = image.getPixelColor(x, y);
-            if (color === MAGENTA) {
+            const r = image.bitmap.data[idx + 0];
+            const g = image.bitmap.data[idx + 1];
+            const b = image.bitmap.data[idx + 2];
+            
+            const dist = getColorDistance(r, g, b, REF_MAGENTA.r, REF_MAGENTA.g, REF_MAGENTA.b);
+            
+            if (dist < THRESHOLD_MAGENTA) {
                 minX = Math.min(minX, x);
                 minY = Math.min(minY, y);
                 maxX = Math.max(maxX, x);
@@ -40,28 +61,37 @@ async function processSprite(inputPath, outputPath, reportPath) {
 
         // 2. Crop Logic
         if (found) {
-            const cropX = minX + 1;
-            const cropY = minY + 1;
-            const cropW = maxX - minX - 1;
-            const cropH = maxY - minY - 1;
-            console.log(`✅ Magenta box found at (${minX},${minY}) size ${maxX-minX}x${maxY-minY}`);
+            // We find the box, then we crop INSIDE it.
+            // Assuming the box is 1-2 pixels thick, we add a small buffer.
+            const cropX = minX + 2;
+            const cropY = minY + 2;
+            const cropW = maxX - minX - 3;
+            const cropH = maxY - minY - 3;
+            console.log(`✅ Magenta-ish box found at (${minX},${minY}) to (${maxX},${maxY})`);
             image.crop({ x: cropX, y: cropY, w: cropW, h: cropH });
         } else {
-            console.warn("⚠️ No magenta box found. Cleaning background only.");
+            console.warn("⚠️ No magenta box found. Cleaning background only based on (0,0).");
         }
 
-        // 3. Make Chroma Keys Transparent (Magenta and Green)
+        // 3. Make Background and Marker Transparent
         let transparentCount = 0;
         image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
-            const color = image.getPixelColor(x, y);
-            if (color === MAGENTA || color === GREEN) {
-                image.setPixelColor(0x00000000, x, y);
+            const r = image.bitmap.data[idx + 0];
+            const g = image.bitmap.data[idx + 1];
+            const b = image.bitmap.data[idx + 2];
+
+            const distGreen = getColorDistance(r, g, b, REF_GREEN.r, REF_GREEN.g, REF_GREEN.b);
+            const distMagenta = getColorDistance(r, g, b, REF_MAGENTA.r, REF_MAGENTA.g, REF_MAGENTA.b);
+
+            if (distGreen < THRESHOLD_GREEN || distMagenta < THRESHOLD_MAGENTA) {
+                image.bitmap.data[idx + 3] = 0; // Alpha to 0
                 transparentCount++;
             }
         });
         console.log(`Made ${transparentCount} pixels transparent.`);
 
         // 4. Resize to 48x48 (Nearest Neighbor)
+        // We use a simple 48x48 resize. Jimp's default resize handles this.
         image.resize({ w: 48, h: 48 });
         
         await image.write(outputPath);
@@ -78,56 +108,44 @@ async function processSprite(inputPath, outputPath, reportPath) {
     <meta charset="UTF-8">
     <title>Sprite Processing Report</title>
     <style>
-        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; line-height: 1.6; }
-        .container { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
-        .box { border: 1px solid #333; padding: 20px; background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s; }
-        .box:hover { transform: translateY(-5px); border-color: #00ffcc; }
-        h1 { color: #00ffcc; margin-bottom: 30px; border-bottom: 2px solid #00ffcc; display: inline-block; padding-bottom: 10px; }
-        h2 { margin-top: 0; color: #ff00ff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; padding: 40px; }
+        .container { display: flex; gap: 30px; flex-wrap: wrap; }
+        .box { border: 1px solid #333; padding: 20px; background: #1e1e1e; border-radius: 8px; }
         .img-wrap { 
             display: inline-block;
-            background: 
-                linear-gradient(45deg, #2a2a2a 25%, transparent 25%), 
-                linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #2a2a2a 75%), 
-                linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+            background-image: linear-gradient(45deg, #2a2a2a 25%, transparent 25%), linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #2a2a2a 75%), linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             border: 1px solid #000;
         }
-        .pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
-        .original-container img { max-width: 500px; height: auto; display: block; }
-        .stats { margin-top: 30px; padding: 15px; background: #252525; border-left: 4px solid #00ffcc; font-family: monospace; }
+        .pixelated { image-rendering: pixelated; }
+        img { display: block; }
+        .stats { margin-top: 20px; font-family: monospace; color: #00ffcc; }
     </style>
 </head>
 <body>
-    <h1>Sprite Processing Report</h1>
-    
+    <h1>Sprite Processing Report (Adaptive)</h1>
     <div class="container">
-        <div class="box original-container">
-            <h2>Raw Input (${originalWidth}x${originalHeight})</h2>
-            <img src="${inputRel}" alt="Original">
+        <div class="box">
+            <h2>Original (${originalWidth}x${originalHeight})</h2>
+            <img src="${inputRel}" style="max-width: 600px;">
         </div>
-        
         <div class="box">
             <h2>Result (48x48)</h2>
             <div class="img-wrap">
-                <img src="${outputRel}" width="48" height="48" alt="Result 1:1">
+                <img src="${outputRel}" width="48" height="48">
             </div>
         </div>
-        
         <div class="box">
             <h2>Stretched (256x256)</h2>
             <div class="img-wrap">
-                <img class="pixelated" src="${outputRel}" width="256" height="256" alt="Result Stretched">
+                <img class="pixelated" src="${outputRel}" width="256" height="256">
             </div>
         </div>
     </div>
-
     <div class="stats">
-        Status: ${found ? '✅ MAGENTA BOX DETECTED' : '⚠️ NO MARKER BOX FOUND'}<br>
-        Input: ${path.basename(inputPath)}<br>
-        Output: ${path.basename(outputPath)}<br>
+        Status: ${found ? '✅ BOX DETECTED' : '⚠️ NO BOX'}<br>
+        BG Probe (0,0): R:${REF_GREEN.r} G:${REF_GREEN.g} B:${REF_GREEN.b}<br>
         Pixels Cleaned: ${transparentCount}
     </div>
 </body>

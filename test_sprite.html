@@ -5,57 +5,45 @@
     <meta charset="UTF-8">
     <title>Sprite Processing Report</title>
     <style>
-        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; line-height: 1.6; }
-        .container { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
-        .box { border: 1px solid #333; padding: 20px; background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: transform 0.2s; }
-        .box:hover { transform: translateY(-5px); border-color: #00ffcc; }
-        h1 { color: #00ffcc; margin-bottom: 30px; border-bottom: 2px solid #00ffcc; display: inline-block; padding-bottom: 10px; }
-        h2 { margin-top: 0; color: #ff00ff; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; padding: 40px; }
+        .container { display: flex; gap: 30px; flex-wrap: wrap; }
+        .box { border: 1px solid #333; padding: 20px; background: #1e1e1e; border-radius: 8px; }
         .img-wrap { 
             display: inline-block;
-            background: 
-                linear-gradient(45deg, #2a2a2a 25%, transparent 25%), 
-                linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #2a2a2a 75%), 
-                linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
+            background-image: linear-gradient(45deg, #2a2a2a 25%, transparent 25%), linear-gradient(-45deg, #2a2a2a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #2a2a2a 75%), linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             border: 1px solid #000;
         }
-        .pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
-        .original-container img { max-width: 500px; height: auto; display: block; }
-        .stats { margin-top: 30px; padding: 15px; background: #252525; border-left: 4px solid #00ffcc; font-family: monospace; }
+        .pixelated { image-rendering: pixelated; }
+        img { display: block; }
+        .stats { margin-top: 20px; font-family: monospace; color: #00ffcc; }
     </style>
 </head>
 <body>
-    <h1>Sprite Processing Report</h1>
-    
+    <h1>Sprite Processing Report (Adaptive)</h1>
     <div class="container">
-        <div class="box original-container">
-            <h2>Raw Input (2752x1536)</h2>
-            <img src="res\gemini enemy.png" alt="Original">
+        <div class="box">
+            <h2>Original (2752x1536)</h2>
+            <img src="res\gemini enemy.png" style="max-width: 600px;">
         </div>
-        
         <div class="box">
             <h2>Result (48x48)</h2>
             <div class="img-wrap">
-                <img src="res\gemini_processed.png" width="48" height="48" alt="Result 1:1">
+                <img src="res\gemini_processed.png" width="48" height="48">
             </div>
         </div>
-        
         <div class="box">
             <h2>Stretched (256x256)</h2>
             <div class="img-wrap">
-                <img class="pixelated" src="res\gemini_processed.png" width="256" height="256" alt="Result Stretched">
+                <img class="pixelated" src="res\gemini_processed.png" width="256" height="256">
             </div>
         </div>
     </div>
-
     <div class="stats">
-        Status: ⚠️ NO MARKER BOX FOUND<br>
-        Input: gemini enemy.png<br>
-        Output: gemini_processed.png<br>
-        Pixels Cleaned: 0
+        Status: ✅ BOX DETECTED<br>
+        BG Probe (0,0): R:3 G:251 B:5<br>
+        Pixels Cleaned: 853881
     </div>
 </body>
 </html>
