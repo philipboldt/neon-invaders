@@ -16,7 +16,7 @@ export class Invader extends BaseEntity {
   }
 
   initSprite() {
-    const textureKey = this.isBoss ? `inv_${this.color}` : 'enemy';
+    const textureKey = this.isBoss ? 'boss' : 'enemy';
     this.sprite = new PIXI.Sprite(this.game.sprites.getTexture(textureKey));
     this.sprite.anchor.set(0.5);
     this.game.entityLayer.addChild(this.sprite);
@@ -37,8 +37,10 @@ export class Invader extends BaseEntity {
   syncTint() {
     const hpRatio = this.maxHp > 1 ? CONSTANTS.INVADER_TINT_MIN + CONSTANTS.INVADER_TINT_RANGE * (this.hp / this.maxHp) : 1;
     
-    // Use the assigned row color as the base tint for ALL invaders
-    const baseColor = this.game.ui.parseHexColor(this.color);
+    // For bosses, we use white as the base to keep the original sprite colors
+    // For standard invaders, we use the assigned row color as the base tint
+    const baseColorHex = this.isBoss ? '#ffffff' : this.color;
+    const baseColor = this.game.ui.parseHexColor(baseColorHex);
     
     if (hpRatio < 1) {
       // Decompose base color into RGB
