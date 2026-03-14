@@ -13,9 +13,9 @@ let useGreenHeuristic = false;
 
 if (bigThresholdIndex !== -1) {
   args.splice(bigThresholdIndex, 1);
-  cleaningThreshold = 200; // Even larger threshold
+  cleaningThreshold = 130; // Balanced threshold
   useGreenHeuristic = true;
-  console.log('Using big threshold (200) and Green-Screen heuristic for background cleaning.');
+  console.log('Using big threshold (130) and Green-Screen heuristic for background cleaning.');
 }
 
 // Get the filename from command line arguments, default to 'player sprite.png'
@@ -133,7 +133,7 @@ async function cleanSprite() {
         const isColorMatchResult = isColorMatch(r, g, b, bgRGBA, cleaningThreshold);
         
         // Option 2: Heuristic Green Screen (Green is much larger than Red and Blue)
-        const isGreenHeuristic = useGreenHeuristic && (g > r + 30 && g > b + 30);
+        const isGreenHeuristic = useGreenHeuristic && (g > r + 100 && g > b + 100);
 
         if (isColorMatchResult || isGreenHeuristic) {
           this.bitmap.data[idx + 3] = 0;
