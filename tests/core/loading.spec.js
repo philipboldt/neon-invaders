@@ -21,8 +21,8 @@ test.describe('Neon Nuke - Loading and Initialization', () => {
         await page.goto('/');
         
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state);
+        }, { timeout: 10000 }).toBeTruthy();
 
         const gameState = await page.evaluate(() => ({
             level: window.game.level,
@@ -42,13 +42,13 @@ test.describe('Neon Nuke - Loading and Initialization', () => {
         
         // Wait for game to initialize
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state);
+        }, { timeout: 10000 }).toBeTruthy();
 
         const startScreenVisible = await page.evaluate(() => window.game.ui.views.start.container.visible);
         expect(startScreenVisible).toBe(true);
         
-        const promptText = await page.evaluate(() => window.game.ui.views.start.prompt.text);
+        const promptText = await page.evaluate(() => window.game.ui.views.start.startButton.text.text);
         expect(promptText.toLowerCase()).toContain('space');
         
         // HUD should be hidden on start screen

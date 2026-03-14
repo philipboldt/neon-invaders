@@ -15,6 +15,11 @@ test('Debug: Check window.game initialization', async ({ page }) => {
             type: typeof window.game,
             constructor: window.game.constructor.name,
             keys: Object.keys(window.game),
+            ui: {
+                type: typeof window.game.ui,
+                keys: window.game.ui ? Object.keys(window.game.ui) : [],
+                hasViews: window.game.ui ? !!window.game.ui.views : false
+            },
             invaders: typeof window.game.invaders,
             player: typeof window.game.player,
             state: window.game.state

@@ -5,8 +5,8 @@ test.describe('Neon Nuke - Game Over and Reset', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state);
+        }, { timeout: 10000 }).toBeTruthy();
     });
 
     test('Flow: Escape during PLAYING should trigger SETTINGS', async ({ page }) => {
@@ -72,6 +72,7 @@ test.describe('Neon Nuke - Game Over and Reset', () => {
             ]));
         });
         await page.reload();
+        await page.waitForFunction(() => window.game?.state);
         await page.keyboard.press('Space'); // Start
         
         await page.evaluate(() => {

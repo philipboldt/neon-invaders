@@ -27,10 +27,11 @@ A Space Invaders-style arcade shooter built with **PixiJS (WebGL)** and JavaScri
 - **Verification:** Automated tests verify pod progression, pierce logic, and mobile responsiveness.
 
 ## Project Status & Active Tracking
-- **Enhancement Roadmap:** Tracked in `improve.md`.
-- **Known Bugs:** Actively tracked in `bugs.md`.
+- **Enhancement Roadmap:** Tracked in `docs/improve.md`.
+- **Known Bugs:** Actively tracked in `docs/bugs.md`.
 
 ## Recent Changes
+- **Project Cleanup & Refactoring:** Deleted obsolete proxy `src/UIManager.js` and consolidated documentation into a new `docs/` directory. Removed temporary debug scripts and Windows-specific files. Updated `src/Game.js` to import directly from `src/ui/UIManager.js`. **[REFACTOR/CLEANUP]**
 - **Enemy Sprite Integration:** Replaced the procedural rectangular invaders with the new high-fidelity enemy sprite (`res/enemy sprite.png`). Standard invaders now show their original natural colors (no base color tinting), while the dynamic darkening effect (HP-based) remains for damage feedback. Bosses continue to use their unique procedural red rectangular design for distinct visual hierarchy. **[NEW/VISUAL]**
 - **Enemy Sprite Cleaning:** Used the updated `clean-sprite.js` tool to remove the magenta background from the new enemy sprite (`res/enemy sprite.png`), making it game-ready with transparency. **[TOOLING/DONE]**
 - **Image Processing Helper Enhancement:** Refactored the `scripts/clean-sprite.js` tool to accept a filename as a command-line argument. This allows for flexible cleaning of any sprite in the `res` directory by simply passing its name (e.g., `node scripts/clean-sprite.js "enemy sprite.png"`). Increased the color matching threshold to 15 for better background removal. **[TOOLING/IMPROVED]**

@@ -7,8 +7,8 @@ test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state);
+        }, { timeout: 10000 }).toBeTruthy();
     });
 
     test('UI: Touch controls (DOM) should NOT exist', async ({ page }) => {
@@ -17,11 +17,11 @@ test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
     });
 
     test('Interaction: Tap to start', async ({ page }) => {
-        // Tap in the middle of the screen
+        // Tap in the bottom zone to start the game
         const rect = await page.locator('#game').boundingBox();
         if (!rect) throw new Error('Canvas not found');
 
-        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height * 0.8);
         
         const state = await page.evaluate(() => window.game.state);
         expect(state).toBe('PLAYING');
@@ -31,7 +31,7 @@ test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
         const rect = await page.locator('#game').boundingBox();
         if (!rect) throw new Error('Canvas not found');
         
-        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2); // Start
+        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height * 0.8); // Start (Bottom zone)
         
         const initialX = await page.evaluate(() => window.game.player.x);
 
@@ -56,7 +56,7 @@ test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
         const rect = await page.locator('#game').boundingBox();
         if (!rect) throw new Error('Canvas not found');
         
-        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2); // Start
+        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height * 0.8); // Start (Bottom zone)
         
         // Tap Bottom Center (at 50% width, 80% height)
         await page.mouse.click(rect.x + rect.width * 0.5, rect.y + rect.height * 0.8);
@@ -73,7 +73,7 @@ test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
         const rect = await page.locator('#game').boundingBox();
         if (!rect) throw new Error('Canvas not found');
         
-        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2); // Start
+        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height * 0.8); // Start (Bottom zone)
         
         // Tap Middle (at 50% width, 50% height)
         await page.mouse.click(rect.x + rect.width * 0.5, rect.y + rect.height * 0.5);
@@ -90,7 +90,7 @@ test.describe('Neon Nuke - Mobile Responsive (New Touch System)', () => {
         const rect = await page.locator('#game').boundingBox();
         if (!rect) throw new Error('Canvas not found');
         
-        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2); // Start
+        await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height * 0.8); // Start (Bottom zone)
         
         // Double Tap Top (at 50% width, 10% height)
         const tx = rect.x + rect.width * 0.5;

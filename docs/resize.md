@@ -5,7 +5,7 @@ The game uses a hybrid approach to handle different aspect ratios (especially fo
 ## 1. The Core Concept: Fixed Logical Width, Dynamic Logical Height
 
 *   **Logical Width (`this.W`)** is always strictly locked to **800** (`LOGICAL_WIDTH`).
-*   **Logical Height (`this.H`)** is flexible. The baseline minimum is **600** (`LOGICAL_HEIGHT_MIN` - creating a base 4:3 ratio), but it can stretch up to **1400** (`LOGICAL_HEIGHT_MAX`) depending on how "tall" the screen is.
+*   **Logical Height (`this.H`)** is flexible. The baseline minimum is **600** (`LOGICAL_HEIGHT_MIN` - creating a base 4:3 ratio), but it can stretch up to **1200** (`LOGICAL_HEIGHT_MAX`) depending on how "tall" the screen is.
 
 ## 2. How `updateDimensions()` calculates the sizing (`src/Game.js`)
 

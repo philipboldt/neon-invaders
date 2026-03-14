@@ -5,8 +5,8 @@ test.describe('Neon Nuke - Core Gameplay', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state);
+        }, { timeout: 10000 }).toBeTruthy();
     });
 
     test('Transitions: START -> PLAYING via Space', async ({ page }) => {

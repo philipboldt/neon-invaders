@@ -7,8 +7,8 @@ test.describe('Neon Nuke - Dynamic Difficulty Scaling', () => {
         await page.goto('/');
         
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game && !!window.game.invaders && window.game.invaders.length > 0);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state && !!window.game.invaders && window.game.invaders.length > 0);
+        }, { timeout: 10000 }).toBeTruthy();
 
         const gridInfo = await page.evaluate(() => {
             const invaders = window.game.invaders;
@@ -37,8 +37,8 @@ test.describe('Neon Nuke - Dynamic Difficulty Scaling', () => {
         await page.goto('/');
         
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game && !!window.game.invaders && window.game.invaders.length > 0);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state && !!window.game.invaders && window.game.invaders.length > 0);
+        }, { timeout: 10000 }).toBeTruthy();
 
         const gridInfo = await page.evaluate(() => {
             const invaders = window.game.invaders.filter(inv => !inv.isBoss);
@@ -60,7 +60,7 @@ test.describe('Neon Nuke - Dynamic Difficulty Scaling', () => {
         // Landscape
         await page.setViewportSize({ width: 800, height: 600 });
         await page.goto('/');
-        await page.waitForFunction(() => !!window.game && window.game.invaders.length > 0);
+        await page.waitForFunction(() => window.game?.state && window.game.invaders.length > 0);
         
         let startY = await page.evaluate(() => {
             // Find the highest invader (lowest Y)
@@ -75,7 +75,7 @@ test.describe('Neon Nuke - Dynamic Difficulty Scaling', () => {
         // Portrait
         await page.setViewportSize({ width: 800, height: 1200 });
         await page.goto('/');
-        await page.waitForFunction(() => !!window.game && window.game.invaders.length > 0);
+        await page.waitForFunction(() => window.game?.state && window.game.invaders.length > 0);
         
         startY = await page.evaluate(() => window.game.invaders[0].y);
         expect(startY).toBeCloseTo(1200 * 0.2, 0);

@@ -5,8 +5,8 @@ test.describe('Neon Nuke - Visual Snapshots', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+            return await page.evaluate(() => window.game?.state);
+        }, { timeout: 10000 }).toBeTruthy();
         
         // Setup consistent highscores for start screen
         await page.evaluate(() => {
@@ -17,11 +17,7 @@ test.describe('Neon Nuke - Visual Snapshots', () => {
             ]));
         });
         await page.reload();
-        
-        // Wait for game to initialize again after reload
-        await expect.poll(async () => {
-            return await page.evaluate(() => !!window.game);
-        }, { timeout: 10000 }).toBe(true);
+        await page.waitForFunction(() => window.game?.state);
 
         // Aggressively disable all animations and movement
         await page.evaluate(() => {

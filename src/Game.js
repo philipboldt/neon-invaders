@@ -1,6 +1,6 @@
 import { COLORS, CONSTANTS } from './constants.js';
 import { SpriteManager } from './SpriteManager.js';
-import { UIManager } from './UIManager.js';
+import { UIManager } from './ui/UIManager.js';
 import { ParticleSystem } from './ParticleSystem.js';
 import { Player } from './Player.js';
 import { Starfield } from './Starfield.js';
