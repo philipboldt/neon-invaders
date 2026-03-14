@@ -13,6 +13,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Wait for fonts to load before initializing the game
   document.fonts.ready.then(() => {
-    window.game = new Game(canvas);
+    // Adding a small additional delay because document.fonts.ready sometimes 
+    // fires just before the font is actually usable by PixiJS/Canvas.
+    setTimeout(() => {
+      window.game = new Game(canvas);
+    }, 500);
   });
 });
