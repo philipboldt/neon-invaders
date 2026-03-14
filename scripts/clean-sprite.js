@@ -143,6 +143,10 @@ async function cleanSprite() {
 
       console.log(`Made ${bgCount} background pixels transparent.`);
       
+      // STEP 6: Resize to 48x48
+      console.log('Resizing sprite to 48x48...');
+      image = image.resize({ w: 48, h: 48 });
+
       // Save
       const ext = path.extname(imagePath);
       const base = path.join(path.dirname(imagePath), path.basename(imagePath, ext));
