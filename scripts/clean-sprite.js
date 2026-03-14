@@ -8,8 +8,11 @@ const __dirname = path.dirname(__filename);
 // Process command line arguments
 const args = process.argv.slice(2);
 const bigThresholdIndex = args.indexOf('--bigthreshold');
+const sizeIndex = args.indexOf('--size');
 let cleaningThreshold = 30; // For background transparency removal
 let useGreenHeuristic = false;
+let targetW = 48;
+let targetH = 48;
 
 if (bigThresholdIndex !== -1) {
   args.splice(bigThresholdIndex, 1);
@@ -18,8 +21,25 @@ if (bigThresholdIndex !== -1) {
   console.log('Using big threshold (130) and Green-Screen heuristic for background cleaning.');
 }
 
+// Find size index again since splice might have shifted it if bigthreshold was before it
+// but actually, we should just parse them all carefully.
+const finalArgs = [];
+for(let i=0; i<args.length; i++) {
+    if (args[i] === '--size') {
+        const sizeStr = args[i+1];
+        if (sizeStr) {
+            const parts = sizeStr.split('x');
+            targetW = parseInt(parts[0]);
+            targetH = parseInt(parts[1]);
+            i++; // skip next
+        }
+    } else {
+        finalArgs.push(args[i]);
+    }
+}
+
 // Get the filename from command line arguments, default to 'player sprite.png'
-const fileName = args[0] || 'player sprite.png';
+const fileName = finalArgs[0] || 'player sprite.png';
 const imagePath = path.isAbsolute(fileName) ? fileName : path.join(__dirname, '..', 'res', fileName);
 
 // Identification thresholds
@@ -143,9 +163,9 @@ async function cleanSprite() {
 
       console.log(`Made ${bgCount} background pixels transparent.`);
       
-      // STEP 6: Resize to 48x48
-      console.log('Resizing sprite to 48x48...');
-      image = image.resize({ w: 48, h: 48 });
+      // STEP 6: Resize
+      console.log(`Resizing sprite to ${targetW}x${targetH}...`);
+      image = image.resize({ w: targetW, h: targetH });
 
       // Save
       const ext = path.extname(imagePath);
