@@ -5,13 +5,23 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Process command line arguments
+const args = process.argv.slice(2);
+const bigThresholdIndex = args.indexOf('--bigthreshold');
+let cleaningThreshold = 30; // For background transparency removal (slightly looser for green gradients)
+
+if (bigThresholdIndex !== -1) {
+  args.splice(bigThresholdIndex, 1);
+  cleaningThreshold = 100; // Much larger threshold for varied backgrounds
+  console.log('Using big threshold for background cleaning.');
+}
+
 // Get the filename from command line arguments, default to 'player sprite.png'
-const fileName = process.argv[2] || 'player sprite.png';
+const fileName = args[0] || 'player sprite.png';
 const imagePath = path.isAbsolute(fileName) ? fileName : path.join(__dirname, '..', 'res', fileName);
 
 // Identification thresholds
 const magentaThreshold = 120; // For detecting the outer AI magenta border
-const cleaningThreshold = 30; // For background transparency removal (slightly looser for green gradients)
 const magentaTarget = { r: 255, g: 0, b: 255 };
 
 function isColorMatch(r, g, b, target, tol) {
