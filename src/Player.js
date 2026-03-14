@@ -25,7 +25,6 @@ export class Player {
     this.sprite = null;
     this.leftPodSprite = null;
     this.rightPodSprite = null;
-    this.shieldGraphics = null;
     this.initPixi();
   }
 
@@ -44,9 +43,6 @@ export class Player {
     this.drawPodGraphics(this.rightPodSprite, COLORS.player);
     this.rightPodSprite.visible = false;
     this.game.entityLayer.addChild(this.rightPodSprite);
-
-    this.shieldGraphics = new PIXI.Graphics();
-    this.game.effectLayer.addChild(this.shieldGraphics);
   }
 
   drawPodGraphics(g, color) {
@@ -83,6 +79,10 @@ export class Player {
     if (!this.sprite) return;
     this.sprite.position.set(this.x, this.y);
     
+    // Switch texture based on shield state
+    const textureKey = this.game.shieldHits > 0 ? 'player_shield' : 'player';
+    this.sprite.texture = this.game.sprites.getTexture(textureKey);
+    
     const podY = this.y + (this.h - this.podH) / 2;
     
     if (this.pods.left.active) {
@@ -101,17 +101,6 @@ export class Player {
       this.rightPodSprite.tint = ratio >= 1 ? 0xFFFFFF : this.getHealthTint(ratio);
     } else {
       this.rightPodSprite.visible = false;
-    }
-
-    // Shield
-    this.shieldGraphics.clear();
-    if (this.game.shieldHits > 0) {
-      this.shieldGraphics.lineStyle(3, this.parseColor(COLORS.shield), 1);
-      let sX = this.x - 4;
-      let sW = this.w + 8;
-      if (this.pods.left.active) { sX -= (this.podW + this.podGap); sW += (this.podW + this.podGap); }
-      if (this.pods.right.active) { sW += (this.podW + this.podGap); }
-      this.shieldGraphics.drawRect(sX, this.y - 4, sW, this.h + 8);
     }
   }
 
