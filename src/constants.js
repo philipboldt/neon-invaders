@@ -57,7 +57,7 @@ export const CONSTANTS = {
   
   // --- INVADERS ---
   INVADER_W: 36, 
-  INVADER_H: 24,
+  INVADER_H: 36,
   INVADER_GAP: 8,
   INVADER_TINT_MIN: 0.45,
   INVADER_TINT_RANGE: 0.55,
