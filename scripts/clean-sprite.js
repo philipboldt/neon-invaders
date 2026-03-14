@@ -8,12 +8,14 @@ const __dirname = path.dirname(__filename);
 // Process command line arguments
 const args = process.argv.slice(2);
 const bigThresholdIndex = args.indexOf('--bigthreshold');
-let cleaningThreshold = 30; // For background transparency removal (slightly looser for green gradients)
+let cleaningThreshold = 30; // For background transparency removal
+let useGreenHeuristic = false;
 
 if (bigThresholdIndex !== -1) {
   args.splice(bigThresholdIndex, 1);
-  cleaningThreshold = 100; // Much larger threshold for varied backgrounds
-  console.log('Using big threshold for background cleaning.');
+  cleaningThreshold = 200; // Even larger threshold
+  useGreenHeuristic = true;
+  console.log('Using big threshold (200) and Green-Screen heuristic for background cleaning.');
 }
 
 // Get the filename from command line arguments, default to 'player sprite.png'
@@ -57,7 +59,6 @@ async function cleanSprite() {
       console.log(`Outer bounds: minX:${outerMinX}, minY:${outerMinY}, maxX:${outerMaxX}, maxY:${outerMaxY}`);
       
       // STEP 2: Use a fixed empirical border thickness to bypass all noise
-      // Based on previous scans, the border + gradient noise extends ~30-40 pixels
       const empiricalThickness = 40; 
       
       const innerMinX = outerMinX + empiricalThickness;
@@ -103,7 +104,6 @@ async function cleanSprite() {
       for (let x = 0; x < Math.min(newW, sampleSize); x++) {
           for (let y = 0; y < Math.min(newH, sampleSize); y++) {
               const c = intToRGBA(image.getPixelColor(x, y));
-              // Round colors to group similar anti-aliased shades
               const key = `${Math.round(c.r/5)*5},${Math.round(c.g/5)*5},${Math.round(c.b/5)*5}`;
               if (!colorCounts[key]) colorCounts[key] = { count: 0, r: c.r, g: c.g, b: c.b };
               colorCounts[key].count++;
@@ -129,7 +129,13 @@ async function cleanSprite() {
         const g = this.bitmap.data[idx + 1];
         const b = this.bitmap.data[idx + 2];
 
-        if (isColorMatch(r, g, b, bgRGBA, cleaningThreshold)) {
+        // Option 1: Match the detected color within threshold
+        const isColorMatchResult = isColorMatch(r, g, b, bgRGBA, cleaningThreshold);
+        
+        // Option 2: Heuristic Green Screen (Green is much larger than Red and Blue)
+        const isGreenHeuristic = useGreenHeuristic && (g > r + 30 && g > b + 30);
+
+        if (isColorMatchResult || isGreenHeuristic) {
           this.bitmap.data[idx + 3] = 0;
           bgCount++;
         }
